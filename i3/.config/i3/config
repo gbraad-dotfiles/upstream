@@ -19,11 +19,11 @@ default_floating_border normal
 hide_edge_borders both
 
 # Hybrid colors
-set $t_background    #000000
+set $t_background    #ffffff
 set $t_currentline   #2a2a2a
 set $t_selection     #424242
 #set $t_foreground   #eaeaea
-set $t_foreground    #ffffff
+set $t_foreground    #000000
 set $t_comment       #969896
 set $t_red           #d54e53
 set $t_orange        #e78c45
@@ -41,7 +41,7 @@ client.urgent           $t_red          $t_background  $t_red         $t_red
 client.background       $t_background
 
 # Set wallpaper with feh
-exec --no-startup-id xsetroot -solid "#000000"
+exec --no-startup-id xsetroot -solid "#ffffff"
 exec --no-startup-id feh --bg-fill ~/Pictures/Wallpapers/red-corner.png
 
 # Font for window titles. Will also be used by the bar unless a different font

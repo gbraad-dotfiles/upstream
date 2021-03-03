@@ -26,7 +26,7 @@ let g:loaded_airline=1  " 'disables' airline
 "let g:airline_theme='powerlineish'
 
 " Appearance
-colorscheme Tomorrow-Night-Bright
+colorscheme Tomorrow
 set guifont=Source\ Code\ Pro
 "set guifont=Source\ Code\ Pro\ for\ Powerline
 "set cursorline 

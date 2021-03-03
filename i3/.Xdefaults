@@ -14,12 +14,12 @@
 #define t_purple       #c397d8
 
 
-*.foreground:   #ffffff
-*.background:   #000000
+*.foreground:   #000000
+*.background:   #ffffff
 *.cursorColor:  #aeafad
 
 ! Black / Grey
-*.color0:       #000000
+*.color0:       #ffffff
 *.color8:       #666666
 
 ! Red / Bright Red
@@ -50,8 +50,8 @@
 *.color7:       #424242
 *.color15:      #2a2a2a
 
-URxvt*background: #000000
-URxvt*foreground: #ffffff
+URxvt*background: #ffffff
+URxvt*foreground: #000000
 URxvt*font: xft:Source\ Code\ Pro:pixelsize=13:antialias=true:hinting=true,xft:Source\ Code\ Pro\ Medium:pixelsize=13:antialias=true:hinting=true
 URxvt*scrollBar: false
 
