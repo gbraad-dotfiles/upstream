@@ -27,8 +27,28 @@ alias debroot='${CONTAINER_RUNTIME} exec -it debsys /bin/zsh'
 alias debuser='${CONTAINER_RUNTIME} exec -it debsys su - gbraad'
 
 
-# --- base on host distro
+# --- Alpine devenv --- https://github.com/gbraad-devenv/alpine/
+ALPINE_VERSION="3.18"
 
+# dotfiles
+alias alpenv='${CONTAINER_RUNTIME} run -it --cap-add=NET_ADMIN --cap-add=NET_RAW --device=/dev/net/tun --rm -v $HOME/Projects:/home/${USER}/Projects --entrypoint="" ghcr.io/gbraad-devenv/alpine/dotfiles:${ALPINE_VERSION} /bin/zsh'
+
+
+# --- CentOS devenv --- https://github.com/gbraad-devenv/centos/
+CENTOS_VERSION="stream9"
+
+# dotfiles
+alias cenenv='${CONTAINER_RUNTIME} run -it --cap-add=NET_ADMIN --cap-add=NET_RAW --device=/dev/net/tun --rm -v $HOME/Projects:/home/${USER}/Projects --entrypoint="" ghcr.io/gbraad-devenv/centos/dotfiles:${CENTOS_VERSION} /bin/zsh'
+
+
+# --- Ubuntu devenv --- https://github.com/gbraad-devenv/ubuntu/
+UBUNTU_VERSION="jammy"
+
+# dotfiles
+alias ubuenv='${CONTAINER_RUNTIME} run -it --cap-add=NET_ADMIN --cap-add=NET_RAW --device=/dev/net/tun --rm -v $HOME/Projects:/home/${USER}/Projects --entrypoint="" ghcr.io/gbraad-devenv/ubuntu/dotfiles:${UBUNTU_VERSION} /bin/zsh'
+
+
+# --- base on host distro
 source /etc/os-release
 
 if [ "$ID" = "fedora" ]
@@ -44,4 +64,3 @@ then
     alias devroot=debroot
     alias devuser=debuser
 fi
-
