@@ -70,6 +70,18 @@ alias almroot='${CONTAINER_RUNTIME} exec -it almsys /bin/zsh'
 alias almuser='${CONTAINER_RUNTIME} exec -it almsys su - gbraad'
 
 
+# --- OpenSUSE devenv --- https://github.com/gbraad-devenv/opensuse/
+OPENSUSE_VERSION="15.2"
+
+# dotfiles
+alias susenv='${CONTAINER_RUNTIME} run -it --cap-add=NET_ADMIN --cap-add=NET_RAW --device=/dev/net/tun --rm -v $HOME/Projects:/home/${USER}/Projects --entrypoint="" ghcr.io/gbraad-devenv/opensuse/dotfiles:${OPENSUSE_VERSION} /bin/zsh'
+
+# systemd
+alias sussys='podman run -d --name=sussys --hostname $HOSTNAME-sussys --systemd=always --cap-add=NET_ADMIN --cap-add=NET_RAW --device=/dev/net/tun -v $HOME/Projects:/home/${USER}/Projects ghcr.io/gbraad-devenv/opensuse/systemd:${OPENSUSE_VERSION}'
+alias susroot='${CONTAINER_RUNTIME} exec -it sussys /bin/zsh'
+alias sususer='${CONTAINER_RUNTIME} exec -it sussys su - gbraad'
+
+
 # --- base on host distro
 source /etc/os-release
 
