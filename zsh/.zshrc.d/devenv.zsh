@@ -58,6 +58,18 @@ alias uburoot='${CONTAINER_RUNTIME} exec -it ubusys /bin/zsh'
 alias ubuuser='${CONTAINER_RUNTIME} exec -it ubusys su - gbraad'
 
 
+# --- AlmaLinux devenv --- https://github.com/gbraad-devenv/almalinux/
+ALMALINUX_VERSION="9"
+
+# dotfiles
+alias almenv='${CONTAINER_RUNTIME} run -it --cap-add=NET_ADMIN --cap-add=NET_RAW --device=/dev/net/tun --rm -v $HOME/Projects:/home/${USER}/Projects --entrypoint="" ghcr.io/gbraad-devenv/almalinux/dotfiles:${ALMALINUX_VERSION} /bin/zsh'
+
+# systemd
+alias almsys='podman run -d --name=almsys --hostname $HOSTNAME-almsys --systemd=always --cap-add=NET_ADMIN --cap-add=NET_RAW --device=/dev/net/tun -v $HOME/Projects:/home/${USER}/Projects ghcr.io/gbraad-devenv/almalinux/systemd:${ALMALINUX_VERSION}'
+alias almroot='${CONTAINER_RUNTIME} exec -it almsys /bin/zsh'
+alias almuser='${CONTAINER_RUNTIME} exec -it almsys su - gbraad'
+
+
 # --- base on host distro
 source /etc/os-release
 
