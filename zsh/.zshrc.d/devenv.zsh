@@ -52,6 +52,11 @@ UBUNTU_VERSION="jammy"
 # dotfiles
 alias ubuenv='${CONTAINER_RUNTIME} run -it --cap-add=NET_ADMIN --cap-add=NET_RAW --device=/dev/net/tun --rm -v $HOME/Projects:/home/${USER}/Projects --entrypoint="" ghcr.io/gbraad-devenv/ubuntu/dotfiles:${UBUNTU_VERSION} /bin/zsh'
 
+# systemd
+alias ubusys='podman run -d --name=ubusys --hostname $HOSTNAME-ubusys --systemd=always --cap-add=NET_ADMIN --cap-add=NET_RAW --device=/dev/net/tun -v $HOME/Projects:/home/${USER}/Projects ghcr.io/gbraad-devenv/ubuntu/systemd:${UBUNTU_VERSION}'
+alias uburoot='${CONTAINER_RUNTIME} exec -it ubusys /bin/zsh'
+alias ubuuser='${CONTAINER_RUNTIME} exec -it ubusys su - gbraad'
+
 
 # --- base on host distro
 source /etc/os-release
