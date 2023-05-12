@@ -33,6 +33,11 @@ ALPINE_VERSION="3.18"
 # dotfiles
 alias alpenv='${CONTAINER_RUNTIME} run -it --cap-add=NET_ADMIN --cap-add=NET_RAW --device=/dev/net/tun --rm -v $HOME/Projects:/home/${USER}/Projects --entrypoint="" ghcr.io/gbraad-devenv/alpine/dotfiles:${ALPINE_VERSION} /bin/zsh'
 
+# system (init)
+alias alpsys='podman run -d --name=alpsys --hostname $HOSTNAME-alpsys --systemd=always --cap-add=NET_ADMIN --cap-add=NET_RAW --device=/dev/net/tun -v $HOME/Projects:/home/${USER}/Projects ghcr.io/gbraad-devenv/alpine/system:${ALPINE_VERSION}'
+alias alproot='${CONTAINER_RUNTIME} exec -it alpsys /bin/zsh'
+alias alpuser='${CONTAINER_RUNTIME} exec -it alpsys su - gbraad'
+
 
 # --- CentOS devenv --- https://github.com/gbraad-devenv/centos/
 CENTOS_VERSION="stream9"
