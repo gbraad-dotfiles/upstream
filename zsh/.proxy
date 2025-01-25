@@ -10,4 +10,4 @@ ncognito-tailscale=http://100.64.21.120:3214
 ndisguise-tailscale=http://100.64.21.240:3214
 ngage=http://10.0.21.44:3214
 ngage-tailscale=http://100.64.21.44:3214
-
+tailproxy=socks5://localhost:3215

@@ -1,5 +1,9 @@
 #!/bin/sh
-STATEDIR=~/.local/state/tailscale
+
+CONFIG="${HOME}/.tailscale"
+alias tailscaleini="git config -f $CONFIG"
+
+STATEDIR=$(tailscaleini --get "tailproxy.statedir")
 SESSION="tailproxy"
 
 tmux has-session -t $SESSION 2>/dev/null
@@ -8,11 +12,11 @@ if [ $? != 0 ]; then
     mkdir -p $STATEDIR
     startcmd="
         tailscaled --tun=userspace-networking \
-            --socks5-server=localhost:3215 \
-            --outbound-http-proxy-listen=localhost:3214 \
+            --socks5-server=$(tailscaleini --get tailproxy.socks5-server) \
+            --outbound-http-proxy-listen=$(tailscaleini --get tailproxy.outbound-http-proxy-listen) \
             --state=$STATEDIR/userspace.state \
             --socket=$STATEDIR/userspace.sock \
-            --port 41642"
+            --port $(tailscaleini --get tailproxy.port)"
     tmux new-session -s $SESSION -d
     tmux send -t $SESSION "$startcmd" ENTER
 fi

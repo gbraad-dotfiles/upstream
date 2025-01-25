@@ -1,0 +1,10 @@
+[tailscale]
+	aliases = true
+
+[tailproxy]
+	aliases = true
+	statedir = "~/.local/state/tailscale"
+	socks5-server = "localhost:3215"
+	outbound-http-proxy-listen = "localhost:3214"
+	port = 41642
+
