@@ -1,0 +1,20 @@
+name: Sync Repos
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout source repository
+        uses: actions/checkout@v2
+
+      - name: Push to destination repository
+        run: |
+          cd dotfiles
+          git remote add gbraad https://gbraad:${{ secrets.PAT }}@github.com/gbraad/dotfiles.git
+          git push -f gbraad main
