@@ -60,6 +60,8 @@ oldinstall() {
   mkdir -p ~/.local/lib/python2.7/site-packages/
 
   dotinstall
+
+  echo "Install finished. Use \`chsh -s /bin/zsh\` to change shell."
 }
 
 if [[ "$0" == *install.sh* ]]; then
