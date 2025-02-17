@@ -160,23 +160,23 @@ var_secret() {
     secret_name="$1"
   fi
 
-  local env_var_name=$(echo "$secret_name" | tr '[:lower:]' '[:upper:]')
+  local env_var_name=$(echo "${secret_name}" | tr '[:lower:]' '[:upper:]')
         
   # Decrypt and store the content
   local secret_content
-  secret_content=$(get_secret "$secret_name")
+  secret_content=$(get_secret "${secret_name}")
     
   # Check if decryption was successful
-  if [ -z "$secret_content" ]; then
-    printf "Error: Failed to decrypt secret '%s'\n" "$secret_name" >&2
+  if [ -z "${secret_content}" ]; then
+    printf "Error: Failed to decrypt secret '%s'\n" "${secret_name}" >&2
     return 1
   fi
     
   # Export to environment variable
-  export "$env_var_name=$secret_content"
+  export "$env_var_name=${secret_content}"
     
   # Optionally notify that the secret was loaded (to stderr to avoid affecting pipes)
-  printf "Loaded secret '%s' into environment variable '%s'\n" "$secret_name" "$env_var_name" >&2
+  printf "Loaded secret '%s' into environment variable '%s'\n" "${secret_name}" "${env_var_name}" >&2
 }
 
 base32_decode() {
@@ -186,19 +186,26 @@ base32_decode() {
   # Calculate padding if needed
   local padding=$((((8 - ${#input} % 8) % 8)))
   if [ $padding -ne 0 ]; then
-    input="${input}$(printf '=%.0s' $(seq 1 $padding))"
+    input="${input}$(printf '=%.0s' $(seq 1 ${padding}))"
   fi
 
   # Decode using base32
-  echo -n "$input" | base32 -d 2>/dev/null
+  echo -n "${input}" | base32 -d 2>/dev/null
 }
 
 totp_secret() {
-  secret=$(get_secret $@)
-  if [ -z "$secret" ]; then
-    echo "Error: No secret provided" >&2
-    return 1
+  local secret_name="$1"
+  if [ -z "$1" ]; then
+    secret_name=$(cd "${_secretspath}/secrets" && find . -type f -not -path '*/\.*' | sed 's|^\./||' | grep "totp_" | fzf)
+    if [ -z "${secret_name}" ]; then
+      echo "Empty selection"
+      return 1
+    fi
+  else
+    secret_name="$1"
   fi
+
+  secret=$(get_secret "${secret_name}")
 
   # Get current time
   local time_step=30
@@ -207,7 +214,7 @@ totp_secret() {
   local time_hex=$(printf '%016x' $time_counter)
 
   # Decode the base32 secret and get the full key
-  local decoded=$(base32_decode "$secret")
+  local decoded=$(base32_decode "${secret}")
   local key=$(echo -n "$decoded" | xxd -p -c256)
 
   # Convert time to binary
@@ -215,7 +222,7 @@ totp_secret() {
 
   # Calculate HMAC-SHA1
   local hmac=$(echo -n "$time_bin" | \
-     openssl dgst -sha1 -mac HMAC -macopt "hexkey:$key" -binary | \
+     openssl dgst -sha1 -mac HMAC -macopt "hexkey:${key}" -binary | \
      xxd -p -c256)
 
   # Get offset from last byte (& 0xf)
@@ -226,10 +233,10 @@ totp_secret() {
 
   # Calculate TOTP value
   local otp=$(printf "%d\n" 0x$dbc)
-  otp=$(($otp & 0x7fffffff))
-  otp=$(($otp % 1000000))
+  otp=$((${otp} & 0x7fffffff))
+  otp=$((${otp} % 1000000))
 
-  printf "%06d\n" $otp
+  printf "%06d\n" ${otp}
 }
 
 
