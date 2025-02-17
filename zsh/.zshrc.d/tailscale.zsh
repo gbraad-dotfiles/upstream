@@ -15,10 +15,11 @@ if [[ $(tailscaleini --get "tailscale.aliases") == true ]]; then
   alias tss='ts status | comment_filter'
   alias tsh='ts ssh'
   alias tsip='ts ip -4'
-  alias tsup='sudo tailscale up --auth-key $TAILSCALE_AUTHKEY'
   alias tsfon='tss | offline_filter'
   alias tsfdir='tss | direct_filter'
   alias tsfexit='tss | exitnode_filter'
+  alias tskey='secrets var tailscale_authkey'
+  alias tsup='sudo tailscale up --auth-key $TAILSCALE_AUTHKEY'
 fi
 
 if [[ $(tailscaleini --get "tailproxy.aliases") == true ]]; then
@@ -27,7 +28,6 @@ if [[ $(tailscaleini --get "tailproxy.aliases") == true ]]; then
   alias tpkill='tailproxy-kill'
   alias tps='tp status | comment_filter'
   alias tph='tp ssh'
-  alias tpup='tp up --auth-key $TAILSCALE_AUTHKEY'
   alias tpip='tp ip -4'
   alias tpfon='tps | offline_filter'
   alias tpfdir='tps | direct_filter'
@@ -35,6 +35,8 @@ if [[ $(tailscaleini --get "tailproxy.aliases") == true ]]; then
   alias tpexit='tailproxy-exit'
   alias tpmull='tailproxy-mull'
   alias tptp='tailproxy; tpexit; proxy tailproxy-resolve'
+  alias tpkey='secrets var tailscale_authkey'
+  alias tpup='tp up --auth-key $TAILSCALE_AUTHKEY'
 
   # ssh/scp over tailproxy
   PROXYHOST="localhost:3215"
