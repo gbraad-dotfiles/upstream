@@ -17,7 +17,7 @@ jobs:
       - name: Push to destination repository
         run: |
           git config --unset-all http.https://github.com/.extraheader
-          git remote add downstream https://gbraad:${{ secrets.PAT }}@github.com/gbraad/dotfiles.git
+          git remote add downstream https://gbraad:${{ secrets.PAT }}@github.com/gbraad/dotfiles-downstream.git
           git push -f downstream main
         env:
           GITHUB_TOKEN: ${{ secrets.PAT }}
