@@ -179,6 +179,60 @@ var_secret() {
   printf "Loaded secret '%s' into environment variable '%s'\n" "$secret_name" "$env_var_name" >&2
 }
 
+base32_decode() {
+  # Remove any whitespace and convert to uppercase
+  local input=$(echo -n "$1" | tr -d '[:space:]' | tr '[:lower:]' '[:upper:]')
+
+  # Calculate padding if needed
+  local padding=$((((8 - ${#input} % 8) % 8)))
+  if [ $padding -ne 0 ]; then
+    input="${input}$(printf '=%.0s' $(seq 1 $padding))"
+  fi
+
+  # Decode using base32
+  echo -n "$input" | base32 -d 2>/dev/null
+}
+
+totp_secret() {
+  secret=$(get_secret $@)
+  if [ -z "$secret" ]; then
+    echo "Error: No secret provided" >&2
+    return 1
+  fi
+
+  # Get current time
+  local time_step=30
+  local epoch=$(date +%s)
+  local time_counter=$(($epoch / $time_step))
+  local time_hex=$(printf '%016x' $time_counter)
+
+  # Decode the base32 secret and get the full key
+  local decoded=$(base32_decode "$secret")
+  local key=$(echo -n "$decoded" | xxd -p -c256)
+
+  # Convert time to binary
+  local time_bin=$(echo -n "$time_hex" | xxd -r -p)
+
+  # Calculate HMAC-SHA1
+  local hmac=$(echo -n "$time_bin" | \
+     openssl dgst -sha1 -mac HMAC -macopt "hexkey:$key" -binary | \
+     xxd -p -c256)
+
+  # Get offset from last byte (& 0xf)
+  local offset=$((0x$(echo "$hmac" | tail -c 2) & 0xf))
+
+  # Extract 4 bytes starting at offset
+  local dbc=$(echo "$hmac" | cut -b $((offset * 2 + 1))-$((offset * 2 + 8)))
+
+  # Calculate TOTP value
+  local otp=$(printf "%d\n" 0x$dbc)
+  otp=$(($otp & 0x7fffffff))
+  otp=$(($otp % 1000000))
+
+  printf "%06d\n" $otp
+}
+
+
 _updatesecrets() {
   echo "Branching trees ..."
   cd ${_secretspath}
@@ -211,7 +265,10 @@ secrets() {
       ;;
     "var")
       var_secret $@
-      ;;      
+      ;;
+    "totp")
+      totp_secret $@
+      ;;
     *)
       echo "Unknown command: $0 $COMMAND"
       ;;
