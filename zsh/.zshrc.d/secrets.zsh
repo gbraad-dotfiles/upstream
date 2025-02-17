@@ -160,7 +160,7 @@ var_secret() {
     secret_name="$1"
   fi
 
-  local env_var_name=$(echo "${secret_name}" | tr '[:lower:]' '[:upper:]')
+  local env_var_name=$(echo "${secret_name}" | tr '[:lower:]-' '[:upper:]_')
         
   # Decrypt and store the content
   local secret_content
