@@ -180,6 +180,7 @@ var_secret() {
 }
 
 _updatesecrets() {
+  echo "Branching trees ..."
   cd ${_secretspath}
   git pull
 
