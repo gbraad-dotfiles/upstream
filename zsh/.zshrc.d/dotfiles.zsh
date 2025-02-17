@@ -8,7 +8,7 @@ dotini() {
   git config -f $CONFIG "$@"
 }
 
-dotinstall() {
+_dotinstall() {
   # Personal dotfiles
   git clone https://github.com/gbraad/dotfiles.git ~/.dotfiles
   cd ~/.dotfiles
@@ -36,7 +36,7 @@ dotinstall() {
 }
 
 # Temporary including the old installation method
-oldinstall() {
+_dotoldinstall() {
   APTPKGS="git zsh stow vim tmux fzf jq powerline"
   RPMPKGS="git-core zsh stow vim tmux fzf jq powerline vim-powerline tmux-powerline"
 
@@ -65,18 +65,18 @@ oldinstall() {
   mkdir -p ~/.local/bin
   mkdir -p ~/.local/lib/python2.7/site-packages/
 
-  dotinstall
+  _dotinstall
 
   echo "Install finished; use \`chsh -s /bin/zsh\` or \`chsh -s /usr/bin/zsh\` to change shell"
 }
 
 if [[ "$0" == *install.sh* ]]; then
   echo "Performing install"
-  oldinstall
+  _dotoldinstall
 fi
 
-resource() {
-  echo "Resourcing zsh"
+_dotresource() {
+  echo "Resourcing zsh."
   if [ -d $HOME/.zshrc.d ]; then
     for file in $HOME/.zshrc.d/*.?sh; do
       source $file
@@ -84,7 +84,16 @@ resource() {
   fi
 }
 
-upstream() {
+_dotrestow() {
+  echo "Restowing ..."
+  # (re)stow
+  stowlist=$(dotini --list | grep '^stow\.' | awk -F '=' '$2 == "true" {print $1}' | sed 's/^stow\.//g')
+  for tostow in $stowlist; do
+    stow -R $(echo "$tostow" | xargs)
+  done
+}
+
+_dotupstream() {
   cd ~/.dotfiles
 
   git remote remove origin
@@ -94,22 +103,17 @@ upstream() {
 
   cd - > /dev/null
 
-  dotupdate
+  _dotupdate
 }
 
-dotupdate() {
+_dotupdate() {
+  echo "Reticulating splines ..."
   cd ~/.dotfiles
   git pull
 
-  # (re)stow
-  stowlist=$(dotini --list | grep '^stow\.' | awk -F '=' '$2 == "true" {print $1}' | sed 's/^stow\.//g')
-  for tostow in $stowlist; do
-    stow $(echo "$tostow" | xargs)
-  done
-
-  if [[ "${stowlist[@]}" =~ "zsh" ]]; then
-    resource
-  fi
+  # (re)stow and (re)source
+  _dotrestow
+  _dotresource
 
   cd - > /dev/null
 }
@@ -124,16 +128,19 @@ dotfiles() {
 
   case "$COMMAND" in
     "up" | "update")
-      dotupdate
+      _dotupdate
       ;;
     "in" | "install")
-      dotinstall
+      _dotinstall
       ;;
     "resource")
-      resource
+      _dotresource
+      ;;
+    "restow")
+      _dotrestow
       ;;
     "switch" | "upstream")
-      upstream
+      _dotupstream
       ;;
     *)
       echo "Unknown command: $0 $COMMAND"
