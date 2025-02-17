@@ -48,6 +48,9 @@ if [[ $(uname) == "Darwin" ]]; then
     alias tailscale='/Applications/Tailscale.app//Contents/MacOS/Tailscale'
 fi
 
+# install for other platforms
+alias install-tailscale="curl -fsSL https://tailscale.com/install.sh | sh"
+
 # tailproxy (user mode instance)
 alias tailproxy=". ~/.local/bin/start-tailproxy"
 
