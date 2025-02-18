@@ -6,7 +6,7 @@ FROM ${BASE_IMAGE}:${BASE_VERSION}
 ARG USER="gbraad"
 ARG USER_PASSWD
 ARG HOMEBASE="/home"
-ARG HOME="${HOMEBASE}/${USER}"
+ARG USERHOME="${HOMEBASE}/${USER}"
 
 RUN dnf install -y \
 	systemd \
@@ -24,7 +24,7 @@ RUN dnf install -y \
 # fix for PAM/SSH
 RUN chmod 0640 /etc/shadow
 
-RUN useradd -l -u 1000 -G wheel -md ${HOME} -s /bin/bash -p ${USER} ${USER} \
+RUN useradd -l -u 1000 -G wheel -md ${USERHOME} -s /bin/bash -p ${USER} ${USER} \
     && sed -i.bkp -e 's/%wheel\s\+ALL=(ALL\(:ALL\)\?)\s\+ALL/%wheel ALL=NOPASSWD:ALL/g' /etc/sudoers \
     && if [ -n "${USER_PASSWD}" ] ; then \
         echo "gbraad:${USER_PASSWD}" | sudo chpasswd && echo "Password set to: ${USER_PASSWD}"; \

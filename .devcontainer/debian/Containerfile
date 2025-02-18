@@ -5,7 +5,7 @@ FROM ${BASE_IMAGE}:${BASE_VERSION}
 
 ARG USER="gbraad"
 ARG HOMEBASE="/home"
-ARG HOME="${HOMEBASE}/${USER}"
+ARG USERHOME="${HOMEBASE}/${USER}"
 
 LABEL org.opencontainers.image.source = "https://github.com/gbraad-dotfiles/debian"
 
@@ -18,7 +18,7 @@ RUN apt-get update \
         curl \
     && rm -rf /var/lib/apt/lists/*
 
-RUN useradd -l -u 1000 -G sudo -md ${HOME} -p ${USER} ${USER} \
+RUN useradd -l -u 1000 -G sudo -md ${USERHOME} -p ${USER} ${USER} \
     && sed -i.bkp -e '/Defaults\tuse_pty/d' -e 's/%sudo\s\+ALL=(ALL\(:ALL\)\?)\s\+ALL/%sudo ALL=NOPASSWD:ALL/g' /etc/sudoers
 
 USER ${USER}
