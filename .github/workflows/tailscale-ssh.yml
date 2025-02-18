@@ -1,0 +1,24 @@
+name: tailscale-ssh
+on:
+  workflow_dispatch:
+
+jobs:
+  dotfiles-test:
+    runs-on: ubuntu-24.04
+    
+    steps:
+      - name: Remove unwanted stuff
+        uses: gbraad-devenv/remove-unwanted@v1
+      - name: Tailscale
+        uses: gbraad-actions/tailscale-action@v1
+        with:
+          authkey: ${{ secrets.TAILSCALE_AUTHKEY }}
+          args: --ssh --accept-dns=false --operator=runner
+          hostname: dotfiles
+      - name: Dotfiles
+        uses: gbraad-dotfiles/install-dotfiles-action@v1
+      - name: Hang around
+        run: |
+          IP=`tailscale ip -4`
+          echo "Use the following command to connect \`tailscale ssh runner@${IP}\`"
+          sleep infinity
