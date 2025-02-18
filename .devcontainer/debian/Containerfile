@@ -33,7 +33,14 @@ RUN mkdir -p ~/.ssh/ \
 
 USER root
 
-RUN chsh -s /bin/zsh ${USER}
+RUN git clone https://github.com/gbraad-dotfiles/upstream.git ${ROOTHOME}/.dotfiles \
+    && cd ${ROOTHOME}/.dotfiles \
+    && . ./zsh/.zshrc.d/dotfiles.zsh \
+    && stow config \
+    && dotfiles restow
+
+RUN chsh -s /usr/bin/zsh ${USER} \
+    && chsh -s /usr/bin/zsh
 
 # install tailscale
 RUN curl -fsSL https://pkgs.tailscale.com/stable/debian/bookworm.noarmor.gpg -o /usr/share/keyrings/tailscale-archive-keyring.gpg \
