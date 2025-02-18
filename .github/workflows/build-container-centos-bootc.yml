@@ -1,0 +1,31 @@
+name: build container - centos-bootc
+run-name: building container - centos-bootc
+on:
+  push:
+    branches:
+      - "main"
+  pull_request: {}
+  workflow_dispatch:
+jobs:
+  build:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os:
+          - ubuntu-24.04
+    steps:
+      - name: Check out repository code
+        uses: actions/checkout@v4
+      - name: Run podman build - centos-bootc
+        run: |
+          podman build -t ghcr.io/gbraad-dotfiles/centos-bootc:latest \
+            --build-arg=BASE_IMAGE="quay.io/centos-bootc/centos-bootc" \
+            --build-arg=BASE_VERSION=stream9 \
+            --build-arg=HOMEBASE="/var/home" \
+            --build-arg=USER_PASSWD="password" \
+            -f .devcontainer/centos/Containerfile .
+      - name: Push image to ghcr.io - centos-bootc
+        run: |
+          podman push --creds=${{ github.actor }}:${{ secrets.GITHUB_TOKEN }} \
+            ghcr.io/gbraad-dotfiles/centos-bootc:latest
