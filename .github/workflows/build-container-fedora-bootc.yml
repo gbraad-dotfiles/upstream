@@ -25,7 +25,15 @@ jobs:
             --build-arg=HOMEBASE="/var/home" \
             --build-arg=USER_PASSWD="password" \
             -f .devcontainer/fedora/Containerfile .
-      - name: Push image to ghcr.io - fedora-bootc
+      - name: Tag and push image to ghcr.io - fedora-bootc
         run: |
-          podman push --creds=${{ github.actor }}:${{ secrets.GITHUB_TOKEN }} \
-            ghcr.io/gbraad-dotfiles/fedora-bootc:latest
+          DATE=$(date +"%y%m%d")
+          podman tag ghcr.io/gbraad-dotfiles/fedora-bootc:latest \
+            ghcr.io/gbraad-dotfiles/fedora-bootc:41
+          podman tag ghcr.io/gbraad-dotfiles/fedora-bootc:latest \
+            ghcr.io/gbraad-dotfiles/fedora-bootc:${DATE}
+          podman login ghcr.io -u ${{ github.actor }} \
+            -p ${{ secrets.GITHUB_TOKEN }}
+          podman push ghcr.io/gbraad-dotfiles/fedora-bootc:${DATE}
+          podman push ghcr.io/gbraad-dotfiles/fedora-bootc:41
+          podman push ghcr.io/gbraad-dotfiles/fedora-bootc:latest

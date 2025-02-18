@@ -21,7 +21,16 @@ jobs:
         run: |
           podman build -t ghcr.io/gbraad-dotfiles/debian:latest \
             -f .devcontainer/debian/Containerfile .
-      - name: Push image to ghcr.io - debian
+      - name: Tag and push image to ghcr.io - debian
         run: |
-          podman push --creds=${{ github.actor }}:${{ secrets.GITHUB_TOKEN }} \
-            ghcr.io/gbraad-dotfiles/debian:latest
+          DATE=$(date +"%y%m%d")
+          podman tag ghcr.io/gbraad-dotfiles/debian:latest \
+            ghcr.io/gbraad-dotfiles/debian:bookworm
+          podman tag ghcr.io/gbraad-dotfiles/debian:latest \
+            ghcr.io/gbraad-dotfiles/debian:${DATE}
+          podman login ghcr.io -u ${{ github.actor }} \
+            -p ${{ secrets.GITHUB_TOKEN }}
+          podman push ghcr.io/gbraad-dotfiles/debian:${DATE}
+          podman push ghcr.io/gbraad-dotfiles/debian:bookworm
+          podman push ghcr.io/gbraad-dotfiles/debian:latest
+

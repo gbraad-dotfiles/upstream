@@ -23,7 +23,16 @@ jobs:
             --build-arg=BASE_IMAGE="quay.io/fedora/fedora" \
             --build-arg=BASE_VERSION=41 \
             -f .devcontainer/fedora/Containerfile .
-      - name: Push image to ghcr.io - fedora
+      - name: Tag and push image to ghcr.io - fedora
         run: |
-          podman push --creds=${{ github.actor }}:${{ secrets.GITHUB_TOKEN }} \
-            ghcr.io/gbraad-dotfiles/fedora:latest
+          DATE=$(date +"%y%m%d")
+          podman tag ghcr.io/gbraad-dotfiles/fedora:latest \
+            ghcr.io/gbraad-dotfiles/fedora:41
+          podman tag ghcr.io/gbraad-dotfiles/fedora:latest \
+            ghcr.io/gbraad-dotfiles/fedora:${DATE}
+          podman login ghcr.io -u ${{ github.actor }} \
+            -p ${{ secrets.GITHUB_TOKEN }}
+          podman push ghcr.io/gbraad-dotfiles/fedora:${DATE}
+          podman push ghcr.io/gbraad-dotfiles/fedora:41
+          podman push ghcr.io/gbraad-dotfiles/fedora:latest
+

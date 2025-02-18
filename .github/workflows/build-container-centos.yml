@@ -23,7 +23,16 @@ jobs:
             --build-arg=BASE_IMAGE="quay.io/centos/centos" \
             --build-arg=BASE_VERSION="stream9" \
             -f .devcontainer/centos/Containerfile .
-      - name: Push image to ghcr.io - centos
+      - name: Tag and push image to ghcr.io - centos
         run: |
-          podman push --creds=${{ github.actor }}:${{ secrets.GITHUB_TOKEN }} \
-            ghcr.io/gbraad-dotfiles/centos:latest
+          DATE=$(date +"%y%m%d")
+          podman tag ghcr.io/gbraad-dotfiles/centos:latest \
+            ghcr.io/gbraad-dotfiles/centos:stream9
+          podman tag ghcr.io/gbraad-dotfiles/centos:latest \
+            ghcr.io/gbraad-dotfiles/centos:${DATE}
+          podman login ghcr.io -u ${{ github.actor }} \
+            -p ${{ secrets.GITHUB_TOKEN }}
+          podman push ghcr.io/gbraad-dotfiles/centos:${DATE}
+          podman push ghcr.io/gbraad-dotfiles/centos:stream9
+          podman push ghcr.io/gbraad-dotfiles/centos:latest
+
