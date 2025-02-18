@@ -1,0 +1,56 @@
+ARG BASE_IMAGE="quay.io/centos/centos"
+ARG BASE_VERSION="stream9"
+
+FROM ${BASE_IMAGE}:${BASE_VERSION}
+
+ARG USER="gbraad"
+ARG USER_PASSWD
+ARG HOMEBASE="/home"
+ARG HOME="${HOMEBASE}/${USER}"
+
+RUN dnf install -y \
+	systemd \
+	sudo \
+	git \
+ 	dnf-plugins-core \
+	util-linux \
+	util-linux-user \
+    && dnf install -y \
+	epel-release \
+	epel-next-release \
+    && dnf clean all \
+    && rm -rf /var/cache/yum
+
+# fix for PAM/SSH
+RUN chmod 0640 /etc/shadow
+
+RUN useradd -l -u 1000 -G wheel -md ${HOME} -s /bin/bash -p ${USER} ${USER} \
+    && sed -i.bkp -e 's/%wheel\s\+ALL=(ALL\(:ALL\)\?)\s\+ALL/%wheel ALL=NOPASSWD:ALL/g' /etc/sudoers \
+    && if [ -n "${USER_PASSWD}" ] ; then \
+        echo "gbraad:${USER_PASSWD}" | sudo chpasswd && echo "Password set to: ${USER_PASSWD}"; \
+    fi
+
+USER ${USER}
+
+RUN git clone https://github.com/gbraad-dotfiles/upstream.git ~/.dotfiles \
+    && cd ~/.dotfiles \
+    && sh ./install.sh
+
+RUN mkdir -p ~/.ssh/ \
+    && curl https://github.com/${USER}.keys | tee -a ~/.ssh/authorized_keys
+
+USER root
+
+RUN chsh -s /usr/bin/zsh ${USER}
+
+# install tailscale
+RUN dnf config-manager --add-repo https://pkgs.tailscale.com/stable/centos/9/tailscale.repo \
+    && dnf install -y \
+        tailscale \
+    && dnf clean all \
+    && rm -rf /var/cache/yum \
+    && mkdir -p /var/run/tailscale /var/cache/tailscale /var/lib/tailscale \
+    && systemctl enable tailscaled
+
+# Enable systemd
+ENTRYPOINT [ "/sbin/init" ]

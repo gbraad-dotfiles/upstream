@@ -1,0 +1,29 @@
+name: build container - centos
+run-name: building container - centos
+on:
+  push:
+    branches:
+      - "main"
+  pull_request: {}
+  workflow_dispatch:
+jobs:
+  build:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os:
+          - ubuntu-24.04
+    steps:
+      - name: Check out repository code
+        uses: actions/checkout@v4
+      - name: Run podman build - centos
+        run: |
+          podman build -t ghcr.io/gbraad-dotfiles/centos:latest \
+            --build-arg=BASE_IMAGE="quay.io/centos/centos" \
+            --build-arg=BASE_VERSION="stream9" \
+            -f .devcontainer/centos/Containerfile .
+      - name: Push image to ghcr.io - centos
+        run: |
+          podman push --creds=${{ github.actor }}:${{ secrets.GITHUB_TOKEN }} \
+            ghcr.io/gbraad-dotfiles/centos:latest
