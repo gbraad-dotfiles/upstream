@@ -5,8 +5,9 @@
 	shell = /bin/zsh
 
 [images]
-	dotfed = ghcr.io/gbraad-dotfiles/fedora:latest
-	dotdeb = ghcr.io/gbraad-dotfiles/debian:latest
+	dotcentos = ghcr.io/gbraad-dotfiles/centos:latest
+	dotfedora = ghcr.io/gbraad-dotfiles/fedora:latest
+	dotdebian = ghcr.io/gbraad-dotfiles/debian:latest
 	fed = ghcr.io/gbraad-devenv/fedora/systemd:41
 	code = ghcr.io/gbraad-devenv/fedora/code-cli:41
 	desk = ghcr.io/gbraad-devenv/fedora/rdesktop:41

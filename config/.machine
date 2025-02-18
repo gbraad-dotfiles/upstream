@@ -5,7 +5,8 @@
 	aliases = true
 
 [images]
-	dotfiles = ghcr.io/gbraad-dotfiles/fedora-bootc:latest
+	dotcentos = ghcr.io/gbraad-dotfiles/centos-bootc:latest
+	dotfedora = ghcr.io/gbraad-dotfiles/fedora-bootc:latest
 	systemd = ghcr.io/gbraad-devenv/fedora/systemd-bootc:41
 	code = ghcr.io/gbraad-devenv/fedora/code-cli-bootc:41
 	rdesktop = ghcr.io/gbraad-devenv/fedora/rdesktop-bootc:41
@@ -21,7 +22,8 @@
 	minecraft-launcher = ghcr.io/gbraad-gaming/minecraft-launcher-bootc:latest
 
 [disks]
-	dotfiles = https://github.com/gbraad-dotfiles/upstream/releases/download/250216/fedora-disk.qcow2
+	dotcentos = https://github.com/gbraad-dotfiles/upstream/releases/download/250218/centos-disk.qcow2
+	dotfedora = https://github.com/gbraad-dotfiles/upstream/releases/download/250218/fedora-disk.qcow2
 	fedora = https://github.com/gbraad-devenv/fedora/releases/download/41/systemd-disk.qcow2
 	code = https://github.com/gbraad-devenv/fedora/releases/download/41/code-cli-disk.qcow2
 	rdesktop = https://github.com/gbraad-devenv/fedora/releases/download/41/rdesktop-disk.qcow2
