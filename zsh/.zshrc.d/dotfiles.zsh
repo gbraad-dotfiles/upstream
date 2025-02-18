@@ -10,8 +10,9 @@ dotini() {
 
 _dotinstall() {
   # Personal dotfiles
-  git clone https://github.com/gbraad/dotfiles.git ~/.dotfiles
+  git clone https://github.com/gbraad/dotfiles.git ~/.dotfiles --depth 2
   cd ~/.dotfiles
+  # TODO: make `oh-my-zsh` optional
   git submodule update --init --progress
 
   # always

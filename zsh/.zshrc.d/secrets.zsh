@@ -122,7 +122,7 @@ read_password() {
 
 _clonesecrets() {
   local repo=$(secretsini --get secrets.repository)
-  git clone ${repo} ${_secretspath}
+  git clone ${repo} ${_secretspath} --depth 2
 }
 
 get_secret() {
