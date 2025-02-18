@@ -1,5 +1,5 @@
-name: build diskimage - fedora-bootc - upload
-run-name: building diskimage - fedora-bootc - upload
+name: build diskimage - centos-bootc - upload
+run-name: building diskimage - centos-bootc - upload
 on:
   workflow_dispatch:
 
@@ -41,7 +41,7 @@ jobs:
     - name: Create empty user configuration
       run: touch config.toml
 
-    - name: Build image - fedora
+    - name: Build image - centos
       id: build-image-dotfiles
       run: |
         mkdir -p ./output
@@ -62,15 +62,15 @@ jobs:
           --local \
           ${{ env.IMAGE_NAME }}
       env:
-        IMAGE_NAME: ghcr.io/gbraad-dotfiles/fedora-bootc:latest
+        IMAGE_NAME: ghcr.io/gbraad-dotfiles/centos-bootc:latest
 
     - name: Rename output file - dotfiles
-      run: sudo mv ./output/qcow2/disk.qcow2 ./output/qcow2/fedora-disk.qcow2
+      run: sudo mv ./output/qcow2/disk.qcow2 ./output/qcow2/centos-disk.qcow2
 
     - name: Upload Artifact - dotfiles
       uses: actions/upload-artifact@v4
       with:
         name: dotfiles-disk
         path: |
-          ./output/qcow2/fedora-disk.qcow2
+          ./output/qcow2/centos-disk.qcow2
         retention-days: 5
