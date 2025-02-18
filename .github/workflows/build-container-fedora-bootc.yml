@@ -24,6 +24,7 @@ jobs:
             --build-arg=BASE_VERSION=41 \
             --build-arg=HOMEBASE="/var/home" \
             --build-arg=USER_PASSWD="password" \
+            --build-arg=ROOTHOME="/var/roothome" \
             -f .devcontainer/fedora/Containerfile .
       - name: Tag and push image to ghcr.io - fedora-bootc
         run: |

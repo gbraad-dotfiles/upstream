@@ -24,6 +24,7 @@ jobs:
             --build-arg=BASE_VERSION=stream9 \
             --build-arg=HOMEBASE="/var/home" \
             --build-arg=USER_PASSWD="password" \
+            --build-arg=ROOTHOME="/var/roothome" \
             -f .devcontainer/centos/Containerfile .
       - name: Tag and push image to ghcr.io - centos-bootc
         run: |

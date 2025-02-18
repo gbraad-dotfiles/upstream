@@ -6,6 +6,7 @@ FROM ${BASE_IMAGE}:${BASE_VERSION}
 ARG USER="gbraad"
 ARG HOMEBASE="/home"
 ARG USERHOME="${HOMEBASE}/${USER}"
+ARG ROOTHOME="/root"
 
 LABEL org.opencontainers.image.source = "https://github.com/gbraad-dotfiles/debian"
 
