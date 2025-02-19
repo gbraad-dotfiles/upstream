@@ -202,7 +202,8 @@ totp_secret() {
       return 1
     fi
   else
-    secret_name="$1"
+    # Allows for shortform, eg. "totp github"
+    secret_name="totp_$1"
   fi
 
   secret=$(get_secret "${secret_name}")
