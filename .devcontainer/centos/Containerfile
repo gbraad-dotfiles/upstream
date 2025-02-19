@@ -1,5 +1,5 @@
 ARG BASE_IMAGE="quay.io/centos/centos"
-ARG BASE_VERSION="stream9"
+ARG BASE_VERSION="stream10"
 
 FROM ${BASE_IMAGE}:${BASE_VERSION}
 
@@ -17,9 +17,10 @@ RUN dnf install -y \
  	dnf-plugins-core \
 	util-linux \
 	util-linux-user \
+    && dnf config-manager \
+	--set-enabled crb \
     && dnf install -y \
-	epel-release \
-	epel-next-release \
+	https://dl.fedoraproject.org/pub/epel/epel-release-latest-10.noarch.rpm \
     && dnf clean all \
     && rm -rf /var/cache/yum
 
