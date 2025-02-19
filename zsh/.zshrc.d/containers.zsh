@@ -27,3 +27,5 @@ alias fcosroot='${CONTAINER_RUNTIME} exec -it fcos /bin/bash'
 alias flaresys='podman run -d --name=flaresys --hostname $HOSTNAME-flaresys --network=host --systemd=always ghcr.io/spotsnel/cloudflared-systemd/fedora:latest'
 #alias scalesys='podman run -d --name=scalesys --hostname $HOSTNAME-scalesys --network=host --systemd=always ghcr.io/spotsnel/tailscale-systemd/fedora:latest'
 alias scalesys=tailsys
+
+alias login-quay='podman login -u gbraad -p $(secrets get quay)'
