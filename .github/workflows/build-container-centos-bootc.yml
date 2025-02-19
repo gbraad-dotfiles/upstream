@@ -21,7 +21,7 @@ jobs:
         run: |
           podman build -t ghcr.io/gbraad-dotfiles/centos-bootc:latest \
             --build-arg=BASE_IMAGE="quay.io/centos-bootc/centos-bootc" \
-            --build-arg=BASE_VERSION="stream10" \
+            --build-arg=BASE_VERSION=stream9 \
             --build-arg=HOMEBASE="/var/home" \
             --build-arg=USER_PASSWD="password" \
             --build-arg=ROOTHOME="/var/roothome" \
@@ -30,7 +30,7 @@ jobs:
         run: |
           DATE=$(date +"%y%m%d")
           podman tag ghcr.io/gbraad-dotfiles/centos-bootc:latest \
-            ghcr.io/gbraad-dotfiles/centos-bootc:stream10
+            ghcr.io/gbraad-dotfiles/centos-bootc:stream9
           podman tag ghcr.io/gbraad-dotfiles/centos-bootc:latest \
             ghcr.io/gbraad-dotfiles/centos-bootc:${DATE}
           podman login ghcr.io -u ${{ github.actor }} \

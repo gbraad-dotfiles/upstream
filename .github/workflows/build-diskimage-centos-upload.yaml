@@ -62,7 +62,7 @@ jobs:
           --local \
           ${{ env.IMAGE_NAME }}
       env:
-        IMAGE_NAME: ghcr.io/gbraad-dotfiles/centos-bootc:stream10
+        IMAGE_NAME: ghcr.io/gbraad-dotfiles/centos-bootc:latest
 
     - name: Rename output file - dotfiles
       run: sudo mv ./output/qcow2/disk.qcow2 ./output/qcow2/centos-disk.qcow2
