@@ -281,3 +281,8 @@ secrets() {
       ;;
   esac
 }
+
+if [[ $(secretsini --get "secrets.aliases") == true ]]; then
+  alias totp="secrets totp"
+fi
+
