@@ -20,6 +20,7 @@ if [[ $(tailscaleini --get "tailscale.aliases") == true ]]; then
   alias tsfexit='tss | exitnode_filter'
   alias tskey='secrets var tailscale_authkey'
   alias tsup='sudo tailscale up --auth-key $TAILSCALE_AUTHKEY'
+  alias tsconnect='tskey; tsup'
 fi
 
 if [[ $(tailscaleini --get "tailproxy.aliases") == true ]]; then
@@ -37,6 +38,7 @@ if [[ $(tailscaleini --get "tailproxy.aliases") == true ]]; then
   alias tptp='tailproxy; tpexit; proxy tailproxy-resolve'
   alias tpkey='secrets var tailscale_authkey'
   alias tpup='tp up --auth-key $TAILSCALE_AUTHKEY'
+  alias tpconnect='tpkey; tpup'
 
   # ssh/scp over tailproxy
   PROXYHOST="localhost:3215"
