@@ -1,6 +1,6 @@
 #!/bin/zsh
 
-CONFIG="${HOME}/.dot"
+CONFIG="${HOME}/.config/dotfiles/dotfiles"
 dotini() {
   git config -f $CONFIG "$@"
 }

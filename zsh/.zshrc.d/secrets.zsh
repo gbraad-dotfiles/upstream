@@ -1,6 +1,6 @@
 #!/usr/bin/zsh
 
-CONFIG="${HOME}/.secrets"
+CONFIG="${HOME}/.config/dotfiles/secrets"
 alias secretsini="git config -f ${CONFIG}"
 
 _secretspath=$(secretsini --get secrets.path || echo "${HOME}/.dotsecrets/secrets")

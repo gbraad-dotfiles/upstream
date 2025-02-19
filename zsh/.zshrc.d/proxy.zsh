@@ -1,6 +1,6 @@
 #!/bin/zsh
 
-CONFIG="${HOME}/.proxy"
+CONFIG="${HOME}/.config/dotfiles/proxy"
 alias proxyini="git config -f $CONFIG"
 
 proxyselect() {

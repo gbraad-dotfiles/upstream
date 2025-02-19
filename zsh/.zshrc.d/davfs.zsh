@@ -1,6 +1,6 @@
 #!/bin/zsh
 
-CONFIG="${HOME}/.davfs"
+CONFIG="${HOME}/.config/dotfiles/davfs"
 alias davfsini="git config -f ${CONFIG}"
 
 davfs() {

@@ -1,6 +1,6 @@
 #!/bin/zsh
 
-CONFIG="${HOME}/.machine"
+CONFIG="${HOME}/.config/dotfiles/machine"
 alias machineini="git config -f $CONFIG"
 
 machine() {

@@ -1,6 +1,6 @@
 #!/bin/zsh
 
-CONFIG="${HOME}/.screenrc"
+CONFIG="${HOME}/.config/dotfiles/screen"
 alias screenini="git config -f ${CONFIG}"
 
 screen () {

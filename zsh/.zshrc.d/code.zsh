@@ -1,6 +1,6 @@
 #!/bin/zsh
 
-CONFIG="${HOME}/.code"
+CONFIG="${HOME}/.config/dotfiles/code"
 alias codeini="git config -f $CONFIG"
 
 _codepath=$(codeini --get code.path || echo "${HOME}/.local/bin")

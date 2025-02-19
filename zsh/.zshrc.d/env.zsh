@@ -1,6 +1,6 @@
 #!/bin/zsh
 
-CONFIG="${HOME}/.env"
+CONFIG="${HOME}/.config/dotfiles/env"
 alias envini="git config -f $CONFIG"
 
 variables=$(envini --list | grep '^variables\.' | sed 's/^variables\.//g')

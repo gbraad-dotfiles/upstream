@@ -1,6 +1,6 @@
 #!/bin/zsh
 
-CONFIG="${HOME}/.tailscale"
+CONFIG="${HOME}/.config/dotfiles/tailscale"
 alias tailscaleini="git config -f $CONFIG"
 
 # general helpers

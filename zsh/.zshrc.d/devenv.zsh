@@ -1,6 +1,6 @@
 #!/bin/zsh
 
-CONFIG="${HOME}/.devenv"
+CONFIG="${HOME}/.config/dotfiles/devenv"
 if [[ ! -f $CONFIG ]]; then
   echo "Configuration file missing: $CONFIG"
   return

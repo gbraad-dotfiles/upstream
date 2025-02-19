@@ -1,6 +1,6 @@
 #!/bin/zsh
 
-CONFIG="${HOME}/.dot"
+CONFIG="${HOME}/.config/dotfiles/dotfiles"
 #alias dotini="git config -f $CONFIG"
 
 # this is to make this work with the restricted bash from Debian
@@ -87,11 +87,17 @@ _dotresource() {
 
 _dotrestow() {
   echo "Restowing ..."
+  cd ~/.dotfiles
+
   # (re)stow
+  stow -R config
+
   stowlist=$(dotini --list | grep '^stow\.' | awk -F '=' '$2 == "true" {print $1}' | sed 's/^stow\.//g')
   for tostow in $stowlist; do
     stow -R $(echo "$tostow" | xargs)
   done
+
+  cd - > /dev/null
 }
 
 _dotupstream() {
