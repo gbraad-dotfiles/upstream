@@ -1,0 +1,4 @@
+[folders]
+	list = "Documents,Downloads,Projects"
+	create = true
+

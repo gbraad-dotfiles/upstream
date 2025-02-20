@@ -15,7 +15,7 @@
 	fed40 = ghcr.io/gbraad-devenv/fedora/systemd:40
 	deb = ghcr.io/gbraad-devenv/debian/systemd:bookworm
 	alp = ghcr.io/gbraad-devenv/alpine/systemd:3.18
-	cen = ghcr.io/gbraad-devenv/centos/systemd:stream10
+	cen = ghcr.io/gbraad-devenv/centos/systemd:stream9
 	gobi = ghcr.io/gbraad-devenv/ubi9-gotoolset/systemd:1.22.7
 	ubi = ghcr.io/gbraad-devenv/ubi/systemd:9
 	ubu = ghcr.io/gbraad-devenv/ubuntu/systemd:jammy
