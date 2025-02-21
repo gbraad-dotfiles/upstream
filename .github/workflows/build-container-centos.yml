@@ -1,19 +1,17 @@
 name: build container - centos
-run-name: building container - centos
+run-name: Building container - CentOS
 on:
-  push:
-    branches:
-      - "main"
-  pull_request: {}
   workflow_dispatch:
+
 jobs:
   build:
+    name: build-container-centos
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
       matrix:
         os:
-          - ubuntu-24.04
+          - ubuntu-latest
     steps:
       - name: Check out repository code
         uses: actions/checkout@v4

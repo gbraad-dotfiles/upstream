@@ -1,19 +1,17 @@
 name: build container - centos-bootc
-run-name: building container - centos-bootc
+run-name: Building container - CentOS bootc
 on:
-  push:
-    branches:
-      - "main"
-  pull_request: {}
   workflow_dispatch:
+
 jobs:
   build:
+    name: build-container-centos-bootc
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
       matrix:
         os:
-          - ubuntu-24.04
+          - ubuntu-latest
     steps:
       - name: Check out repository code
         uses: actions/checkout@v4

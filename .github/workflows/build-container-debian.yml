@@ -1,19 +1,17 @@
 name: build container - debian
-run-name: building container - debian
+run-name: Building container - Debian
 on:
-  push:
-    branches:
-      - "main"
-  pull_request: {}
   workflow_dispatch:
+
 jobs:
   build:
+    name: build-container-debian
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
       matrix:
         os:
-          - ubuntu-24.04
+          - ubuntu-latest
     steps:
       - name: Check out repository code
         uses: actions/checkout@v4

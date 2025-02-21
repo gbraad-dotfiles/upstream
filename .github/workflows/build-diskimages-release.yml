@@ -1,5 +1,5 @@
 name: build diskimages (bootc) - release
-run-name: building diskimages (bootc) - release
+run-name: Building diskimages (bootc) - release
 on:
   workflow_dispatch:
 
@@ -43,7 +43,7 @@ jobs:
       run: touch config.toml
 
     - name: Build image - fedora
-      id: build-image-dotfiles
+      id: build-image-fedora
       run: |
         mkdir -p ./output
         sudo podman pull ${{ env.IMAGE_NAME }}
@@ -69,7 +69,7 @@ jobs:
       run: sudo mv ./output/qcow2/disk.qcow2 ./output/qcow2/fedora-disk.qcow2
 
     - name: Build image - centos
-      id: build-image-dotfiles
+      id: build-image-centos
       run: |
         mkdir -p ./output
         sudo podman pull ${{ env.IMAGE_NAME }}

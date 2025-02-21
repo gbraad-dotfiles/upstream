@@ -1,0 +1,203 @@
+name: build process
+run-name: Build process
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - "main"
+  pull_request: {}
+
+jobs:
+
+  trigger-build-container-centos:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Start CentOS container build
+        uses: actions/github-script@v7
+        with:
+          script: |
+            await github.rest.actions.createWorkflowDispatch({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              workflow_id: 'build-container-centos.yml',
+              ref: context.ref,
+            });
+
+  trigger-build-container-debian:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Start Debian container build
+        uses: actions/github-script@v7
+        with:
+          script: |
+            await github.rest.actions.createWorkflowDispatch({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              workflow_id: 'build-container-debian.yml',
+              ref: context.ref,
+            });
+
+  trigger-build-container-fedora:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Start Fedora container build
+        uses: actions/github-script@v7
+        with:
+          script: |
+            await github.rest.actions.createWorkflowDispatch({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              workflow_id: 'build-container-fedora.yml',
+              ref: context.ref,
+            });
+
+
+  trigger-build-container-centos-bootc:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Start CentOS (bootc) container build
+        uses: actions/github-script@v7
+        with:
+          script: |
+            await github.rest.actions.createWorkflowDispatch({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              workflow_id: 'build-container-centos-bootc.yml',
+              ref: context.ref,
+            });
+  
+  trigger-build-container-fedora-bootc:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Start Fedora (bootc) container build
+        uses: actions/github-script@v7
+        with:
+          script: |
+            await github.rest.actions.createWorkflowDispatch({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              workflow_id: 'build-container-fedora-bootc.yml',
+              ref: context.ref,
+            });
+
+
+  wait-for-build-container-centos:
+    runs-on: ubuntu-latest
+    needs: trigger-build-container-centos
+    steps:
+      - name: Wait for build-container-centos to complete
+        uses: lewagon/wait-on-check-action@v1.3.4
+        with:
+          ref: ${{ github.ref }}
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
+          check-name: 'build-container-centos (ubuntu-latest)'
+          wait-interval: 10
+
+  wait-for-build-container-debian:
+    runs-on: ubuntu-latest
+    needs: trigger-build-container-debian
+    steps:
+      - name: Wait for build-container-debian to complete
+        uses: lewagon/wait-on-check-action@v1.3.4
+        with:
+          ref: ${{ github.ref }}
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
+          check-name: 'build-container-debian (ubuntu-latest)'
+          wait-interval: 10
+
+  wait-for-build-container-fedora:
+    runs-on: ubuntu-latest
+    needs: trigger-build-container-fedora
+    steps:
+      - name: Wait for build-container-fedora to complete
+        uses: lewagon/wait-on-check-action@v1.3.4
+        with:
+          ref: ${{ github.ref }}
+          repo-token: ${{ secrets.GITHUB_TOKEN }} 
+          check-name: 'build-container-fedora (ubuntu-latest)'
+          wait-interval: 10
+
+
+  wait-for-build-container-centos-bootc:
+    runs-on: ubuntu-latest
+    needs: trigger-build-container-centos-bootc
+    steps:
+      - name: Wait for build-container-centos to complete
+        uses: lewagon/wait-on-check-action@v1.3.4
+        with:
+          ref: ${{ github.ref }}
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
+          check-name: 'build-container-centos-bootc (ubuntu-latest)'
+          wait-interval: 10
+
+  wait-for-build-container-fedora-bootc:
+    runs-on: ubuntu-latest
+    needs: trigger-build-container-fedora-bootc
+    steps:
+      - name: Wait for build-container-fedora to complete
+        uses: lewagon/wait-on-check-action@v1.3.4
+        with:
+          ref: ${{ github.ref }}
+          repo-token: ${{ secrets.GITHUB_TOKEN }} 
+          check-name: 'build-container-fedora-bootc (ubuntu-latest)'
+          wait-interval: 10
+
+
+  trigger-build-diskimages:
+    runs-on: ubuntu-latest
+    needs:
+      - wait-for-build-container-centos-bootc
+      - wait-for-build-container-fedora-bootc
+    steps:
+      - name: Start bootc disk images build
+        uses: actions/github-script@v7
+        with:
+          script: |
+            await github.rest.actions.createWorkflowDispatch({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              workflow_id: 'build-diskimages-release.yml',
+              ref: context.ref,
+            });
+
+
+  trigger-sync-repos:
+    runs-on: ubuntu-latest
+    needs:
+      - wait-for-build-container-centos
+      - wait-for-build-container-debian
+      - wait-for-build-container-fedora
+      - wait-for-build-container-centos-bootc
+      - wait-for-build-container-fedora-bootc
+    steps:
+      - name: Trigger sync-repo-gbraad.yml
+        uses: actions/github-script@v7
+        with:
+          script: |
+            await github.rest.actions.createWorkflowDispatch({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              workflow_id: 'sync-repo-gbraad.yml',
+              ref: context.ref,
+            });
+      - name: Trigger sync-repo-devenv.yml
+        uses: actions/github-script@v7
+        with:
+          script: |
+            await github.rest.actions.createWorkflowDispatch({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              workflow_id: 'sync-repo-devenv.yml',
+              ref: context.ref,
+            });
+      - name: Trigger sync-repo-redhat.yml
+        uses: actions/github-script@v7
+        with:
+          script: |
+            await github.rest.actions.createWorkflowDispatch({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              workflow_id: 'sync-repo-redhat.yml',
+              ref: context.ref,
+            });

@@ -1,19 +1,17 @@
 name: build container - fedora
-run-name: building container - fedora
+run-name: Building container - Fedora
 on:
-  push:
-    branches:
-      - "main"
-  pull_request: {}
   workflow_dispatch:
+
 jobs:
   build:
+    name: build-container-fedora
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
       matrix:
         os:
-          - ubuntu-24.04
+          - ubuntu-latest
     steps:
       - name: Check out repository code
         uses: actions/checkout@v4
