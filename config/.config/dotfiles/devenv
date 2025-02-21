@@ -8,6 +8,7 @@
 	dotcentos = ghcr.io/gbraad-dotfiles/centos:latest
 	dotfedora = ghcr.io/gbraad-dotfiles/fedora:latest
 	dotdebian = ghcr.io/gbraad-dotfiles/debian:latest
+        dotubi9 = ghcr.io/gbraad-dotfiles/ubi9:latest
 	fed = ghcr.io/gbraad-devenv/fedora/systemd:41
 	code = ghcr.io/gbraad-devenv/fedora/code-cli:41
 	desk = ghcr.io/gbraad-devenv/fedora/rdesktop:41
@@ -16,7 +17,8 @@
 	deb = ghcr.io/gbraad-devenv/debian/systemd:bookworm
 	alp = ghcr.io/gbraad-devenv/alpine/systemd:3.18
 	cen = ghcr.io/gbraad-devenv/centos/systemd:stream9
-	gobi = ghcr.io/gbraad-devenv/ubi9-gotoolset/systemd:1.22.7
+	gobi = ghcr.io/gbraad-devenv/ubi9-golang/systemd:latest
+	gtbi = ghcr.io/gbraad-devenv/ubi9-gotoolset/systemd:1.22.7
 	ubi = ghcr.io/gbraad-devenv/ubi/systemd:9
 	ubu = ghcr.io/gbraad-devenv/ubuntu/systemd:jammy
 	alm = ghcr.io/gbraad-devenv/almalinux/systemd:9
