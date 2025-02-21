@@ -144,24 +144,6 @@ jobs:
           wait-interval: 10
 
 
-  trigger-build-diskimages:
-    runs-on: ubuntu-latest
-    needs:
-      - wait-for-build-container-centos-bootc
-      - wait-for-build-container-fedora-bootc
-    steps:
-      - name: Start bootc disk images build
-        uses: actions/github-script@v7
-        with:
-          script: |
-            await github.rest.actions.createWorkflowDispatch({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              workflow_id: 'build-diskimages-release.yml',
-              ref: context.ref,
-            });
-
-
   trigger-sync-repos:
     runs-on: ubuntu-latest
     needs:

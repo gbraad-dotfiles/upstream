@@ -1,6 +1,8 @@
 name: build diskimages (bootc) - release
 run-name: Building diskimages (bootc) - release
 on:
+  schedule:
+    - cron: "0 0 */2 * *"
   workflow_dispatch:
 
 env:
