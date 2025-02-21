@@ -44,9 +44,8 @@ _dotoldinstall() {
   then
     sudo apt-get update
     sudo apt-get install -y \
-	git-core zsh stow vim \
-	tmux fzf jq powerline \
-	vim-powerline tmux-powerline 
+	git zsh stow vim \
+	tmux fzf jq powerline
   elif [ -x "/usr/bin/dnf" ]
   then
     sudo dnf install -y \
