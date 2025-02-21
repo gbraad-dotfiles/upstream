@@ -1,5 +1,6 @@
 name: build container - centos
 run-name: Building container - CentOS
+
 on:
   workflow_dispatch:
 
@@ -12,15 +13,18 @@ jobs:
       matrix:
         os:
           - ubuntu-latest
+
     steps:
       - name: Check out repository code
         uses: actions/checkout@v4
+
       - name: Run podman build - centos
         run: |
           podman build -t ghcr.io/gbraad-dotfiles/centos:latest \
             --build-arg=BASE_IMAGE="quay.io/centos/centos" \
             --build-arg=BASE_VERSION="stream9" \
             -f .devcontainer/centos/Containerfile .
+
       - name: Tag and push image to ghcr.io - centos
         run: |
           DATE=$(date +"%y%m%d")

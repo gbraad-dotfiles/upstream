@@ -53,6 +53,21 @@ jobs:
             });
 
 
+  trigger-build-container-ubi9:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Start UBI9 container build
+        uses: actions/github-script@v7
+        with:
+          script: |
+            await github.rest.actions.createWorkflowDispatch({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              workflow_id: 'build-container-ubi9.yml',
+              ref: context.ref,
+            });
+
+
   trigger-build-container-centos-bootc:
     runs-on: ubuntu-latest
     steps:
@@ -118,6 +133,18 @@ jobs:
           check-name: 'build-container-fedora (ubuntu-latest)'
           wait-interval: 10
 
+  wait-for-build-container-ubi9:
+    runs-on: ubuntu-latest
+    needs: trigger-build-container-ubi9
+    steps:
+      - name: Wait for build-container-ubi9 to complete
+        uses: lewagon/wait-on-check-action@v1.3.4
+        with:
+          ref: ${{ github.ref }}
+          repo-token: ${{ secrets.GITHUB_TOKEN }} 
+          check-name: 'build-container-ubi9 (ubuntu-latest)'
+          wait-interval: 10
+
 
   wait-for-build-container-centos-bootc:
     runs-on: ubuntu-latest
@@ -150,6 +177,7 @@ jobs:
       - wait-for-build-container-centos
       - wait-for-build-container-debian
       - wait-for-build-container-fedora
+      - wait-for-build-container-ubi9
       - wait-for-build-container-centos-bootc
       - wait-for-build-container-fedora-bootc
     steps:

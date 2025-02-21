@@ -1,5 +1,6 @@
 name: build container - fedora-bootc
 run-name: Building container - Fedora (bootc)
+
 on:
   workflow_dispatch:
 
@@ -12,9 +13,11 @@ jobs:
       matrix:
         os:
           - ubuntu-latest
+
     steps:
       - name: Check out repository code
         uses: actions/checkout@v4
+
       - name: Run podman build - fedora-bootc
         run: |
           podman build -t ghcr.io/gbraad-dotfiles/fedora-bootc:latest \
@@ -24,6 +27,7 @@ jobs:
             --build-arg=USER_PASSWD="password" \
             --build-arg=ROOTHOME="/var/roothome" \
             -f .devcontainer/fedora/Containerfile .
+
       - name: Tag and push image to ghcr.io - fedora-bootc
         run: |
           DATE=$(date +"%y%m%d")

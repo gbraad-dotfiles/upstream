@@ -1,5 +1,6 @@
 name: build container - fedora
 run-name: Building container - Fedora
+
 on:
   workflow_dispatch:
 
@@ -12,15 +13,18 @@ jobs:
       matrix:
         os:
           - ubuntu-latest
+
     steps:
       - name: Check out repository code
         uses: actions/checkout@v4
+
       - name: Run podman build - fedora
         run: |
           podman build -t ghcr.io/gbraad-dotfiles/fedora:latest \
             --build-arg=BASE_IMAGE="quay.io/fedora/fedora" \
             --build-arg=BASE_VERSION=41 \
             -f .devcontainer/fedora/Containerfile .
+
       - name: Tag and push image to ghcr.io - fedora
         run: |
           DATE=$(date +"%y%m%d")

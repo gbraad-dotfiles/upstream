@@ -1,5 +1,6 @@
 name: build container - debian
 run-name: Building container - Debian
+
 on:
   workflow_dispatch:
 
@@ -12,13 +13,16 @@ jobs:
       matrix:
         os:
           - ubuntu-latest
+
     steps:
       - name: Check out repository code
         uses: actions/checkout@v4
+
       - name: Run podman build - debian
         run: |
           podman build -t ghcr.io/gbraad-dotfiles/debian:latest \
             -f .devcontainer/debian/Containerfile .
+
       - name: Tag and push image to ghcr.io - debian
         run: |
           DATE=$(date +"%y%m%d")
