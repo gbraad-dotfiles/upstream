@@ -36,25 +36,39 @@ _dotinstall() {
   fi
 }
 
+_dotpackageinstall() {
+  if [ -f /etc/os-release ]; then
+    . /etc/os-release
+  else
+    echo "Error: /etc/os-release not found. Unable to determine the operating system."
+    return 1
+  fi
+
+  case "$ID" in
+    debian|ubuntu)
+      echo "Detected $ID. Updating package list and installing packages..."
+      sudo apt-get update
+      sudo apt-get install -y \
+        git zsh stow vim tmux fzf jq powerline
+      ;;
+    fedora|centos|rhel)
+      echo "Detected $ID. Installing packages..."
+      sudo dnf install -y \
+        git-core zsh stow vim tmux fzf jq powerline vim-powerline tmux-powerline
+      # allow first-time system install
+      export SYSTEM_INSTALL=1
+      ;;
+    *)
+      echo "Error: Unsupported operating system $ID."
+      return 1
+      ;;
+  esac
+}
+
 # Temporary including the old installation method
 _dotoldinstall() {
 
-  # Crude multi-os installation option
-  if [ -x "/usr/bin/apt-get" ]
-  then
-    sudo apt-get update
-    sudo apt-get install -y \
-	git zsh stow vim \
-	tmux fzf jq powerline
-  elif [ -x "/usr/bin/dnf" ]
-  then
-    sudo dnf install -y \
-	git-core zsh stow vim \
-	tmux fzf jq powerline \
-	vim-powerline tmux-powerline
-    # allow first-time system install
-    export SYSTEM_INSTALL=1
-  fi
+  _dotpackageinstall
 
   # Add missing directory layout
   if [ ! -d "~/.config" ]
