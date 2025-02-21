@@ -71,11 +71,6 @@ _dotoldinstall() {
   echo "Install finished; use \`chsh -s /bin/zsh\` or \`chsh -s /usr/bin/zsh\` to change shell"
 }
 
-if [[ "$0" == *install.sh* ]]; then
-  echo "Performing install"
-  _dotoldinstall
-fi
-
 _dotresource() {
   echo "Resourcing zsh."
   if [ -d $HOME/.zshrc.d ]; then
@@ -155,11 +150,16 @@ dotfiles() {
   esac
 }
 
-if [[ $(dotini --get "dotfiles.aliases") == true ]]; then
+if [ "$(expr "$0" : '.*install.sh')" -gt 0 ]; then
+  echo "Performing install"
+  _dotoldinstall
+fi
+
+if [ "$(dotini --get "dotfiles.aliases")" = true ]; then
   alias dot="dotfiles"
   alias dotup="dot up"
 fi
 
-if [[ $(dotini --get "dotfiles.autoupdate") == true ]]; then
+if [ "$(dotini --get "dotfiles.autoupdate")" = true ]; then
   dotfiles up
 fi
