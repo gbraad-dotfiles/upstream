@@ -36,31 +36,47 @@ _dotinstall() {
   fi
 }
 
+_dotpackageinstall_apt() {
+  echo "Updating package list and installing packages..."
+  sudo apt-get update
+  sudo apt-get install -y \
+    git zsh stow vim tmux fzf jq powerline
+}
+
+_dotpackageinstall_dnf() {
+  echo "Installing packages..."
+  sudo dnf install -y \
+    git-core zsh stow vim tmux fzf jq powerline vim-powerline tmux-powerline
+  # allow first-time system install
+}
+
 _dotpackageinstall() {
   if [ -f /etc/os-release ]; then
     . /etc/os-release
+    echo "Dectected $ID"
   else
     echo "Error: /etc/os-release not found. Unable to determine the operating system."
     return 1
   fi
 
   case "$ID" in
-    debian|ubuntu)
-      echo "Detected $ID. Updating package list and installing packages..."
-      sudo apt-get update
-      sudo apt-get install -y \
-        git zsh stow vim tmux fzf jq powerline
+    "debian" | "ubuntu")
+      _dotpackageinstall_apt
       ;;
-    fedora|centos|rhel)
-      echo "Detected $ID. Installing packages..."
-      sudo dnf install -y \
-        git-core zsh stow vim tmux fzf jq powerline vim-powerline tmux-powerline
-      # allow first-time system install
+    "fedora" | "centos" | "rhel" | "almalinux")
+      _dotpackageinstall_dnf 
       export SYSTEM_INSTALL=1
       ;;
     *)
       echo "Error: Unsupported operating system $ID."
-      return 1
+      if command -v apt-get > /dev/null 2>&1; then
+        _dotpackageinstall_apt
+      elif command -v dnf > /dev/null 2>&1; then
+        _dotpackageinstall_dnf 
+      else
+        echo "Error: No supported package manager found (apt-get or dnf)."
+        return 1
+      fi
       ;;
   esac
 }
