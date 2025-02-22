@@ -1,0 +1,38 @@
+name: build container - ubuntu
+run-name: Building container - Ubuntu
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    name: build-container-ubuntu
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os:
+          - ubuntu-latest
+
+    steps:
+      - name: Check out repository code
+        uses: actions/checkout@v4
+
+      - name: Run podman build - ubuntu
+        run: |
+          podman build -t ghcr.io/gbraad-dotfiles/ubuntu:latest \
+            -f .devcontainer/ubuntu/Containerfile .
+
+      - name: Tag and push image to ghcr.io - ubuntu
+        run: |
+          DATE=$(date +"%y%m%d")
+          podman tag ghcr.io/gbraad-dotfiles/ubuntu:latest \
+            ghcr.io/gbraad-dotfiles/ubuntu:noble
+          podman tag ghcr.io/gbraad-dotfiles/ubuntu:latest \
+            ghcr.io/gbraad-dotfiles/ubuntu:${DATE}
+          podman login ghcr.io -u ${{ github.actor }} \
+            -p ${{ secrets.GITHUB_TOKEN }}
+          podman push ghcr.io/gbraad-dotfiles/ubuntu:${DATE}
+          podman push ghcr.io/gbraad-dotfiles/ubuntu:noble
+          podman push ghcr.io/gbraad-dotfiles/ubuntu:latest
+
