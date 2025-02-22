@@ -19,7 +19,8 @@ RUN apt-get update \
         curl \
     && rm -rf /var/lib/apt/lists/*
 
-RUN useradd -l -u 1000 -G sudo -md ${USERHOME} -p ${USER} ${USER} \
+RUN userdel -r ubuntu \
+    && useradd -l -u 1000 -G sudo -md ${USERHOME} -p ${USER} ${USER} \
     && sed -i.bkp -e '/Defaults\tuse_pty/d' -e 's/%sudo\s\+ALL=(ALL\(:ALL\)\?)\s\+ALL/%sudo ALL=NOPASSWD:ALL/g' /etc/sudoers
 
 USER ${USER}
