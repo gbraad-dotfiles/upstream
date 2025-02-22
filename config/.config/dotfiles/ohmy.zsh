@@ -1,0 +1,3 @@
+[ohmy]
+	enabled = true
+
