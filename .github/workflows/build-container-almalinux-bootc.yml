@@ -1,0 +1,42 @@
+name: build container - almalinux-bootc
+run-name: Building container - AlmaLinux bootc
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    name: build-container-almalinux-bootc
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os:
+          - ubuntu-latest
+
+    steps:
+      - name: Check out repository code
+        uses: actions/checkout@v4
+
+      - name: Run podman build - almalinux-bootc
+        run: |
+          podman build -t ghcr.io/gbraad-dotfiles/almalinux-bootc:latest \
+            --build-arg=BASE_IMAGE="quay.io/almalinuxorg/almalinux-bootc" \
+            --build-arg=BASE_VERSION=9 \
+            --build-arg=HOMEBASE="/var/home" \
+            --build-arg=USER_PASSWD="password" \
+            --build-arg=ROOTHOME="/var/roothome" \
+            -f .devcontainer/almalinux/Containerfile .
+
+      - name: Tag and push image to ghcr.io - almalinux-bootc
+        run: |
+          DATE=$(date +"%y%m%d")
+          podman tag ghcr.io/gbraad-dotfiles/almalinux-bootc:latest \
+            ghcr.io/gbraad-dotfiles/almalinux-bootc:9
+          podman tag ghcr.io/gbraad-dotfiles/almalinux-bootc:latest \
+            ghcr.io/gbraad-dotfiles/almalinux-bootc:${DATE}
+          podman login ghcr.io -u ${{ github.actor }} \
+            -p ${{ secrets.GITHUB_TOKEN }}
+          podman push ghcr.io/gbraad-dotfiles/almalinux-bootc:${DATE}
+          podman push ghcr.io/gbraad-dotfiles/almalinux-bootc:9
+          podman push ghcr.io/gbraad-dotfiles/almalinux-bootc:latest
