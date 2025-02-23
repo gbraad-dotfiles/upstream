@@ -69,6 +69,15 @@ $ dotfiles update
 > You can also use the alias `dot up` or `dotup` if `dotini dotfiles.aliases` returns `true`.
 
 
+### On GitHub Action runners
+For debugging purposes these can also be installed on GitHub Action runners:
+
+```yaml
+      - name: Install dotfiles action
+        uses: gbraad-dotfiles/install-dotfiles@v1
+```
+
+
 Compatibility
 -------------
 
