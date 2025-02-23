@@ -15,7 +15,7 @@ RUN dnf install -y \
         sudo \
         git \
         dnf-plugins-core \
-    && dnf install -y --allowerasing --nobest \
+    && dnf install -y \
         util-linux \
         util-linux-user \
     && dnf install -y \
