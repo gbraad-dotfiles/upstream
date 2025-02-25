@@ -1,4 +1,4 @@
-name: tailscale-ssh
+name: tailscale-ssh-arm
 run-name: Tailscale SSH with install action on Arm
 
 on:
@@ -6,7 +6,7 @@ on:
 
 jobs:
   dotfiles-test:
-    runs-on: ubuntu-latest-arm
+    runs-on: ubuntu-24.04-arm
     
     steps:
       - name: Remove unwanted stuff
