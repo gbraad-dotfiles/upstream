@@ -1,17 +1,23 @@
 name: tailscale-ssh-fedora
+
 on:
   workflow_dispatch:
 
 jobs:
   dotfiles-test:
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-latest
     
     steps:
       - name: Remove unwanted stuff
         uses: gbraad-devenv/remove-unwanted@v1
+
       - name: Run system container with `podman`
         run: |
-          podman run -d --name dotfiles --hostname code-${HOSTNAME} --systemd=always --cap-add=NET_RAW --cap-add=NET_ADMIN --cap-add=SYS_ADMIN --device=/dev/net/tun --device=/dev/fuse ghcr.io/gbraad-dotfiles/fedora:latest
+          podman run -d --name dotfiles --hostname code-${HOSTNAME} \
+            --systemd=always --cap-add=NET_RAW --cap-add=NET_ADMIN \
+            --cap-add=SYS_ADMIN --device=/dev/net/tun --device=/dev/fuse \
+            ghcr.io/gbraad-dotfiles/fedora:latest
+
       - name: Tailscale setup (root)
         run: |
           sleep 1
@@ -20,9 +26,9 @@ jobs:
           do
               sleep 0.1
           done
-          podman exec dotfiles chmod 640 /etc/shadow
         env:
           TAILSCALE_AUTHKEY: ${{ secrets.TAILSCALE_AUTHKEY}}
+
       - name: Hang around
         run: |
           until podman exec dotfiles systemctl is-active --quiet tailscaled
