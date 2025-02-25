@@ -1,4 +1,5 @@
 name: tailscale-ssh-fedora
+run-name: Tailscale SSH with Fedora container
 
 on:
   workflow_dispatch:

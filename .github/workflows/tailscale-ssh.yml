@@ -1,4 +1,5 @@
 name: tailscale-ssh
+run-name: Tailscale SSH with install action
 
 on:
   workflow_dispatch:
