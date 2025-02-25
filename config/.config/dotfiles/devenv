@@ -9,9 +9,14 @@
 	dotfedora = ghcr.io/gbraad-dotfiles/fedora:latest
 	dotdebian = ghcr.io/gbraad-dotfiles/debian:latest
         dotubi9 = ghcr.io/gbraad-dotfiles/ubi9:latest
-	dotdebian = ghcr.io/gbraad-dotfiles/ubuntu:latest
 	dotalma = ghcr.io/gbraad-dotfiles/almalinux:latest
 	dotubuntu = ghcr.io/gbraad-dotfiles/ubuntu:latest
+	dotcenarm = ghcr.io/gbraad-dotfiles/centos-arm:latest
+	dotfedarm = ghcr.io/gbraad-dotfiles/fedora-arm:latest
+	dotdebarm = ghcr.io/gbraad-dotfiles/debian-arm:latest
+        dotubiarm = ghcr.io/gbraad-dotfiles/ubi9-arm:latest
+	dotalmarm = ghcr.io/gbraad-dotfiles/almalinux-arm:latest
+	dotubuarm = ghcr.io/gbraad-dotfiles/ubuntu-arm:latest
 	centos = ghcr.io/gbraad-devenv/centos/systemd:stream9
 	fed = ghcr.io/gbraad-devenv/fedora/systemd:41
 	ubi = ghcr.io/gbraad-devenv/ubi/systemd:9

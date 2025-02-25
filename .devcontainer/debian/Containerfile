@@ -7,6 +7,7 @@ ARG USER="gbraad"
 ARG HOMEBASE="/home"
 ARG USERHOME="${HOMEBASE}/${USER}"
 ARG ROOTHOME="/root"
+ARG ARCH="amd64"
 
 LABEL org.opencontainers.image.source = "https://github.com/gbraad-dotfiles/debian"
 
@@ -54,7 +55,7 @@ RUN curl -fsSL https://pkgs.tailscale.com/stable/debian/bookworm.noarmor.gpg -o 
 #   && systemctl enable tailscaled
 
 # install cloudflared (or use https://github.com/spotsnel/cloudflared-systemd/)
-RUN curl -fsSL https://github.com/cloudflare/cloudflared/releases/latest/download/cloudflared-linux-amd64.deb -o /tmp/cloudflared.deb \
+RUN curl -fsSL https://github.com/cloudflare/cloudflared/releases/latest/download/cloudflared-linux-${ARCH}.deb -o /tmp/cloudflared.deb \
     && apt-get install -y \
         /tmp/cloudflared.deb \
     && rm -f /tmp/cloudflared.deb \

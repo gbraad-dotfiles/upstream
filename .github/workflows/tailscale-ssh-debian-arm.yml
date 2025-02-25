@@ -1,0 +1,40 @@
+name: tailscale-ssh-debian-arm
+run-name: Tailscale SSH with Debian container on Arm
+
+on:
+  workflow_dispatch:
+
+jobs:
+  dotfiles-test:
+    runs-on: ubuntu-24.04-arm
+    
+    steps:
+      - name: Remove unwanted stuff
+        uses: gbraad-devenv/remove-unwanted@v1
+
+      - name: Run system container with `podman`
+        run: |
+          podman run -d --name dotfiles --hostname code-${HOSTNAME} \
+            --systemd=always --cap-add=NET_RAW --cap-add=NET_ADMIN \
+            --cap-add=SYS_ADMIN --device=/dev/net/tun --device=/dev/fuse \
+            ghcr.io/gbraad-dotfiles/debian-arm:latest
+
+      - name: Tailscale setup (root)
+        run: |
+          sleep 1
+          until podman exec dotfiles tailscale up --auth-key ${TAILSCALE_AUTHKEY} --ssh
+          do
+              sleep 0.1
+          done
+        env:
+          TAILSCALE_AUTHKEY: ${{ secrets.TAILSCALE_AUTHKEY}}
+
+      - name: Hang around
+        run: |
+          until podman exec dotfiles systemctl is-active --quiet tailscaled
+          do
+               sleep 1
+          done
+          IP=`podman exec dotfiles tailscale ip -4`
+          echo "Use the following command to connect \`tailscale ssh gbraad@${IP}\`"
+          sleep infinity
