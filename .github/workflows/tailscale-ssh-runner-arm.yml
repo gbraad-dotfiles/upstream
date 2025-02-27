@@ -1,4 +1,4 @@
-name: tailscale-ssh-arm
+name: tailscale-ssh-runner-arm
 run-name: Tailscale SSH with install action on Arm
 
 on:
@@ -17,7 +17,23 @@ jobs:
         with:
           authkey: ${{ secrets.TAILSCALE_AUTHKEY }}
           args: --ssh --accept-dns=false --operator=runner
-          hostname: dotfiles-arm
+          hostname: dotfiles
+
+      - name: Usage message
+        run: |
+          IP=`tailscale ip -4`
+          echo "Use the following command to connect \`tailscale ssh runner@${IP}\`"
+
+      - name: Create and share userdirs
+        run: |
+          cd ${{ github.workspace }}
+          mkdir -p Projects Documents Downloads
+          ln -s ${{ github.workspace }}/Projects  ${HOME}/Projects
+          ln -s ${{ github.workspace }}/Documents ${HOME}/Documents
+          ln -s ${{ github.workspace }}/Downloads ${HOME}/Downloads
+          tailscale drive share projects ${HOME}/Projects
+          tailscale drive share documents ${HOME}/Documents
+          tailscale drive share downloads ${HOME}/Downloads
 
       - name: Dotfiles
         uses: gbraad-dotfiles/install-dotfiles-action@v1
@@ -30,6 +46,45 @@ jobs:
 
       - name: Hang around
         run: |
-          IP=`tailscale ip -4`
-          echo "Use the following command to connect \`tailscale ssh runner@${IP}\`"
+          sleep 18000
+
+      - name: Message user; 1 hour
+        run: |
+          sudo wall "about 1 hour remaining"
+          sleep 1800
+
+      - name: Message user; 20 minutes
+        run: |
+          sudo wall "20 minutes remaining"
+          sleep 1200
+
+      - name: Upload Artifact - Projects
+        if: ${{ always() }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: projects
+          path: ${{ github.workspace }}/Projects/
+          retention-days: 1
+          include-hidden-files: true
+
+      - name: Upload Artifact - Documents
+        if: ${{ always() }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: documents
+          path: ${{ github.workspace }}/Documents/
+          retention-days: 1
+          include-hidden-files: true
+
+      - name: Upload Artifact - Downloads
+        if: ${{ always() }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: downloads
+          path: ${{ github.workspace }}/Downloads/
+          retention-days: 1
+          include-hidden-files: true
+
+      - name: Hang around
+        run: |
           sleep infinity
