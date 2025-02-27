@@ -1,4 +1,4 @@
-name: tailscale-ssh-arm
+name: tailscale-ssh-runner-arm
 run-name: Tailscale SSH with install action on Arm
 
 on:
@@ -17,7 +17,12 @@ jobs:
         with:
           authkey: ${{ secrets.TAILSCALE_AUTHKEY }}
           args: --ssh --accept-dns=false --operator=runner
-          hostname: dotfiles-arm
+          hostname: dotfiles
+
+      - name: Usage message
+        run: |
+          IP=`tailscale ip -4`
+          echo "Use the following command to connect \`tailscale ssh runner@${IP}\`"
 
       - name: Dotfiles
         uses: gbraad-dotfiles/install-dotfiles-action@v1
@@ -30,6 +35,45 @@ jobs:
 
       - name: Hang around
         run: |
-          IP=`tailscale ip -4`
-          echo "Use the following command to connect \`tailscale ssh runner@${IP}\`"
+          sleep 18000
+
+      - name: Message user; 1 hour
+        run: |
+          sudo wall "about 1 hour remaining"
+          sleep 1800
+
+      - name: Message user; 20 minutes
+        run: |
+          sudo wall "20 minutes remaining"
+          sleep 1200
+
+      - name: Upload Artifact - Projects
+        if: ${{ always() }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: projects
+          path: |
+            ${HOME}/Projects
+          retention-days: 1
+  
+      - name: Upload Artifact - Documents
+        if: ${{ always() }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: documents
+          path: |
+            ${HOME}/Documents
+          retention-days: 1
+
+      - name: Upload Artifact - Downloads
+        if: ${{ always() }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: downloads
+          path: |
+            ${HOME}/Downloads
+          retention-days: 1
+
+      - name: Hang around
+        run: |
           sleep infinity
