@@ -39,10 +39,11 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Run Dockerfile commands
-        uses: gbraad-actions/machinefile-executor-action@v1
+        uses: gbraad-actions/machinefile-executor-action@v2
         with:
           containerfile: '.devcontainer/ubuntu/Containerfile'
           context: '.'
+          arguments: --arg=USERID=1002
 
       - name: Install required virtualization software
         continue-on-error: true
