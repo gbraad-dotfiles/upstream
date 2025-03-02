@@ -1,0 +1,67 @@
+ARG BASE_IMAGE="mcr.microsoft.com/devcontainers/base"
+ARG BASE_VERSION="latest"
+
+FROM ${BASE_IMAGE}:${BASE_VERSION}
+
+ARG USER="gbraad"
+ARG HOMEBASE="/home"
+ARG USERHOME="${HOMEBASE}/${USER}"
+ARG ROOTHOME="/root"
+ARG ARCH="amd64"
+ARG USERID=1000
+
+LABEL org.opencontainers.image.source = "https://github.com/gbraad-dotfiles/"
+
+RUN apt-get update \
+    && apt-get install -y \
+        systemd \
+	init \
+        sudo \
+        git \
+        curl \
+    && rm -rf /var/lib/apt/lists/*
+
+RUN userdel -r "vscode" 2>/dev/null || true \
+    && useradd -l -u ${USERID} -G sudo -md ${USERHOME} -p ${USER} ${USER} \
+    && sed -i.bkp -e '/Defaults\tuse_pty/d' -e 's/%sudo\s\+ALL=(ALL\(:ALL\)\?)\s\+ALL/%sudo ALL=NOPASSWD:ALL/g' /etc/sudoers
+
+USER ${USER}
+
+RUN git clone https://github.com/gbraad-dotfiles/upstream.git ${USERHOME}/.dotfiles --depth 2 \
+    && cd ${USERHOME}/.dotfiles \
+    && bash ./install.sh
+
+RUN mkdir -p ~/.ssh/ \
+    && curl https://github.com/${USER}.keys | tee -a ~/.ssh/authorized_keys
+
+USER root
+
+RUN git clone https://github.com/gbraad-dotfiles/upstream.git ${ROOTHOME}/.dotfiles --depth 2 \
+    && cd ${ROOTHOME}/.dotfiles \
+    && . ./zsh/.zshrc.d/dotfiles.zsh \
+    && stow config \
+    && dotfiles restow
+
+RUN chsh -s /usr/bin/zsh ${USER} \
+    && chsh -s /usr/bin/zsh
+
+# install tailscale (or use https://github.com/spotsnel/tailscale-systemd/)
+RUN curl -fsSL https://pkgs.tailscale.com/stable/ubuntu/noble.noarmor.gpg -o /usr/share/keyrings/tailscale-archive-keyring.gpg \
+    && curl -fsSL https://pkgs.tailscale.com/stable/ubuntu/noble.tailscale-keyring.list | sudo tee /etc/apt/sources.list.d/tailscale.list \
+    && apt-get update \
+    && apt-get install -y \
+        tailscale \
+    && rm -rf /var/lib/apt/lists/* \
+    && mkdir -p /var/run/tailscale /var/cache/tailscale /var/lib/tailscale
+# already 'enabled' by default
+#   && systemctl enable tailscaled
+
+# install cloudflared (or use https://github.com/spotsnel/cloudflared-systemd/)
+RUN curl -fsSL https://github.com/cloudflare/cloudflared/releases/latest/download/cloudflared-linux-${ARCH}.deb -o /tmp/cloudflared.deb \
+    && apt-get install -y \
+        /tmp/cloudflared.deb \
+    && rm -f /tmp/cloudflared.deb \
+    && rm -rf /var/lib/apt/lists/*
+
+# Enable systemd
+ENTRYPOINT [ "/sbin/init" ]
