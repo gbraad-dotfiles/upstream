@@ -1,7 +1,7 @@
 #!/bin/zsh
 
 _installmachinefile() {
-  VERSION="0.8.5"
+  VERSION="0.8.7"
   DOWNLOAD_BASEURL="https://github.com/gbraad-redhat/Machinefile/releases/download/${VERSION}"
 
   arch=$(uname -m)
