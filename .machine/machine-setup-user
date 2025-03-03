@@ -1,0 +1,21 @@
+#!/bin/env -S machinefile --stdin
+
+ARG USER="gbraad"
+ARG HOMEBASE="/home"
+ARG USERHOME="${HOMEBASE}/${USER}"
+ARG USERID=1000
+ARG USERGROUP="wheel"
+
+#RUN useradd -l -u ${USERID} -G ${USERGROUP} -md ${USERHOME} -p ${USER} ${USER} \
+#    && sed -i.bkp -e '/Defaults\tuse_pty/d' -e 's/%sudo\s\+ALL=(ALL\(:ALL\)\?)\s\+ALL/%sudo ALL=NOPASSWD:ALL/g' /etc/sudoers
+
+USER ${USER}
+
+RUN git clone https://github.com/gbraad-dotfiles/upstream.git ${USERHOME}/.dotfiles --depth 2 \
+    && cd ${USERHOME}/.dotfiles \
+    && bash ./install.sh
+
+RUN mkdir -p ~/.ssh/ \
+    && curl https://github.com/${USER}.keys | tee -a ~/.ssh/authorized_keys
+
+RUN sudo chsh -s /usr/bin/zsh ${USER}
