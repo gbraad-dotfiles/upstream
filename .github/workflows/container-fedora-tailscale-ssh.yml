@@ -10,7 +10,7 @@ jobs:
 
     container:
       image: ghcr.io/gbraad-dotfiles/fedora:latest
-      options: --privileged --cpus 4 --cap-add=NET_ADMIN --cap-add=NET_RAW --device=/dev/net/tun --device=/dev/fuse
+      options: --privileged --entrypoint /sbin/init --cap-add=NET_ADMIN --cap-add=NET_RAW --device=/dev/net/tun --device=/dev/fuse
     
     steps:
       - name: Tailscale setup (root)
