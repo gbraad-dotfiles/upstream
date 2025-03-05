@@ -1,0 +1,33 @@
+name: tailscale-ssh-fedora
+run-name: Tailscale SSH with Fedora container
+
+on:
+  workflow_dispatch:
+
+jobs:
+  dotfiles-test:
+    runs-on: ubuntu-latest
+
+    container:
+      image: ghcr.io/gbraad-dotfiles/fedora:latest
+      options: --privileged --cpus 4 --cap-add=NET_ADMIN --cap-add=NET_RAW --device=/dev/net/tun --device=/dev/fuse
+    
+    steps:
+      - name: Tailscale setup (root)
+        run: |
+          systemctl enable --now tailscaled
+          until tailscale up --auth-key ${TAILSCALE_AUTHKEY} --ssh
+          do
+              sleep 0.1
+          done
+        env:
+          TAILSCALE_AUTHKEY: ${{ secrets.TAILSCALE_AUTHKEY}}
+
+      - name: Hang around
+        run: |
+          until systemctl is-active --quiet tailscaled
+          do
+               sleep 1
+          done
+          IP=`tailscale ip -4`
+          echo "Use the following command to connect \`tailscale ssh gbraad@${IP}\`"
