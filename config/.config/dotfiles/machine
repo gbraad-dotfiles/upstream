@@ -5,13 +5,17 @@
 	aliases = true
 
 [images]
-	workstation = ghcr.io/gbraad-fedora/workstation-bootc:latest
+	dotalma = ghcr.io/gbraad-dotfiles/almalinux-bootc:latest
 	dotcentos = ghcr.io/gbraad-dotfiles/centos-bootc:latest
 	dotfedora = ghcr.io/gbraad-dotfiles/fedora-bootc:latest
 	systemd = ghcr.io/gbraad-devenv/fedora/systemd-bootc:41
-	code = ghcr.io/gbraad-devenv/fedora/code-cli-bootc:41
-	rdesktop = ghcr.io/gbraad-devenv/fedora/rdesktop-bootc:41
-	golang = ghcr.io/gbraad-devenv/fedora-golang/systemd-bootc:41
+	workstation = ghcr.io/gbraad-dotfiles/fedora-workstation-bootc:latest
+	devstation = ghcr.io/gbraad-devenv/fedora/workstation-bootc:latest
+	gostation = ghcr.io/gbraad-devenv/fedora-golang/workstation-bootc:latest
+	code = ghcr.io/gbraad-devenv/fedora/code-cli-bootclatest
+	rdesktop = ghcr.io/gbraad-devenv/fedora/rdesktop-bootc:latest
+	golang = ghcr.io/gbraad-devenv/fedora-golang/systemd-bootc:latest
+	gocode = ghcr.io/gbraad-devenv/fedora-golang/code-cli-bootc:latest
 	forgejo = ghcr.io/gbraad-homelab/forgejo-bootc:latest
 	jellyfin = ghcr.io/gbraad-homelab/jellyfin-bootc:latest
 	nextcloud = ghcr.io/gbraad-homelab/nextcloud-bootc:latest
@@ -27,11 +31,13 @@
 	dotfedora = registry:ghcr.io/gbraad-dotfiles/fedora-disk:latest
 	dotalma = registry:ghcr.io/graad-dotfiles/almalinux-disk:latest
 	workstation = registry:ghcr.io/gbraad-dotfiles/fedora-workstation-disk:latest
-	fedora = https://github.com/gbraad-devenv/fedora/releases/download/250225/systemd-disk.qcow2
-	code = https://github.com/gbraad-devenv/fedora/releases/download/250225/code-cli-disk.qcow2
-	rdesktop = https://github.com/gbraad-devenv/fedora/releases/download/250225/rdesktop-disk.qcow2
-	go = https://github.com/gbraad-devenv/fedora-golang/releases/download/250220/systemd-disk.qcow2
-	gocode = https://github.com/gbraad-devenv/fedora-golang/releases/download/250220/code-cli-disk.qcow2
+	devstation = registry:ghcr.io/gbraad-devenv/fedora/workstation-disk:latest
+	gostation = registry:ghcr.io/gbraad-devenv/fedora-golang/workstation-disk:latest
+	fedora = registry:ghcr.io/gbraad-devenv/fedora/systemd-disk:latest
+	code = registry:ghcr.io/gbraad-devenv/fedora/code-cli-disk:latest
+	rdesktop = registry:ghcr.io/gbraad-devenv/fedora/rdesktop-disk:latest
+	golang = registry:ghcr.io/gbraad-devenv/fedora-golang/systemd-disk:latest
+	gocode = registry:ghcr.io/gbraad-devenv/fedora-golang/code-cli-disk:latest
 	obsidian = https://github.com/gbraad-apps/personal-obsidian/releases/download/250225/disk.qcow2
 	libreoffice = https://github.com/gbraad-apps/personal-libreoffice/releases/download/latest/disk.qcow2_part[0-1]
 	vscode = https://github.com/gbraad-apps/personal-code/releases/download/latest/disk.qcow2_part[0-1]
