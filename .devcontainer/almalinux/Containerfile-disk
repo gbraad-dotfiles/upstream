@@ -1,0 +1,2 @@
+FROM scratch
+ADD ./output/qcow2/almalinux-disk.qcow2 /disk.qcow2

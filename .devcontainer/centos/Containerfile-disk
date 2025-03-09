@@ -1,0 +1,2 @@
+FROM scratch
+ADD ./output/qcow2/centos-disk.qcow2 /disk.qcow2

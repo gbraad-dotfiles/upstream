@@ -1,5 +1,5 @@
-name: build diskimage - almalinux-bootc - upload
-run-name: building diskimage - almalinux-bootc - upload
+name: build diskimage - fedora-bootc
+run-name: building diskimage - fedora-bootc
 on:
   workflow_dispatch:
 
@@ -11,13 +11,13 @@ env:
 
 jobs:
   build:
-    name: Build qcow2 diskimage - dotfiles
+    name: build-diskimage-fedora
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
       matrix:
         os:
-          - ubuntu-24.04
+          - ubuntu-latest
 
     steps:
     - name: Remove unwanted stuff
@@ -41,7 +41,7 @@ jobs:
     - name: Create empty user configuration
       run: touch config.toml
 
-    - name: Build image - centos
+    - name: Build image - fedora
       id: build-image-dotfiles
       run: |
         mkdir -p ./output
@@ -62,15 +62,43 @@ jobs:
           --local \
           ${{ env.IMAGE_NAME }}
       env:
-        IMAGE_NAME: ghcr.io/gbraad-dotfiles/almalinux-bootc:latest
+        IMAGE_NAME: ghcr.io/gbraad-dotfiles/fedora-bootc:latest
 
     - name: Rename output file - dotfiles
-      run: sudo mv ./output/qcow2/disk.qcow2 ./output/qcow2/almalinux-disk.qcow2
+      run: sudo mv ./output/qcow2/disk.qcow2 ./output/qcow2/fedora-disk.qcow2
 
-    - name: Upload Artifact - dotfiles
-      uses: actions/upload-artifact@v4
-      with:
-        name: dotfiles-disk
-        path: |
-          ./output/qcow2/almalinux-disk.qcow2
-        retention-days: 5
+#    - name: Upload Artifact - dotfiles
+#      uses: actions/upload-artifact@v4
+#      with:
+#        name: dotfiles-disk
+#        path: |
+#          ./output/qcow2/fedora-disk.qcow2
+#        retention-days: 5
+
+    - name: Set release tag
+      id: get-tag
+      run: |
+        echo "TAG=$(date +'%y%m%d')" >> $GITHUB_OUTPUT
+
+    - name: Wrap disk image in container
+      run: |
+        podman build -t ghcr.io/gbraad-dotfiles/fedora-disk:latest \
+          -f .devcontainer/fedora/Containerfile-disk .
+
+    - name: Tag image container
+      run: |
+        podman tag ghcr.io/gbraad-dotfiles/fedora-disk:latest \
+          ghcr.io/gbraad-dotfiles/fedora-disk:41
+        podman tag ghcr.io/gbraad-dotfiles/fedora-disk:latest \
+          ghcr.io/gbraad-dotfiles/fedora-disk:${{steps.get-tag.outputs.TAG}}
+
+    - name: Login to registry
+      run: |
+        podman login ghcr.io -u ${{ github.actor }} \
+          -p ${{ secrets.GITHUB_TOKEN }}
+
+    - name: Push image container to registry
+      run: |
+        podman push ghcr.io/gbraad-dotfiles/fedora-disk:latest
+        podman push ghcr.io/gbraad-dotfiles/fedora-disk:41
+        podman push ghcr.io/gbraad-dotfiles/fedora-disk:${{steps.get-tag.outputs.TAG}}
