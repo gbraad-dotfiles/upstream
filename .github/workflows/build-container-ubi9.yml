@@ -25,16 +25,25 @@ jobs:
             --build-arg=BASE_VERSION="9.5" \
             -f .devcontainer/ubi9/Containerfile .
 
-      - name: Tag and push image to ghcr.io - ubi9
+      - name: Set release tag
+        id: get-tag
         run: |
-          DATE=$(date +"%y%m%d")
+          echo "TAG=$(date +'%y%m%d')" >> $GITHUB_OUTPUT
+
+      - name: Tag container
+        run: |
           podman tag ghcr.io/gbraad-dotfiles/ubi9:latest \
             ghcr.io/gbraad-dotfiles/ubi9:9.5
           podman tag ghcr.io/gbraad-dotfiles/ubi9:latest \
-            ghcr.io/gbraad-dotfiles/ubi9:${DATE}
+            ghcr.io/gbraad-dotfiles/ubi9:${{steps.get-tag.outputs.TAG}}
+
+      - name: Login to registry
+        run: |
           podman login ghcr.io -u ${{ github.actor }} \
             -p ${{ secrets.GITHUB_TOKEN }}
-          podman push ghcr.io/gbraad-dotfiles/ubi9:${DATE}
-          podman push ghcr.io/gbraad-dotfiles/ubi9:9.5
-          podman push ghcr.io/gbraad-dotfiles/ubi9:latest
 
+      - name: Push container to registry
+        run: |
+          podman push ghcr.io/gbraad-dotfiles/ubi9:latest
+          podman push ghcr.io/gbraad-dotfiles/ubi9:9.5
+          podman push ghcr.io/gbraad-dotfiles/ubi9:${{steps.get-tag.outputs.TAG}}

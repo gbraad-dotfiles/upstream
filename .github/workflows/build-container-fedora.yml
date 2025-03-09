@@ -25,16 +25,25 @@ jobs:
             --build-arg=BASE_VERSION=41 \
             -f .devcontainer/fedora/Containerfile .
 
-      - name: Tag and push image to ghcr.io - fedora
+      - name: Set release tag
+        id: get-tag
         run: |
-          DATE=$(date +"%y%m%d")
+          echo "TAG=$(date +'%y%m%d')" >> $GITHUB_OUTPUT
+
+      - name: Tag container
+        run: |
           podman tag ghcr.io/gbraad-dotfiles/fedora:latest \
             ghcr.io/gbraad-dotfiles/fedora:41
           podman tag ghcr.io/gbraad-dotfiles/fedora:latest \
-            ghcr.io/gbraad-dotfiles/fedora:${DATE}
+            ghcr.io/gbraad-dotfiles/fedora:${{steps.get-tag.outputs.TAG}}
+
+      - name: Login to registry
+        run: |
           podman login ghcr.io -u ${{ github.actor }} \
             -p ${{ secrets.GITHUB_TOKEN }}
-          podman push ghcr.io/gbraad-dotfiles/fedora:${DATE}
-          podman push ghcr.io/gbraad-dotfiles/fedora:41
-          podman push ghcr.io/gbraad-dotfiles/fedora:latest
 
+      - name: Push container to registry
+        run: |
+          podman push ghcr.io/gbraad-dotfiles/fedora:latest
+          podman push ghcr.io/gbraad-dotfiles/fedora:41
+          podman push ghcr.io/gbraad-dotfiles/fedora:${{steps.get-tag.outputs.TAG}}

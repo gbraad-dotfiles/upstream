@@ -28,15 +28,25 @@ jobs:
             --build-arg=ROOTHOME="/var/roothome" \
             -f .devcontainer/almalinux/Containerfile .
 
-      - name: Tag and push image to ghcr.io - almalinux-bootc
+      - name: Set release tag
+        id: get-tag
         run: |
-          DATE=$(date +"%y%m%d")
+          echo "TAG=$(date +'%y%m%d')" >> $GITHUB_OUTPUT
+
+      - name: Tag container
+        run: |
           podman tag ghcr.io/gbraad-dotfiles/almalinux-bootc:latest \
             ghcr.io/gbraad-dotfiles/almalinux-bootc:9
           podman tag ghcr.io/gbraad-dotfiles/almalinux-bootc:latest \
-            ghcr.io/gbraad-dotfiles/almalinux-bootc:${DATE}
+            ghcr.io/gbraad-dotfiles/almalinux-bootc:${{steps.get-tag.outputs.TAG}}
+
+      - name: Login to registry
+        run: |
           podman login ghcr.io -u ${{ github.actor }} \
             -p ${{ secrets.GITHUB_TOKEN }}
-          podman push ghcr.io/gbraad-dotfiles/almalinux-bootc:${DATE}
-          podman push ghcr.io/gbraad-dotfiles/almalinux-bootc:9
+
+      - name: Push container to registry
+        run: |
           podman push ghcr.io/gbraad-dotfiles/almalinux-bootc:latest
+          podman push ghcr.io/gbraad-dotfiles/almalinux-bootc:9
+          podman push ghcr.io/gbraad-dotfiles/almalinux-bootc:${{steps.get-tag.outputs.TAG}}

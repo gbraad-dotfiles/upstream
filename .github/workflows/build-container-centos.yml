@@ -25,16 +25,25 @@ jobs:
             --build-arg=BASE_VERSION="stream9" \
             -f .devcontainer/centos/Containerfile .
 
-      - name: Tag and push image to ghcr.io - centos
+      - name: Set release tag
+        id: get-tag
         run: |
-          DATE=$(date +"%y%m%d")
+          echo "TAG=$(date +'%y%m%d')" >> $GITHUB_OUTPUT
+
+      - name: Tag container
+        run: |
           podman tag ghcr.io/gbraad-dotfiles/centos:latest \
             ghcr.io/gbraad-dotfiles/centos:stream9
           podman tag ghcr.io/gbraad-dotfiles/centos:latest \
-            ghcr.io/gbraad-dotfiles/centos:${DATE}
+            ghcr.io/gbraad-dotfiles/centos:${{steps.get-tag.outputs.TAG}}
+
+      - name: Login to registry
+        run: |
           podman login ghcr.io -u ${{ github.actor }} \
             -p ${{ secrets.GITHUB_TOKEN }}
-          podman push ghcr.io/gbraad-dotfiles/centos:${DATE}
-          podman push ghcr.io/gbraad-dotfiles/centos:stream9
-          podman push ghcr.io/gbraad-dotfiles/centos:latest
 
+      - name: Push container to registry
+        run: |
+          podman push ghcr.io/gbraad-dotfiles/centos:latest
+          podman push ghcr.io/gbraad-dotfiles/centos:stream9
+          podman push ghcr.io/gbraad-dotfiles/centos:${{steps.get-tag.outputs.TAG}}
