@@ -23,10 +23,10 @@
 	minecraft-launcher = ghcr.io/gbraad-gaming/minecraft-launcher-bootc:latest
 
 [disks]
-	workstation = https://github.com/gbraad-fedora/personal-workstation/releases/download/250306/disk.qcow2_part[0-1]
-	dotcentos = https://github.com/gbraad-dotfiles/upstream/releases/download/250223/centos-disk.qcow2
-	dotfedora = https://github.com/gbraad-dotfiles/upstream/releases/download/250223/fedora-disk.qcow2
-	dotalma = https://github.com/gbraad-dotfiles/upstream/releases/download/250223/almalinux-disk.qcow2
+	dotcentos = registry:ghcr.io/gbraad-dotfiles/centos-disk:latest
+	dotfedora = registry:ghcr.io/gbraad-dotfiles/fedora-disk:latest
+	dotalma = registry:ghcr.io/graad-dotfiles/almalinux-disk:latest
+	workstation = registry:ghcr.io/gbraad-dotfiles/fedora-workstation-disk:latest
 	fedora = https://github.com/gbraad-devenv/fedora/releases/download/250225/systemd-disk.qcow2
 	code = https://github.com/gbraad-devenv/fedora/releases/download/250225/code-cli-disk.qcow2
 	rdesktop = https://github.com/gbraad-devenv/fedora/releases/download/250225/rdesktop-disk.qcow2
