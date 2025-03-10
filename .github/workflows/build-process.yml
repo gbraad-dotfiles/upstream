@@ -62,7 +62,7 @@ jobs:
             await github.rest.actions.createWorkflowDispatch({
               owner: context.repo.owner,
               repo: context.repo.repo,
-              workflow_id: 'build-container-fedora.yml',
+              workflow_id: 'build-container-fedora-multi.yml',
               ref: context.ref,
             });
 
@@ -178,13 +178,21 @@ jobs:
     runs-on: ubuntu-latest
     needs: trigger-build-container-fedora
     steps:
-      - name: Wait for build-container-fedora to complete
+      - name: Wait for build-container-fedora-amd64 to complete
         uses: lewagon/wait-on-check-action@v1.3.4
         with:
           ref: ${{ github.ref }}
           repo-token: ${{ secrets.GITHUB_TOKEN }} 
-          check-name: 'build-container-fedora (ubuntu-latest)'
+          check-name: 'build-container-fedora-amd64 (ubuntu-latest)'
           wait-interval: 10
+      - name: Wait for build-container-fedora-arm64 to complete
+        uses: lewagon/wait-on-check-action@v1.3.4
+        with:
+          ref: ${{ github.ref }}
+          repo-token: ${{ secrets.GITHUB_TOKEN }} 
+          check-name: 'build-container-fedora-arm64 (ubuntu-24.04-arm)'
+          wait-interval: 10
+
 
   wait-for-build-container-ubi9:
     runs-on: ubuntu-latest
