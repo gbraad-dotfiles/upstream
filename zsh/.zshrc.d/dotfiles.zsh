@@ -159,6 +159,7 @@ _dotreset() {
   echo "Reconciling remotes ..."
   cd ~/.dotfiles
 
+  git stash
   git fetch origin
   git reset --hard origin/main
    
@@ -168,8 +169,8 @@ _dotreset() {
 _dotupdate() {
   echo "Reticulating splines ..."
   cd ~/.dotfiles
-  git pull
 
+  git pull
   # (re)stow and (re)source
   _dotrestow
   _dotresource
