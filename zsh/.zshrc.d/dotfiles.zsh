@@ -155,6 +155,16 @@ _dotupstream() {
   _dotupdate
 }
 
+_dotreset() {
+  echo "Reconciling remotes ..."
+  cd ~/.dotfiles
+
+  git fetch origin
+  git reset --hard origin/main
+   
+  cd - > /dev/null
+}
+
 _dotupdate() {
   echo "Reticulating splines ..."
   cd ~/.dotfiles
@@ -184,6 +194,9 @@ dotfiles() {
       ;;
     "resource")
       _dotresource
+      ;;
+    "reset")
+      _dotreset
       ;;
     "restow")
       _dotrestow
