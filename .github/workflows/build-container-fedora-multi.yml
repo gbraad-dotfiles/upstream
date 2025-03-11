@@ -37,10 +37,24 @@ jobs:
           podman save ghcr.io/gbraad-dotfiles/fedora:arm64 \
             --format=oci-dir -o oci-arm64
 
+      - name: Run podman export - fedora
+        run: |
+          podman create --name fedora-arm64 \
+            ghcr.io/gbraad-dotfiles/fedora:arm64          
+          podman export fedora-arm64 -o fedora-arm64.tar
+          gzip fedora-arm64.tar
+
       - uses: actions/upload-artifact@v4
         with:
           name: oci-arm64
           path: oci-arm64/
+          retention-days: 7
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: rootfs-arm64
+          path: fedora-arm64.tar.gz
+          retention-days: 7
 
 
   build-container-fedora-amd64:
@@ -68,10 +82,24 @@ jobs:
           podman save ghcr.io/gbraad-dotfiles/fedora:amd64 \
             --format=oci-dir -o oci-amd64
 
+      - name: Run podman export - fedora
+        run: |
+          podman create --name fedora-amd64 \
+            ghcr.io/gbraad-dotfiles/fedora:amd64          
+          podman export fedora-amd64 -o fedora-amd64.tar
+          gzip fedora-amd64.tar
+
       - uses: actions/upload-artifact@v4
         with:
           name: oci-amd64
           path: oci-amd64/
+          retention-days: 7
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: rootfs-amd64
+          path: fedora-amd64.tar.gz
+          retention-days: 7
 
 
   push-manifest:
@@ -87,12 +115,20 @@ jobs:
         with:
           name: oci-arm64
           path: oci-arm64
+      - uses: actions/download-artifact@v4
+        with:
+          name: rootfs-arm64
+          path: rootfs
       - name: Download amd64
         uses: actions/download-artifact@v4
         with:
           name: oci-amd64
           path: oci-amd64
-                
+      - uses: actions/download-artifact@v4
+        with:
+          name: rootfs-amd64
+          path: rootfs
+
       - name: Set release tag
         id: get-tag
         run: |
@@ -118,4 +154,10 @@ jobs:
         run: |
           podman manifest push fedora-manifest docker://ghcr.io/gbraad-dotfiles/fedora:latest
           podman manifest push fedora-manifest docker://ghcr.io/gbraad-dotfiles/fedora:41
-          podman manifest push fedora-manifest docker://ghcr.io/gbraad-dotfiles/fedora:${{steps.get-tag.outputs.TAG}}
+          podman manifest push fedora-manifest docker://ghcr.io/gbraad-dotfiles/fedora:${{ steps.get-tag.outputs.TAG }}
+
+      - name: Upload to release
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: ${{ steps.get-tag.outputs.TAG }}
+          files: rootfs/*.tar.gz
