@@ -1,0 +1,46 @@
+name: build container - fedora-eln
+run-name: Building container - Fedora ELN
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    name: build-container-fedora-eln
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os:
+          - ubuntu-latest
+
+    steps:
+      - name: Check out repository code
+        uses: actions/checkout@v4
+
+      - name: Run podman build - fedora-eln
+        run: |
+          podman build -t ghcr.io/gbraad-dotfiles/fedora-eln:latest \
+            --build-arg=BASE_IMAGE="quay.io/fedora/eln" \
+            --build-arg=BASE_VERSION=latest \
+            -f .devcontainer/fedora/Containerfile .
+
+      - name: Set release tag
+        id: get-tag
+        run: |
+          echo "TAG=$(date +'%y%m%d')" >> $GITHUB_OUTPUT
+
+      - name: Tag container
+        run: |
+          podman tag ghcr.io/gbraad-dotfiles/fedora-eln:latest \
+            ghcr.io/gbraad-dotfiles/fedora-eln:${{steps.get-tag.outputs.TAG}}
+
+      - name: Login to registry
+        run: |
+          podman login ghcr.io -u ${{ github.actor }} \
+            -p ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Push container to registry
+        run: |
+          podman push ghcr.io/gbraad-dotfiles/fedora-eln:latest
+          podman push ghcr.io/gbraad-dotfiles/fedora-eln:${{steps.get-tag.outputs.TAG}}
