@@ -55,7 +55,8 @@ _dotpackageinstall_apt() {
 
   ${CMD_PREFIX}apt-get update
   ${CMD_PREFIX}apt-get install -y \
-    git zsh stow vim tmux fzf jq powerline
+    git zsh stow vim tmux screen fzf jq \
+    powerline
 }
 
 _dotpackageinstall_dnf() {
@@ -64,7 +65,8 @@ _dotpackageinstall_dnf() {
   CMD_PREFIX=$(get_cmd_prefix)
 
   ${CMD_PREFIX}dnf install -y \
-    git-core zsh stow vim tmux fzf jq powerline vim-powerline tmux-powerline
+    git-core zsh stow vim tmux screen fzf jq \
+    powerline vim-powerline tmux-powerline
   # allow first-time system install
 }
 
