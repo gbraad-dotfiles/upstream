@@ -42,11 +42,9 @@ jobs:
         continue-on-error: true
         uses: gbraad-actions/setup-virtualization@v1
 
-      - name: Install podman (optional)
+      - name: Install containers tools (optional)
         continue-on-error: true
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y podman
+        uses: gbraad-actions/setup-container-tools@v1
 
       - name: Hang around
         run: |
