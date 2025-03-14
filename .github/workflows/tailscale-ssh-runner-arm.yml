@@ -38,6 +38,10 @@ jobs:
       - name: Dotfiles
         uses: gbraad-dotfiles/install-dotfiles-action@v1
 
+      - name: Install required virtualization software
+        continue-on-error: true
+        uses: gbraad-actions/setup-virtualization@v1
+
       - name: Install podman (optional)
         continue-on-error: true
         run: |

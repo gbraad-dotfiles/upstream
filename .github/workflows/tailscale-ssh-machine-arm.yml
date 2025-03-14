@@ -49,11 +49,7 @@ jobs:
 
       - name: Install required virtualization software
         continue-on-error: true
-        run: |
-          sudo apt-get update
-          sudo apt install -y \
-            qemu-kvm libvirt-daemon libvirt-daemon-system virtiofsd virt-manager
-          sudo usermod -a -G libvirt $USER
+        uses: gbraad-actions/setup-virtualization@v1
 
       - name: Hang around
         run: |
