@@ -29,3 +29,14 @@ alias flaresys='podman run -d --name=flaresys --hostname $HOSTNAME-flaresys --ne
 alias scalesys=tailsys
 
 alias login-quay='podman login -u gbraad -p $(secrets get quay)'
+
+# OCI registry client
+_install_oras() {
+  VERSION="1.2.0"
+  local TEMP_DIR=$(mktemp -d)
+  curl -fsSL "https://github.com/oras-project/oras/releases/download/v${VERSION}/oras_${VERSION}_linux_amd64.tar.gz" -o ${TEMP_DIR}/oras.tar.gz
+  tar -zxf ${TEMP_DIR}/oras.tar.gz -C ${TEMP_DIR}/
+  mv ${TEMP_DIR}/oras ~/.local/bin/
+  rm -rf ${TEMP_DIR}/
+}
+alias install-oras=_install_oras
