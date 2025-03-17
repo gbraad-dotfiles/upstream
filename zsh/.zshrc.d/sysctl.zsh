@@ -31,3 +31,9 @@ sysctl() {
    systemctl status $(systemctl list-units --type service --no-pager --no-legend | fzf)
 
 }
+
+sysjson() {
+
+   systemctl list-units $1 --all --output=json --no-pager
+
+}
