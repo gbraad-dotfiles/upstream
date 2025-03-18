@@ -153,12 +153,19 @@ jobs:
     runs-on: ubuntu-latest
     needs: trigger-build-container-centos
     steps:
-      - name: Wait for build-container-centos to complete
+      - name: Wait for build-container-centos-amd64 to complete
         uses: lewagon/wait-on-check-action@v1.3.4
         with:
           ref: ${{ github.ref }}
-          repo-token: ${{ secrets.GITHUB_TOKEN }}
-          check-name: 'build-container-centos (ubuntu-latest)'
+          repo-token: ${{ secrets.GITHUB_TOKEN }} 
+          check-name: 'build-container-centos-amd64 (ubuntu-latest)'
+          wait-interval: 10
+      - name: Wait for build-container-centos-arm64 to complete
+        uses: lewagon/wait-on-check-action@v1.3.4
+        with:
+          ref: ${{ github.ref }}
+          repo-token: ${{ secrets.GITHUB_TOKEN }} 
+          check-name: 'build-container-centos-arm64 (ubuntu-24.04-arm)'
           wait-interval: 10
 
   wait-for-build-container-debian:
