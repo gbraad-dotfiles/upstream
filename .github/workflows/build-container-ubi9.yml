@@ -5,8 +5,53 @@ on:
   workflow_dispatch:
 
 jobs:
-  build:
-    name: build-container-ubi9
+  build-arm64:
+    name: build-container-ubi9-arm64
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os:
+          - ubuntu-24.04-arm
+
+    steps:
+      - name: Check out repository code
+        uses: actions/checkout@v4
+
+      - name: Run podman build - ubi9-arm
+        run: |
+          podman build -t ghcr.io/gbraad-dotfiles/ubi9:arm64 \
+            --build-arg=BASE_IMAGE="registry.access.redhat.com/ubi9-init" \
+            --build-arg=BASE_VERSION="9.5" \
+            --build-arg=ARCH="aarch64" \
+            -f .devcontainer/ubi9/Containerfile .
+
+      - name: Run podman save - ubi9-arm
+        run: |
+          podman save ghcr.io/gbraad-dotfiles/ubi9:arm64 \
+            --format=oci-dir -o oci-arm64
+
+      - name: Run podman export - ubi9-arm
+        run: |
+          podman create --name ubi9-arm64 \
+            ghcr.io/gbraad-dotfiles/ubi9:arm64          
+          podman export ubi9-arm64 -o ubi9-arm64.tar
+          gzip ubi9-arm64.tar
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: oci-arm64
+          path: oci-arm64/
+          retention-days: 7
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: rootfs-arm64
+          path: ubi9-arm64.tar.gz
+          retention-days: 7
+
+  build-amd64:
+    name: build-container-ubi9-amd64
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
@@ -20,22 +65,78 @@ jobs:
 
       - name: Run podman build - ubi9
         run: |
-          podman build -t ghcr.io/gbraad-dotfiles/ubi9:latest \
+          podman build -t ghcr.io/gbraad-dotfiles/ubi9:amd64 \
             --build-arg=BASE_IMAGE="registry.access.redhat.com/ubi9-init" \
             --build-arg=BASE_VERSION="9.5" \
             -f .devcontainer/ubi9/Containerfile .
+
+      - name: Run podman save - ubi9
+        run: |
+          podman save ghcr.io/gbraad-dotfiles/ubi9:amd64 \
+            --format=oci-dir -o oci-amd64
+
+      - name: Run podman export - ubi9
+        run: |
+          podman create --name ubi9-amd64 \
+            ghcr.io/gbraad-dotfiles/ubi9:amd64          
+          podman export ubi9-amd64 -o ubi9-amd64.tar
+          gzip ubi9-amd64.tar
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: oci-amd64
+          path: oci-amd64/
+          retention-days: 7
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: rootfs-amd64
+          path: ubi9-amd64.tar.gz
+          retention-days: 7
+
+
+  push-manifest:
+    name: build-container-ubi9
+    needs: 
+      - build-arm64
+      - build-amd64
+    runs-on: ubuntu-24.04
+
+    steps:
+      - name: Download arm64
+        uses: actions/download-artifact@v4
+        with:
+          name: oci-arm64
+          path: oci-arm64
+      - uses: actions/download-artifact@v4
+        with:
+          name: rootfs-arm64
+          path: rootfs
+      - name: Download amd64
+        uses: actions/download-artifact@v4
+        with:
+          name: oci-amd64
+          path: oci-amd64
+      - uses: actions/download-artifact@v4
+        with:
+          name: rootfs-amd64
+          path: rootfs
 
       - name: Set release tag
         id: get-tag
         run: |
           echo "TAG=$(date +'%y%m%d')" >> $GITHUB_OUTPUT
 
-      - name: Tag container
+      - name: Create manifest
         run: |
-          podman tag ghcr.io/gbraad-dotfiles/ubi9:latest \
-            ghcr.io/gbraad-dotfiles/ubi9:9.5
-          podman tag ghcr.io/gbraad-dotfiles/ubi9:latest \
-            ghcr.io/gbraad-dotfiles/ubi9:${{steps.get-tag.outputs.TAG}}
+          podman manifest create ubi-manifest
+
+      - name: Add arm64 to manifest
+        run: |
+          podman manifest add ubi-manifest oci:$(pwd)/oci-arm64
+      - name: Add amd64 to manifest
+        run: |
+          podman manifest add ubi-manifest oci:$(pwd)/oci-amd64
 
       - name: Login to registry
         run: |
@@ -44,6 +145,12 @@ jobs:
 
       - name: Push container to registry
         run: |
-          podman push ghcr.io/gbraad-dotfiles/ubi9:latest
-          podman push ghcr.io/gbraad-dotfiles/ubi9:9.5
-          podman push ghcr.io/gbraad-dotfiles/ubi9:${{steps.get-tag.outputs.TAG}}
+          podman manifest push ubi-manifest docker://ghcr.io/gbraad-dotfiles/ubi9:latest
+          podman manifest push ubi-manifest docker://ghcr.io/gbraad-dotfiles/ubi9:9.5
+          podman manifest push ubi-manifest docker://ghcr.io/gbraad-dotfiles/ubi9:${{steps.get-tag.outputs.TAG}}
+
+      - name: Upload to release
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: ${{ steps.get-tag.outputs.TAG }}
+          files: rootfs/*.tar.gz
