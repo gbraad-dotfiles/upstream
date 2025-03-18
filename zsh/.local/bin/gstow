@@ -1,0 +1,202 @@
+#!/bin/bash
+
+# A simple replacement for GNU stow
+# Usage: ./simple-stow.sh [-D|--delete] [-R|--restow] [--target=DIR] PACKAGE...
+
+set -e
+
+function usage() {
+  echo "Usage: $0 [-D|--delete] [-R|--restow] [--target=DIR] PACKAGE..."
+  echo
+  echo "Options:"
+  echo "  -D, --delete      Delete (unstow) the package"
+  echo "  -R, --restow      Restow (first unstow, then stow again)"
+  echo "  --target=DIR      Set the target directory (default: parent of current directory)"
+  echo
+  echo "Example: $0 vim            # Stow vim package to parent directory"
+  echo "Example: $0 -D vim         # Unstow vim package"
+  echo "Example: $0 -R vim         # Restow vim package"
+  echo "Example: $0 --target=~/.config vim  # Stow vim package to ~/.config"
+  exit 1
+}
+
+# Default options
+DELETE=false
+RESTOW=false
+TARGET_DIR=""
+
+# Parse arguments
+PACKAGES=()
+while [[ $# -gt 0 ]]; do
+  case $1 in
+    -D|--delete)
+      DELETE=true
+      shift
+      ;;
+    -R|--restow)
+      RESTOW=true
+      shift
+      ;;
+    --target=*)
+      TARGET_DIR="${1#*=}"
+      shift
+      ;;
+    -h|--help)
+      usage
+      ;;
+    -*)
+      echo "Unknown option: $1"
+      usage
+      ;;
+    *)
+      PACKAGES+=("$1")
+      shift
+      ;;
+  esac
+done
+
+if [ ${#PACKAGES[@]} -eq 0 ]; then
+  echo "Error: No packages specified"
+  usage
+fi
+
+# Set the stow directory (where we are now) and default target (parent directory)
+STOW_DIR=$(pwd)
+if [ -z "$TARGET_DIR" ]; then
+  TARGET_DIR=$(dirname "$STOW_DIR")
+fi
+TARGET_DIR=$(realpath "$TARGET_DIR")
+
+echo "Stow directory: $STOW_DIR"
+echo "Target directory: $TARGET_DIR"
+
+function find_path_in_target() {
+  local source_path=$1
+  local target_path=$2
+  local source_dirname=$(dirname "$source_path")
+  local target_dirname=$(dirname "$target_path")
+  local basename=$(basename "$source_path")
+
+  # If target parent directory doesn't exist, check if we should create a symlink to the source parent
+  if [ ! -e "$target_dirname" ]; then
+    local rel_source_dirname="${source_dirname#$STOW_DIR/*/}"
+    local parent_source_dirname="${source_dirname%/$rel_source_dirname}"
+    local parent_target_dirname="${target_dirname%/$rel_source_dirname}"
+    
+    if [ -d "$parent_source_dirname" ] && [ -d "$parent_target_dirname" ]; then
+      # We can create a symlink at a higher level
+      find_path_in_target "$parent_source_dirname" "$parent_target_dirname"
+      return
+    fi
+    
+    # We need to create the directory
+    mkdir -p "$target_dirname"
+    echo "Created directory: $target_dirname"
+  fi
+
+  # If target already exists and is a directory, descend into it
+  if [ -d "$target_path" ] && [ ! -L "$target_path" ]; then
+    return
+  fi
+
+  # Create the symlink
+  if [ -e "$target_path" ] && [ ! -L "$target_path" ]; then
+    echo "Warning: $target_path already exists and is not a symlink. Skipping."
+  else
+    ln -sf "$source_path" "$target_path"
+    echo "Linked: $source_path -> $target_path"
+  fi
+}
+
+function stow_package() {
+  local pkg_name=$1
+  local pkg_dir="$STOW_DIR/$pkg_name"
+  
+  echo "Stowing $pkg_name from $pkg_dir to $TARGET_DIR"
+  
+  # First pass - handle files
+  find "$pkg_dir" -type f -o -type l | while read file; do
+    rel_path="${file#$pkg_dir/}"
+    target_file="$TARGET_DIR/$rel_path"
+    
+    if [ -d "$(dirname "$target_file")" ] && [ ! -L "$(dirname "$target_file")" ]; then
+      # Target directory exists, create a symlink to the file
+      if [ -e "$target_file" ] && [ ! -L "$target_file" ]; then
+        echo "Warning: $target_file already exists and is not a symlink. Skipping."
+      else
+        ln -sf "$file" "$target_file"
+        echo "Linked file: $file -> $target_file"
+      fi
+    else
+      # Check if we can create a symlink to a parent directory
+      find_path_in_target "$file" "$target_file"
+    fi
+  done
+  
+  # Second pass - handle empty directories
+  find "$pkg_dir" -type d -empty | while read dir; do
+    rel_path="${dir#$pkg_dir/}"
+    target_dir="$TARGET_DIR/$rel_path"
+    
+    # Only create empty directories if they don't exist
+    if [ ! -e "$target_dir" ]; then
+      mkdir -p "$target_dir"
+      echo "Created empty directory: $target_dir"
+    fi
+  done
+}
+
+function unstow_package() {
+  local pkg_name=$1
+  local pkg_dir="$STOW_DIR/$pkg_name"
+  
+  echo "Unstowing $pkg_name from $TARGET_DIR"
+  
+  # Find all symlinks in the target that point to the package
+  find "$pkg_dir" -type f -o -type l | while read file; do
+    rel_path="${file#$pkg_dir/}"
+    target_file="$TARGET_DIR/$rel_path"
+    
+    # Remove symlink if it exists and points to our file
+    if [ -L "$target_file" ]; then
+      link_target=$(readlink "$target_file")
+      if [ "$link_target" == "$file" ]; then
+        rm "$target_file"
+        echo "Removed link: $target_file"
+        
+        # Remove empty parent directories
+        target_dir=$(dirname "$target_file")
+        while [ "$target_dir" != "$TARGET_DIR" ] && [ -d "$target_dir" ] && [ -z "$(ls -A "$target_dir")" ]; do
+          rmdir "$target_dir"
+          echo "Removed empty directory: $target_dir"
+          target_dir=$(dirname "$target_dir")
+        done
+      fi
+    fi
+  done
+  
+  # Also check for and remove directory symlinks
+  find "$TARGET_DIR" -type l | while read link; do
+    if [[ "$(readlink "$link")" == "$pkg_dir"* ]]; then
+      rm "$link"
+      echo "Removed directory link: $link"
+    fi
+  done
+}
+
+for package in "${PACKAGES[@]}"; do
+  if [ ! -d "$STOW_DIR/$package" ]; then
+    echo "Error: Package directory $STOW_DIR/$package does not exist"
+    continue
+  fi
+  
+  if [ "$RESTOW" = true ]; then
+    unstow_package "$package"
+    stow_package "$package"
+  elif [ "$DELETE" = true ]; then
+    unstow_package "$package"
+  else
+    stow_package "$package"
+  fi
+done
+
