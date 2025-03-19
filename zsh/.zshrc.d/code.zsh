@@ -1,5 +1,8 @@
 #!/bin/zsh
 
+# Allow code to run unnagged in WSL
+export DONT_PROMPT_WSL_INSTALL=1
+
 CONFIG="${HOME}/.config/dotfiles/code"
 alias codeini="git config -f $CONFIG"
 
