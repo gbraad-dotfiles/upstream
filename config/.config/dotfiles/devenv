@@ -38,4 +38,5 @@
 	cardforge  = 	ghcr.io/gbraad-gaming/cardforge:latest
 	steam = 	ghcr.io/gbraad-gaming/steam:latest
 	steamcmd = 	ghcr.io/gbraad-gaming/steamcmd:latest
-
+	actfedora = 	ghcr.io/gbraad-actions/fedora:stable
+	actcentos =	ghcr.io/gbraad-actions/centos:stable
