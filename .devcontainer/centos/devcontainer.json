@@ -10,7 +10,8 @@
     "customizations": {
         "vscode": {
             "extensions": [
-                "ms-vscode.Theme-TomorrowKit"
+                "ms-vscode.Theme-TomorrowKit",
+                "gbraad.systemd-universal-manager"
             ]
         }
     }
