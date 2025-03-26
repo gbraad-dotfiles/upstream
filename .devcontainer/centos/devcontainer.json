@@ -11,6 +11,7 @@
         "vscode": {
             "extensions": [
                 "ms-vscode.Theme-TomorrowKit",
+		"gbraad.dotfiles-checker",
                 "gbraad.systemd-universal-manager"
             ]
         }
