@@ -46,6 +46,16 @@ _installcode() {
     rm -f ${tempfile}
 }
 
+_installcodesystemduser() {
+    mkdir -p ~/.config/systemd/user/
+    #https://github.com/gbraad-vscode/code-systemd/blob/main/README.md
+    curl -fsSL  https://raw.githubusercontent.com/gbraad-vscode/codecli-systemd/refs/heads/main/user/code-serveweb.service \
+        -o ~/.config/systemd/user/code-serveweb.service
+    curl -fsSL  https://raw.githubusercontent.com/gbraad-vscode/codecli-systemd/refs/heads/main/user/code-tunnel.service   \
+        -o ~/.config/systemd/user/code-tunnel.service
+    systemctl --user daemon-reload
+}
+
 _startcodetunnel() {
     if ! _codeexists; then
         _installcode
@@ -70,6 +80,7 @@ _startcodeserveweb() {
 }
 
 alias install-code="_installcode"
+alias install-code-systemd-user="_installcodesystemduser"
 alias start-code-tunnel="_startcodetunnel"
 alias start-code-serveweb="_startcodeserveweb"
 
