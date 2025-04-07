@@ -1,0 +1,18 @@
+{
+    "name": "Alpine dotfiles environment",
+    "image": "ghcr.io/gbraad-dotfiles/alpine:latest",
+
+    "runArgs": [ "--cap-add=NET_ADMIN", "--cap-add=NET_RAW", "--device=/dev/net/tun", "--device=/dev/fuse"],
+    "overrideCommand": false,
+    "privileged": true,
+    "remoteUser": "gbraad",
+
+    "customizations": {
+        "vscode": {
+            "extensions": [
+                "ms-vscode.Theme-TomorrowKit",
+		        "gbraad.dotfiles-checker"
+            ]
+        }
+    }
+}

@@ -1,0 +1,65 @@
+ARG BASE_IMAGE="alpine"
+ARG BASE_VERSION="3.21"
+
+FROM ${BASE_IMAGE}:${BASE_VERSION}
+
+ARG USER="gbraad"
+ARG HOMEBASE="/home"
+ARG USERHOME="${HOMEBASE}/${USER}"
+ARG ROOTHOME="/root"
+ARG ARCH="x86_64"
+
+RUN apk add --update --no-cache \
+        openrc \
+        bash \
+        git \
+        sudo \
+        openssh-client \
+        openssh-server \
+        curl \
+        stow \
+        zsh \
+        screen \
+        tmux \
+        vim \
+        shadow \
+    && sed -i 's/^\(tty\d\:\:\)/#\1/g' /etc/inittab \
+    && rm -f /etc/init.d/hwdrivers \
+        /etc/init.d/hwclock \
+        /etc/init.d/hwdrivers
+
+# Add user with the expected ID (automated setup does not work atm)
+RUN echo '%wheel ALL=(ALL) NOPASSWD: ALL' > /etc/sudoers.d/wheel \
+    && adduser -u 1000 -G wheel -h ${USERHOME} -s /bin/zsh -D ${USER}
+
+USER ${USER}
+
+RUN git clone https://github.com/gbraad-dotfiles/upstream.git ${USERHOME}/.dotfiles --depth 2 \
+    && cd ${USERHOME}/.dotfiles \
+    && sh ./install.sh
+
+USER root
+
+RUN git clone https://github.com/gbraad-dotfiles/upstream.git ${ROOTHOME}/.dotfiles --depth 2 \
+    && cd ${ROOTHOME}/.dotfiles \
+    && . ./zsh/.zshrc.d/dotfiles.zsh \
+    && stow config \
+    && dotfiles restow
+
+RUN chsh -s /usr/bin/zsh ${USER} \
+    && chsh -s /usr/bin/zsh
+
+# Enable powerline
+RUN apk add --no-cache \
+        python3 \
+        py3-pip \
+    && pip install --break-system-packages git+https://github.com/powerline/powerline \
+    && mkdir -p /usr/share/tmux \
+    && ln -s /usr/lib/python3.12/site-packages/powerline/bindings/tmux/powerline.conf /usr/share/tmux/powerline.conf \
+    && mkdir -p  /usr/share/powerline/zsh \
+    && ln -s /usr/lib/python3.12/site-packages/powerline/bindings/zsh/powerline.zsh /usr/share/powerline/zsh/powerline.zsh
+
+RUN apk add --no-cache \
+    tailscale
+
+ENTRYPOINT ["/sbin/init"]
