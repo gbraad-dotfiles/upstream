@@ -27,23 +27,26 @@ RUN userdel -r "vscode" 2>/dev/null || true \
 
 USER ${USER}
 
-RUN git clone https://github.com/gbraad-dotfiles/upstream.git ${USERHOME}/.dotfiles --depth 2 \
-    && cd ${USERHOME}/.dotfiles \
-    && bash ./install.sh
+# Moved to devcontainer feature
+#RUN git clone https://github.com/gbraad-dotfiles/upstream.git ${USERHOME}/.dotfiles --depth 2 \
+#    && cd ${USERHOME}/.dotfiles \
+#    && bash ./install.sh
 
 RUN mkdir -p ~/.ssh/ \
     && curl https://github.com/${USER}.keys | tee -a ~/.ssh/authorized_keys
 
 USER root
 
-RUN git clone https://github.com/gbraad-dotfiles/upstream.git ${ROOTHOME}/.dotfiles --depth 2 \
-    && cd ${ROOTHOME}/.dotfiles \
-    && . ./zsh/.zshrc.d/dotfiles.zsh \
-    && stow config \
-    && dotfiles restow
+# Moved to devcontainer feature
+#RUN git clone https://github.com/gbraad-dotfiles/upstream.git ${ROOTHOME}/.dotfiles --depth 2 \
+#    && cd ${ROOTHOME}/.dotfiles \
+#    && . ./zsh/.zshrc.d/dotfiles.zsh \
+#    && stow config \
+#    && dotfiles restow
 
-RUN chsh -s /usr/bin/zsh ${USER} \
-    && chsh -s /usr/bin/zsh
+# Moved to devcontainer feature
+#RUN chsh -s /usr/bin/zsh ${USER} \
+#    && chsh -s /usr/bin/zsh
 
 # install tailscale (or use https://github.com/spotsnel/tailscale-systemd/)
 RUN curl -fsSL https://pkgs.tailscale.com/stable/ubuntu/noble.noarmor.gpg -o /usr/share/keyrings/tailscale-archive-keyring.gpg \

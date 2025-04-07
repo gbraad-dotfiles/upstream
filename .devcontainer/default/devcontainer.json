@@ -10,6 +10,10 @@
     "privileged": true,
     "remoteUser": "gbraad",
 
+     "features": {
+        "ghcr.io/gbraad-vscode/devcontainer-features/dotfiles:latest": {}
+    },
+
     "customizations": {
         "vscode": {
             "extensions": [
