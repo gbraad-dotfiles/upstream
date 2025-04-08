@@ -26,7 +26,8 @@ RUN apk add --update --no-cache \
     && sed -i 's/^\(tty\d\:\:\)/#\1/g' /etc/inittab \
     && rm -f /etc/init.d/hwdrivers \
         /etc/init.d/hwclock \
-        /etc/init.d/hwdrivers
+        /etc/init.d/hwdrivers \
+    && echo 'rc_need="!dev !net"' >> /etc/rc.conf
 
 # Add user with the expected ID (automated setup does not work atm)
 RUN echo '%wheel ALL=(ALL) NOPASSWD: ALL' > /etc/sudoers.d/wheel \
