@@ -80,6 +80,21 @@ jobs:
               ref: context.ref,
             });
 
+  trigger-build-container-alpine:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Start Alpine container build
+        uses: actions/github-script@v7
+        with:
+          script: |
+            await github.rest.actions.createWorkflowDispatch({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              workflow_id: 'build-container-alpine.yml',
+              ref: context.ref,
+            });
+
+
   trigger-build-container-ubuntu:
     runs-on: ubuntu-latest
     steps:
@@ -232,6 +247,25 @@ jobs:
           check-name: 'build-container-ubi9-arm64 (ubuntu-24.04-arm)'
           wait-interval: 10
 
+  wait-for-build-container-alpine:
+    runs-on: ubuntu-latest
+    needs: trigger-build-container-alpine
+    steps:
+      - name: Wait for build-container-alpine-amd64 to complete
+        uses: lewagon/wait-on-check-action@v1.3.4
+        with:
+          ref: ${{ github.ref }}
+          repo-token: ${{ secrets.GITHUB_TOKEN }} 
+          check-name: 'build-container-alpine-amd64 (ubuntu-latest)'
+          wait-interval: 10
+      - name: Wait for build-container-alpine-arm64 to complete
+        uses: lewagon/wait-on-check-action@v1.3.4
+        with:
+          ref: ${{ github.ref }}
+          repo-token: ${{ secrets.GITHUB_TOKEN }} 
+          check-name: 'build-container-alpine-arm64 (ubuntu-24.04-arm)'
+          wait-interval: 10
+
   wait-for-build-container-ubuntu:
     runs-on: ubuntu-latest
     needs: trigger-build-container-ubuntu
@@ -296,6 +330,7 @@ jobs:
       - wait-for-build-container-debian
       - wait-for-build-container-fedora
       - wait-for-build-container-ubi9
+      - wait-for-build-container-alpine
       - wait-for-build-container-ubuntu
       - wait-for-build-container-almalinux-bootc
       - wait-for-build-container-centos-bootc
