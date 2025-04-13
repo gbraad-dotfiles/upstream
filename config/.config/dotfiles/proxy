@@ -4,6 +4,7 @@
 [servers]
 	ncognito = http://10.0.21.120:3214
 	ndisguise = http://10.0.21.240:3214
+	ndisguise-socks = socks5://10.0.21.240:3215
 	ncognito-dmz = http://192.168.1.120:3214
 	ndisguise-dmz = http://192.168.1.240:3214
 	ncognito-tailscale = http://100.64.21.120:3214
