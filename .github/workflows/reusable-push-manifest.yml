@@ -7,33 +7,35 @@ on:
         description: "Name of the container (e.g., fedora, ubi9, debian)"
         required: true
         type: string
-      archs:
-        description: "Comma-separated list of architectures as JSON array (e.g., [\"arm64\",\"amd64\"])"
-        required: true
-        type: string
 
 jobs:
   prepare-and-push-manifest:
     name: Prepare and Push Multi-Architecture Manifest
-    strategy:
-      matrix:
-        arch: ${{ fromJson(inputs.archs) }}
 
     runs-on: ubuntu-latest
 
     steps:
-      - name: Download OCI artifact for ${{ matrix.arch }}
+      - name: Download OCI artifacts for arm64
         uses: actions/download-artifact@v4
         with:
-          name: oci-${{ matrix.arch }}
-          path: oci-${{ matrix.arch }}
-
-      - name: Download rootfs artifact for ${{ matrix.arch }}
+          name: oci-arm64
+          path: oci-arm64
+      - name: Download OCI artifacts for arm64
         uses: actions/download-artifact@v4
         with:
-          name: rootfs-${{ matrix.arch }}
-          path: rootfs-${{ matrix.arch }}
-
+          name: rootfs-arm64
+          path: rootfs
+          
+      - name: Download rootfs artifacts for amd64
+        uses: actions/download-artifact@v4
+        with:
+          name: oci-amd64
+          path: oci-amd64
+      - name: Download rootfs artifacts for amd64
+        uses: actions/download-artifact@v4
+        with:
+          name: rootfs-amd64
+          path: rootfs
 
       - name: Fetch shared configuration
         uses: gbraad-actions/shared-config@v1
@@ -57,12 +59,13 @@ jobs:
           # Create the manifest
           podman manifest create ${{ inputs.container_name }}-manifest
 
-          # Add each architecture's OCI artifact to the manifest
-          ARCHS=$(echo '${{ inputs.archs }}' | jq -r '.[]')
-          for ARCH in $ARCHS; do
-            echo "Adding OCI artifact for architecture: $ARCH"
-            podman manifest add ${{ inputs.container_name }}-manifest oci-$ARCH
-          done
+          # Add OCI artifacts for arm64
+          echo "Adding OCI artifact for architecture: arm64"
+          podman manifest add ${{ inputs.container_name }}-manifest oci-arm64
+
+          # Add OCI artifacts for amd64
+          echo "Adding OCI artifact for architecture: amd64"
+          podman manifest add ${{ inputs.container_name }}-manifest oci-amd64
 
           # Push the manifest with multiple tags
           echo "Pushing manifest with tags: latest, version-specific, and date-based"

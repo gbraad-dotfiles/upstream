@@ -28,5 +28,4 @@ jobs:
       - build-amd64
     with:
       container_name: "ubi9"
-      archs: "arm64,amd64"
     secrets: inherit

@@ -28,5 +28,4 @@ jobs:
       - build-amd64
     with:
       container_name: "fedora"
-      archs: '["arm64","amd64"]'
     secrets: inherit
