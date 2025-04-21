@@ -15,9 +15,6 @@ on:
         description: "Version of the container (e.g., 41, 9.5, latest)"
         required: true
         type: string
-    secrets:
-      GITHUB_TOKEN:
-        description: "GitHub token for authentication"
 
 jobs:
   prepare-artifacts:

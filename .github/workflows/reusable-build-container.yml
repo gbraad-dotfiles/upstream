@@ -11,9 +11,6 @@ on:
         description: "Architecture for the container (e.g., arm64, amd64)"
         required: true
         type: string
-    secrets:
-      GITHUB_TOKEN:
-        description: "GitHub token for authentication"
 
 jobs:
   build:
