@@ -63,7 +63,8 @@ jobs:
           podman manifest create ${{ inputs.container_name }}-manifest
 
           # Add each architecture's OCI artifact to the manifest
-          for ARCH in ${{ fromJson(inputs.archs) }}; do
+          ARCHS=$(echo '${{ inputs.archs }}' | jq -r '.[]')
+          for ARCH in $ARCHS; do
             echo "Adding OCI artifact for architecture: $ARCH"
             podman manifest add ${{ inputs.container_name }}-manifest oci-$ARCH
           done
