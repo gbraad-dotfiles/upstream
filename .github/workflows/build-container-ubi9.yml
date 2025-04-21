@@ -6,7 +6,7 @@ on:
 jobs:
   build-arm64:
     name: Build UBI9 Container (arm64)
-    uses: ./.github/workflows/reusable/build-container.yml
+    uses: ./.github/workflows/reusable-build-container.yml
     with:
       container_name: "ubi9"
       arch: "arm64"
@@ -14,7 +14,7 @@ jobs:
 
   build-amd64:
     name: Build UBI9 Container (amd64)
-    uses: ./.github/workflows/reusable/build-container.yml
+    uses: ./.github/workflows/reusable-build-container.yml
     with:
       container_name: "ubi9"
       arch: "amd64"
@@ -22,7 +22,7 @@ jobs:
 
   push-manifest:
     name: Push Multi-Architecture Manifest
-    uses: ./.github/workflows/reusable/push-manifest.yml
+    uses: ./.github/workflows/reusable-push-manifest.yml
     needs:
       - build-arm64
       - build-amd64
