@@ -7,6 +7,14 @@ on:
         description: "Name of the container (e.g., fedora, ubi9, debian)"
         required: true
         type: string
+      base_version:
+        description: "Base version identifier"
+        required: true
+        type: string
+      release_tag:
+        description: "Release version identifier"
+        required: true
+        type: string
 
 jobs:
   prepare-and-push-manifest:
@@ -68,8 +76,8 @@ jobs:
           # Push the manifest with multiple tags
           echo "Pushing manifest with tags: latest, version-specific, and date-based"
           podman manifest push ${{ inputs.container_name }}-manifest docker://ghcr.io/${{ github.repository }}/${{ inputs.container_name }}:latest
-          podman manifest push ${{ inputs.container_name }}-manifest docker://ghcr.io/${{ github.repository }}/${{ inputs.container_name }}:${{ env.BASE_VERSION }}
-          podman manifest push ${{ inputs.container_name }}-manifest docker://ghcr.io/${{ github.repository }}/${{ inputs.container_name }}:${{ steps.get-tag.outputs.TAG }}
+          podman manifest push ${{ inputs.container_name }}-manifest docker://ghcr.io/${{ github.repository }}/${{ inputs.container_name }}:${{ inputs.base_version }}
+          podman manifest push ${{ inputs.container_name }}-manifest docker://ghcr.io/${{ github.repository }}/${{ inputs.container_name }}:${{ inputs.release_tag }}
 
       - name: Upload to release
         uses: softprops/action-gh-release@v1

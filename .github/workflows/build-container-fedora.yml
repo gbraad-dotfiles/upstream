@@ -4,28 +4,59 @@ on:
   workflow_dispatch:
 
 jobs:
+  shared-config:
+    name: Fetch Shared Configuration
+    runs-on: ubuntu-latest
+    outputs:
+      container_name: "fedora"
+      base_image: ${{ steps.config.outputs.base_image }}
+      base_version: ${{ steps.config.outputs.base_version }}
+      bootc_image: ${{ steps.config.outputs.bootc_image }}
+      release_tag: ${{ steps.release.outputs.tag }}
+    steps:
+      - name: Fetch configuration and use output
+        id: config
+        uses: gbraad-actions/shared-config@v2
+        with:
+          config_repo: https://github.com/gbraad-dotfiles/shared-config.git
+          config_file: containers/fedora.ini
+          use_output: true
+      - name: Set release tag
+        id: release
+        run: |
+          echo "tag=$(date +'%y%m%d')" >> $GITHUB_OUTPUT
+
   build-arm64:
+    needs: shared-config
     name: build-container-fedora-arm64
     uses: ./.github/workflows/reusable-build-container.yml
     with:
-      container_name: "fedora"
+      container_name: ${{ needs.shared-config.outputs.container_name }}
+      base_image: ${{ needs.shared-config.outputs.base_image }}
+      base_version: ${{ needs.shared-config.outputs.base_version }}
       arch: "arm64"
     secrets: inherit
 
   build-amd64:
+    needs: shared-config
     name: build-container-fedora-amd64
     uses: ./.github/workflows/reusable-build-container.yml
     with:
-      container_name: "fedora"
+      container_name: ${{ needs.shared-config.outputs.container_name }}
+      base_image: ${{ needs.shared-config.outputs.base_image }}
+      base_version: ${{ needs.shared-config.outputs.base_version }}
       arch: "amd64"
     secrets: inherit
 
   push-manifest:
-    name: build-container-fedora
-    uses: ./.github/workflows/reusable-push-manifest.yml
     needs:
+      - shared-config
       - build-arm64
       - build-amd64
+    name: build-container-fedora
+    uses: ./.github/workflows/reusable-push-manifest.yml
     with:
-      container_name: "fedora"
+      container_name: ${{ needs.shared-config.outputs.container_name }}
+      base_version: ${{ needs.shared-config.outputs.base_version }}
+      release_tag: ${{ needs.shared-config.outputs.release_tag }}
     secrets: inherit

@@ -11,6 +11,14 @@ on:
         description: "Architecture for the container (e.g., arm64, amd64)"
         required: true
         type: string
+      base_image:
+        description: "Base image identifier"
+        required: true
+        type: string
+      base_version:
+        description: "Base version identifier"
+        required: true
+        type: string
 
 jobs:
   build:
@@ -21,17 +29,11 @@ jobs:
       - name: Check out repository code
         uses: actions/checkout@v4
 
-      - name: Fetch shared configuration
-        uses: gbraad-actions/shared-config@v1
-        with:
-          config_repo: https://github.com/gbraad-dotfiles/shared-config.git
-          config_file: containers/${{ inputs.container_name }}.ini
-
       - name: Build container
         run: |
           podman build -t ghcr.io/${{ github.repository }}/${{ inputs.container_name }}:${{ inputs.arch }} \
-            --build-arg=BASE_IMAGE="${{ env.BASE_IMAGE }}" \
-            --build-arg=BASE_VERSION="${{ env.BASE_VERSION }}" \
+            --build-arg=BASE_IMAGE="${{ inputs.base_image }}" \
+            --build-arg=BASE_VERSION="${{ inputs.base_version }}" \
             --build-arg=ARCH="${{ inputs.arch }}" \
             -f .devcontainer/${{ inputs.container_name }}/Containerfile
 
