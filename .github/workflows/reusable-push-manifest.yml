@@ -11,10 +11,6 @@ on:
         description: "Comma-separated list of architectures as JSON array (e.g., [\"arm64\",\"amd64\"])"
         required: true
         type: string
-      version:
-        description: "Version of the container (e.g., 41, 9.5, latest)"
-        required: true
-        type: string
 
 jobs:
   prepare-artifacts:
@@ -44,6 +40,12 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      - name: Fetch shared configuration
+        uses: gbraad-actions/shared-config@v1
+        with:
+          config_repo: https://github.com/gbraad-dotfiles/shared-config.git
+          config_file: actions/${{ inputs.container_name }}.ini
+
       - name: Login to container registry
         run: |
           podman login ghcr.io -u ${{ github.actor }} -p ${{ secrets.GITHUB_TOKEN }}
@@ -69,7 +71,7 @@ jobs:
           # Push the manifest with multiple tags
           echo "Pushing manifest with tags: latest, version-specific, and date-based"
           podman manifest push ${{ inputs.container_name }}-manifest docker://ghcr.io/${{ github.repository }}/${{ inputs.container_name }}:latest
-          podman manifest push ${{ inputs.container_name }}-manifest docker://ghcr.io/${{ github.repository }}/${{ inputs.container_name }}:${{ inputs.version }}
+          podman manifest push ${{ inputs.container_name }}-manifest docker://ghcr.io/${{ github.repository }}/${{ inputs.container_name }}:${{ env.BASE_VERSION }}
           podman manifest push ${{ inputs.container_name }}-manifest docker://ghcr.io/${{ github.repository }}/${{ inputs.container_name }}:${{ env.TAG }}
 
       - name: Upload to release
