@@ -1,0 +1,82 @@
+name: reusable-push-manifest
+
+on:
+  workflow_call:
+    inputs:
+      container_name:
+        description: "Name of the container (e.g., fedora, ubi9, debian)"
+        required: true
+        type: string
+      archs:
+        description: "Comma-separated list of architectures as JSON array (e.g., [\"arm64\",\"amd64\"])"
+        required: true
+        type: string
+      version:
+        description: "Version of the container (e.g., 41, 9.5, latest)"
+        required: true
+        type: string
+    secrets:
+      GITHUB_TOKEN:
+        description: "GitHub token for authentication"
+
+jobs:
+  prepare-artifacts:
+    name: Prepare OCI Artifacts
+    strategy:
+      matrix:
+        arch: ${{ fromJson(inputs.archs) }}
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Download OCI artifact for ${{ matrix.arch }}
+        uses: actions/download-artifact@v4
+        with:
+          name: oci-${{ matrix.arch }}
+          path: oci-${{ matrix.arch }}
+
+      - name: Download rootfs artifact for ${{ matrix.arch }}
+        uses: actions/download-artifact@v4
+        with:
+          name: rootfs-${{ matrix.arch }}
+          path: rootfs/
+
+  push-manifest:
+    name: Push Multi-Architecture Manifest
+    needs: prepare-artifacts
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Login to container registry
+        run: |
+          podman login ghcr.io -u ${{ github.actor }} -p ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Generate dynamic TAG
+        id: get-tag
+        run: |
+          TAG=$(date +%Y%m%d)
+          echo "TAG=$TAG" >> $GITHUB_ENV
+          echo "TAG=$TAG" >> $GITHUB_OUTPUT
+
+      - name: Create and push multi-architecture manifest
+        run: |
+          # Create the manifest
+          podman manifest create ${{ inputs.container_name }}-manifest
+
+          # Add each architecture's OCI artifact to the manifest
+          for ARCH in ${{ fromJson(inputs.archs) }}; do
+            echo "Adding OCI artifact for architecture: $ARCH"
+            podman manifest add ${{ inputs.container_name }}-manifest oci-$ARCH
+          done
+
+          # Push the manifest with multiple tags
+          echo "Pushing manifest with tags: latest, version-specific, and date-based"
+          podman manifest push ${{ inputs.container_name }}-manifest docker://ghcr.io/${{ github.repository }}/${{ inputs.container_name }}:latest
+          podman manifest push ${{ inputs.container_name }}-manifest docker://ghcr.io/${{ github.repository }}/${{ inputs.container_name }}:${{ inputs.version }}
+          podman manifest push ${{ inputs.container_name }}-manifest docker://ghcr.io/${{ github.repository }}/${{ inputs.container_name }}:${{ env.TAG }}
+
+      - name: Upload to release
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: ${{ steps.get-tag.outputs.TAG }}
+          files: rootfs/*.tar.gz
