@@ -29,5 +29,4 @@ jobs:
     with:
       container_name: "fedora"
       archs: '["arm64","amd64"]'
-      version: "41"
     secrets: inherit
