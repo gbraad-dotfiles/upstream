@@ -65,6 +65,7 @@ RUN dnf config-manager addrepo --from-repofile=https://pkgs.tailscale.com/stable
 # install cloudflared (or use https://github.com/spotsnel/cloudflared-systemd/)
 RUN dnf install -y \
         systemd \
+    && ARCH=$( [ "$ARCH" = "amd64" ] && echo "x86_64" || ( [ "$ARCH" = "arm64" ] && echo "aarch64" ) ) \
     && curl -fsSL https://github.com/cloudflare/cloudflared/releases/latest/download/cloudflared-linux-${ARCH}.rpm -o /tmp/cloudflared.rpm \
     && dnf install -y \
         /tmp/cloudflared.rpm \
