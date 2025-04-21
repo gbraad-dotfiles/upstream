@@ -13,8 +13,8 @@ on:
         type: string
 
 jobs:
-  prepare-artifacts:
-    name: Prepare OCI Artifacts
+  prepare-and-push-manifest:
+    name: Prepare and Push Multi-Architecture Manifest
     strategy:
       matrix:
         arch: ${{ fromJson(inputs.archs) }}
@@ -32,14 +32,9 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: rootfs-${{ matrix.arch }}
-          path: rootfs/
+          path: rootfs-${{ matrix.arch }}
 
-  push-manifest:
-    name: Push Multi-Architecture Manifest
-    needs: prepare-artifacts
-    runs-on: ubuntu-latest
 
-    steps:
       - name: Fetch shared configuration
         uses: gbraad-actions/shared-config@v1
         with:
