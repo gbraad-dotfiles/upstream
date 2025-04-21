@@ -75,9 +75,9 @@ jobs:
 
           # Push the manifest with multiple tags
           echo "Pushing manifest with tags: latest, version-specific, and date-based"
-          podman manifest push ${{ inputs.container_name }}-manifest docker://ghcr.io/${{ github.repository }}/${{ inputs.container_name }}:latest
-          podman manifest push ${{ inputs.container_name }}-manifest docker://ghcr.io/${{ github.repository }}/${{ inputs.container_name }}:${{ inputs.base_version }}
-          podman manifest push ${{ inputs.container_name }}-manifest docker://ghcr.io/${{ github.repository }}/${{ inputs.container_name }}:${{ inputs.release_tag }}
+          podman manifest push ${{ inputs.container_name }}-manifest docker://ghcr.io/${{ github.repository_owner }}/${{ inputs.container_name }}:latest
+          podman manifest push ${{ inputs.container_name }}-manifest docker://ghcr.io/${{ github.repository_owner }}/${{ inputs.container_name }}:${{ inputs.base_version }}
+          podman manifest push ${{ inputs.container_name }}-manifest docker://ghcr.io/${{ github.repository_owner }}/${{ inputs.container_name }}:${{ inputs.release_tag }}
 
       - name: Upload to release
         uses: softprops/action-gh-release@v1

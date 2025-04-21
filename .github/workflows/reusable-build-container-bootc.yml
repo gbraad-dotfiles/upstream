@@ -35,7 +35,7 @@ jobs:
 
       - name: Build container
         run: |
-          podman build -t ghcr.io/${{ github.repository }}/${{ inputs.container_name }}-bootc:latest \
+          podman build -t ghcr.io/${{ github.repository_owner }}/${{ inputs.container_name }}-bootc:latest \
             --build-arg=BASE_IMAGE="${{ inputs.bootc_image }}" \
             --build-arg=BASE_VERSION="${{ inputs.base_version }}" \
             --build-arg=ARCH="${{ inputs.arch }}" \
@@ -46,10 +46,10 @@ jobs:
 
       - name: Tag container
         run: |
-          podman tag ghcr.io/${{ github.repository }}/${{ inputs.container_name }}-bootc:latest \
-            ghcr.io/${{ github.repository }}/${{ inputs.container_name }}-bootc:${{ inputs.base_version }}
-          podman tag ghcr.io/${{ github.repository }}/${{ inputs.container_name }}-bootc:latest \
-            ghcr.io/${{ github.repository }}/${{ inputs.container_name }}-bootc:${{ inputs.release_tag }}
+          podman tag ghcr.io/${{ github.repository_owner }}/${{ inputs.container_name }}-bootc:latest \
+            ghcr.io/${{ github.repository_owner }}/${{ inputs.container_name }}-bootc:${{ inputs.base_version }}
+          podman tag ghcr.io/${{ github.repository_owner }}/${{ inputs.container_name }}-bootc:latest \
+            ghcr.io/${{ github.repository_owner }}/${{ inputs.container_name }}-bootc:${{ inputs.release_tag }}
 
       - name: Login to registry
         run: |
@@ -58,6 +58,6 @@ jobs:
 
       - name: Push container to registry
         run: |
-          podman push ghcr.io/${{ github.repository }}/${{ inputs.container_name }}-bootc:latest
-          podman push ghcr.io/${{ github.repository }}/${{ inputs.container_name }}-bootc:${{ inputs.base_version }}
-          podman push ghcr.io/${{ github.repository }}/${{ inputs.container_name }}-bootc:${{ inputs.release_tag }}
+          podman push ghcr.io/${{ github.repository_owner }}/${{ inputs.container_name }}-bootc:latest
+          podman push ghcr.io/${{ github.repository_owner }}/${{ inputs.container_name }}-bootc:${{ inputs.base_version }}
+          podman push ghcr.io/${{ github.repository_owner }}/${{ inputs.container_name }}-bootc:${{ inputs.release_tag }}

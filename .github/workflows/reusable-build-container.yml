@@ -31,7 +31,7 @@ jobs:
 
       - name: Build container
         run: |
-          podman build -t ghcr.io/${{ github.repository }}/${{ inputs.container_name }}:${{ inputs.arch }} \
+          podman build -t ghcr.io/${{ github.repository_owner }}/${{ inputs.container_name }}:${{ inputs.arch }} \
             --build-arg=BASE_IMAGE="${{ inputs.base_image }}" \
             --build-arg=BASE_VERSION="${{ inputs.base_version }}" \
             --build-arg=ARCH="${{ inputs.arch }}" \
@@ -39,7 +39,7 @@ jobs:
 
       - name: Save container as OCI
         run: |
-          podman save ghcr.io/${{ github.repository }}/${{ inputs.container_name }}:${{ inputs.arch }} \
+          podman save ghcr.io/${{ github.repository_owner }}/${{ inputs.container_name }}:${{ inputs.arch }} \
             --format=oci-dir -o oci-${{ inputs.arch }}
 
       - uses: actions/upload-artifact@v4
@@ -51,7 +51,7 @@ jobs:
       - name: Run podman export
         run: |
           podman create --name ${{ inputs.container_name }}-${{ inputs.arch }} \
-            ghcr.io/${{ github.repository }}/${{ inputs.container_name }}:${{ inputs.arch }}
+            ghcr.io/${{ github.repository_owner }}/${{ inputs.container_name }}:${{ inputs.arch }}
           podman export ${{ inputs.container_name }}-${{ inputs.arch }} -o ${{ inputs.container_name }}-${{ inputs.arch }}.tar
           gzip ${{ inputs.container_name }}-${{ inputs.arch }}.tar
 
