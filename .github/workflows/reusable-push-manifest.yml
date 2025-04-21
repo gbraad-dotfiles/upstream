@@ -25,7 +25,7 @@ jobs:
         with:
           name: rootfs-arm64
           path: rootfs
-          
+
       - name: Download rootfs artifacts for amd64
         uses: actions/download-artifact@v4
         with:
@@ -61,11 +61,11 @@ jobs:
 
           # Add OCI artifacts for arm64
           echo "Adding OCI artifact for architecture: arm64"
-          podman manifest add ${{ inputs.container_name }}-manifest oci-arm64
+          podman manifest add ${{ inputs.container_name }}-manifest oci:$(pwd)/oci-arm64
 
           # Add OCI artifacts for amd64
           echo "Adding OCI artifact for architecture: amd64"
-          podman manifest add ${{ inputs.container_name }}-manifest oci-amd64
+          podman manifest add ${{ inputs.container_name }}-manifest oci:$(pwd)/oci-amd64
 
           # Push the manifest with multiple tags
           echo "Pushing manifest with tags: latest, version-specific, and date-based"
