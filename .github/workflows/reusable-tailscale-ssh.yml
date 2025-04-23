@@ -15,7 +15,7 @@ on:
         description: "Base version identifier"
         required: false
         type: string
-        default: latest
+        default: "latest"
 
 jobs:
   dotfiles-test:
@@ -27,7 +27,7 @@ jobs:
 
       - name: Run system container with `podman`
         run: |
-          podman run -d --name dotfiles --hostname code-${HOSTNAME} \
+          podman run -d --name dotfiles --hostname dot${{ inputs.container_name }}-${{ inputs.arch }}-${HOSTNAME:-3} \
             --systemd=always --cap-add=NET_RAW --cap-add=NET_ADMIN \
             --cap-add=SYS_ADMIN --device=/dev/net/tun --device=/dev/fuse \
             ghcr.io/gbraad-dotfiles/${{ inputs.container_name }}:${{ inputs.base_version }}
