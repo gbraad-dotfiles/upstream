@@ -29,7 +29,7 @@ RUN grep -qF "users:x:100:" /etc/group || echo "users:x:100:" | sudo tee -a /etc
 RUN useradd -l -u 1000 -G wheel -md ${USERHOME} -s /bin/bash -p ${USER} ${USER} \
     && sed -i.bkp -e 's/%wheel\s\+ALL=(ALL\(:ALL\)\?)\s\+ALL/%wheel ALL=NOPASSWD:ALL/g' /etc/sudoers \
     && if [ -n "${USER_PASSWD}" ] ; then \
-        echo "gbraad:${USER_PASSWD}" | sudo chpasswd && echo "Password set to: ${USER_PASSWD}"; \
+        echo "${USER}:${USER_PASSWD}" | sudo chpasswd && echo "Password set to: ${USER_PASSWD}"; \
     fi \
     && usermod -a -G users ${USER}
 
