@@ -4,6 +4,7 @@ ARG BASE_VERSION="stream9"
 FROM ${BASE_IMAGE}:${BASE_VERSION}
 
 ARG USER="gbraad"
+ARG USER_GROUP="users"
 ARG USER_PASSWD
 ARG HOMEBASE="/home"
 ARG USERHOME="${HOMEBASE}/${USER}"
@@ -30,9 +31,9 @@ RUN chmod 0640 /etc/shadow
 RUN useradd -l -u 1000 -G wheel -md ${USERHOME} -s /bin/bash -p ${USER} ${USER} \
     && sed -i.bkp -e 's/%wheel\s\+ALL=(ALL\(:ALL\)\?)\s\+ALL/%wheel ALL=NOPASSWD:ALL/g' /etc/sudoers \
     && if [ -n "${USER_PASSWD}" ] ; then \
-        echo "gbraad:${USER_PASSWD}" | sudo chpasswd && echo "Password set to: ${USER_PASSWD}"; \
+        echo "${USER}:${USER_PASSWD}" | sudo chpasswd && echo "Password set to: ${USER_PASSWD}"; \
     fi \
-    && usermod -a -G users ${USER}
+    && usermod -a -G ${USER_GROUP} ${USER}
 
 USER ${USER}
 
@@ -64,7 +65,8 @@ RUN dnf config-manager --add-repo https://pkgs.tailscale.com/stable/centos/9/tai
     && systemctl enable tailscaled
 
 # install cloudflared (or use https://github.com/spotsnel/cloudflared-systemd/)
-RUN dnf install -y \
+RUN ARCH=$( [ "$ARCH" = "amd64" ] && echo "x86_64" || ( [ "$ARCH" = "arm64" ] && echo "aarch64" ) ) \
+    && dnf install -y \
         systemd \
     && curl -fsSL https://github.com/cloudflare/cloudflared/releases/latest/download/cloudflared-linux-${ARCH}.rpm -o /tmp/cloudflared.rpm \
     && dnf install -y \
