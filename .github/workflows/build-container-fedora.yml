@@ -8,5 +8,5 @@ jobs:
     name: build-and-push-containers-fedora
     uses: ./.github/workflows/reusable-build-and-push-containers.yml
     with:
-      container_name: ${{ needs.shared-config.outputs.container_name }}
+      container_name: "fedora"
     secrets: inherit
