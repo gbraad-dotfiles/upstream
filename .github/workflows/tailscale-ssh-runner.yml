@@ -1,4 +1,4 @@
-name: tailscale-ssh-runner
+name: tailscale-ssh-runner-amd64
 run-name: Tailscale SSH with install action
 
 on:
