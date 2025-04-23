@@ -23,6 +23,9 @@ jobs:
               workflow_id: 'build-container-almalinux.yml',
               ref: context.ref,
             });
+      - name: Wait a little
+        run: |
+          sleep 10
 
   trigger-build-container-centos:
     runs-on: ubuntu-latest
@@ -37,6 +40,9 @@ jobs:
               workflow_id: 'build-container-centos.yml',
               ref: context.ref,
             });
+      - name: Wait a little
+        run: |
+          sleep 10
 
   trigger-build-container-debian:
     runs-on: ubuntu-latest
@@ -51,6 +57,9 @@ jobs:
               workflow_id: 'build-container-debian.yml',
               ref: context.ref,
             });
+      - name: Wait a little
+        run: |
+          sleep 10        
 
   trigger-build-container-fedora:
     runs-on: ubuntu-latest
@@ -65,6 +74,10 @@ jobs:
               workflow_id: 'build-container-fedora.yml',
               ref: context.ref,
             });
+      - name: Wait a little
+        run: |
+          sleep 10        
+
 
   trigger-build-container-ubi9:
     runs-on: ubuntu-latest
@@ -79,6 +92,10 @@ jobs:
               workflow_id: 'build-container-ubi9.yml',
               ref: context.ref,
             });
+      - name: Wait a little
+        run: |
+          sleep 10        
+
 
   trigger-build-container-alpine:
     runs-on: ubuntu-latest
@@ -93,6 +110,9 @@ jobs:
               workflow_id: 'build-container-alpine.yml',
               ref: context.ref,
             });
+      - name: Wait a little
+        run: |
+          sleep 10        
 
 
   trigger-build-container-ubuntu:
@@ -108,6 +128,9 @@ jobs:
               workflow_id: 'build-container-ubuntu.yml',
               ref: context.ref,
             });
+      - name: Wait a little
+        run: |
+          sleep 10        
 
 
   trigger-build-container-almalinux-bootc:
@@ -123,6 +146,10 @@ jobs:
               workflow_id: 'build-container-almalinux-bootc.yml',
               ref: context.ref,
             });
+      - name: Wait a little
+        run: |
+          sleep 10        
+
 
   trigger-build-container-centos-bootc:
     runs-on: ubuntu-latest
@@ -137,7 +164,11 @@ jobs:
               workflow_id: 'build-container-centos-bootc.yml',
               ref: context.ref,
             });
-  
+      - name: Wait a little
+        run: |
+          sleep 10        
+
+            
   trigger-build-container-fedora-bootc:
     runs-on: ubuntu-latest
     steps:
@@ -151,6 +182,10 @@ jobs:
               workflow_id: 'build-container-fedora-bootc.yml',
               ref: context.ref,
             });
+      - name: Wait a little
+        run: |
+          sleep 10        
+
 
   wait-for-build-container-almalinux:
     runs-on: ubuntu-latest
@@ -161,14 +196,14 @@ jobs:
         with:
           ref: ${{ github.ref }}
           repo-token: ${{ secrets.GITHUB_TOKEN }} 
-          check-name: 'build-container-almalinux-amd64 (ubuntu-latest)'
+          check-name: 'Build and push - AlmaLinux / Build AMD64 / Build Container'
           wait-interval: 10
       - name: Wait for build-container-almalinux-arm64 to complete
         uses: lewagon/wait-on-check-action@v1.3.4
         with:
           ref: ${{ github.ref }}
           repo-token: ${{ secrets.GITHUB_TOKEN }} 
-          check-name: 'build-container-almalinux-arm64 (ubuntu-24.04-arm)'
+          check-name: 'Build and push - AlmaLinux / Build ARM64 / Build Container'
           wait-interval: 10
 
   wait-for-build-container-centos:
@@ -180,14 +215,14 @@ jobs:
         with:
           ref: ${{ github.ref }}
           repo-token: ${{ secrets.GITHUB_TOKEN }} 
-          check-name: 'build-container-centos-amd64 (ubuntu-latest)'
+          check-name: 'Build and push - CentOS / Build AMD64 / Build Container'
           wait-interval: 10
       - name: Wait for build-container-centos-arm64 to complete
         uses: lewagon/wait-on-check-action@v1.3.4
         with:
           ref: ${{ github.ref }}
           repo-token: ${{ secrets.GITHUB_TOKEN }} 
-          check-name: 'build-container-centos-arm64 (ubuntu-24.04-arm)'
+          check-name: 'Build and push - CentOS / Build ARM64 / Build Container'
           wait-interval: 10
 
   wait-for-build-container-debian:
@@ -199,14 +234,14 @@ jobs:
         with:
           ref: ${{ github.ref }}
           repo-token: ${{ secrets.GITHUB_TOKEN }} 
-          check-name: 'build-container-debian-amd64 (ubuntu-latest)'
+          check-name: 'Build and push - Debian / Build AMD64 / Build Container'
           wait-interval: 10
       - name: Wait for build-container-debian-arm64 to complete
         uses: lewagon/wait-on-check-action@v1.3.4
         with:
           ref: ${{ github.ref }}
           repo-token: ${{ secrets.GITHUB_TOKEN }} 
-          check-name: 'build-container-debian-arm64 (ubuntu-24.04-arm)'
+          check-name: 'Build and push - Debian / Build ARM64 / Build Container'
           wait-interval: 10
 
   wait-for-build-container-fedora:
@@ -218,14 +253,14 @@ jobs:
         with:
           ref: ${{ github.ref }}
           repo-token: ${{ secrets.GITHUB_TOKEN }} 
-          check-name: 'build-container-fedora-amd64 (ubuntu-latest)'
+          check-name: 'Build and push - Fedora / Build AMD64 / Build Container'
           wait-interval: 10
       - name: Wait for build-container-fedora-arm64 to complete
         uses: lewagon/wait-on-check-action@v1.3.4
         with:
           ref: ${{ github.ref }}
           repo-token: ${{ secrets.GITHUB_TOKEN }} 
-          check-name: 'build-container-fedora-arm64 (ubuntu-24.04-arm)'
+          check-name: 'Build and push - Fedora / Build ARM64 / Build Container'
           wait-interval: 10
 
   wait-for-build-container-ubi9:
@@ -237,14 +272,14 @@ jobs:
         with:
           ref: ${{ github.ref }}
           repo-token: ${{ secrets.GITHUB_TOKEN }} 
-          check-name: 'build-container-ubi9-amd64 (ubuntu-latest)'
+          check-name: 'Build and push - UBI9 / Build AMD64 / Build Container'
           wait-interval: 10
       - name: Wait for build-container-ubi9-arm64 to complete
         uses: lewagon/wait-on-check-action@v1.3.4
         with:
           ref: ${{ github.ref }}
           repo-token: ${{ secrets.GITHUB_TOKEN }} 
-          check-name: 'build-container-ubi9-arm64 (ubuntu-24.04-arm)'
+          check-name: 'Build and push - UBI9 / Build ARM64 / Build Container'
           wait-interval: 10
 
   wait-for-build-container-alpine:
@@ -256,14 +291,14 @@ jobs:
         with:
           ref: ${{ github.ref }}
           repo-token: ${{ secrets.GITHUB_TOKEN }} 
-          check-name: 'build-container-alpine-amd64 (ubuntu-latest)'
+          check-name: 'Build and push - Alpine / Build AMD64 / Build Container'
           wait-interval: 10
       - name: Wait for build-container-alpine-arm64 to complete
         uses: lewagon/wait-on-check-action@v1.3.4
         with:
           ref: ${{ github.ref }}
           repo-token: ${{ secrets.GITHUB_TOKEN }} 
-          check-name: 'build-container-alpine-arm64 (ubuntu-24.04-arm)'
+          check-name: 'Build and push - Alpine / Build ARM64 / Build Container'
           wait-interval: 10
 
   wait-for-build-container-ubuntu:
@@ -275,50 +310,72 @@ jobs:
         with:
           ref: ${{ github.ref }}
           repo-token: ${{ secrets.GITHUB_TOKEN }} 
-          check-name: 'build-container-ubuntu-amd64 (ubuntu-latest)'
+          check-name: 'Build and push - Ubuntu / Build AMD64 / Build Container'
           wait-interval: 10
       - name: Wait for build-container-ubuntu-arm64 to complete
         uses: lewagon/wait-on-check-action@v1.3.4
         with:
           ref: ${{ github.ref }}
           repo-token: ${{ secrets.GITHUB_TOKEN }} 
-          check-name: 'build-container-ubuntu-arm64 (ubuntu-24.04-arm)'
+          check-name: 'Build and push - Ubuntu / Build ARM64 / Build Container'
           wait-interval: 10
+
 
   wait-for-build-container-almalinux-bootc:
     runs-on: ubuntu-latest
     needs: trigger-build-container-almalinux-bootc
     steps:
-      - name: Wait for build-container-almalinux to complete
+      - name: Wait for build-container-fedora-amd64 to complete
         uses: lewagon/wait-on-check-action@v1.3.4
         with:
           ref: ${{ github.ref }}
-          repo-token: ${{ secrets.GITHUB_TOKEN }}
-          check-name: 'build-container-almalinux-bootc (ubuntu-latest)'
+          repo-token: ${{ secrets.GITHUB_TOKEN }} 
+          check-name: 'Build and push - AlmaLinux bootc / Build AMD64 / Build Bootable Container'
+          wait-interval: 10
+      - name: Wait for build-container-fedora-arm64 to complete
+        uses: lewagon/wait-on-check-action@v1.3.4
+        with:
+          ref: ${{ github.ref }}
+          repo-token: ${{ secrets.GITHUB_TOKEN }} 
+          check-name: 'Build and push - AlmaLinux bootc / Build ARM64 / Build Bootable Container'
           wait-interval: 10
 
   wait-for-build-container-centos-bootc:
     runs-on: ubuntu-latest
     needs: trigger-build-container-centos-bootc
     steps:
-      - name: Wait for build-container-centos to complete
+      - name: Wait for build-container-fedora-amd64 to complete
         uses: lewagon/wait-on-check-action@v1.3.4
         with:
           ref: ${{ github.ref }}
-          repo-token: ${{ secrets.GITHUB_TOKEN }}
-          check-name: 'build-container-centos-bootc (ubuntu-latest)'
+          repo-token: ${{ secrets.GITHUB_TOKEN }} 
+          check-name: 'Build and push - CentOS bootc / Build AMD64 / Build Bootable Container'
+          wait-interval: 10
+      - name: Wait for build-container-fedora-arm64 to complete
+        uses: lewagon/wait-on-check-action@v1.3.4
+        with:
+          ref: ${{ github.ref }}
+          repo-token: ${{ secrets.GITHUB_TOKEN }} 
+          check-name: 'Build and push - CentOS bootc / Build ARM64 / Build Bootable Container'
           wait-interval: 10
 
   wait-for-build-container-fedora-bootc:
     runs-on: ubuntu-latest
     needs: trigger-build-container-fedora-bootc
     steps:
-      - name: Wait for build-container-fedora to complete
+      - name: Wait for build-container-fedora-amd64 to complete
         uses: lewagon/wait-on-check-action@v1.3.4
         with:
           ref: ${{ github.ref }}
           repo-token: ${{ secrets.GITHUB_TOKEN }} 
-          check-name: 'build-container-fedora-bootc (ubuntu-latest)'
+          check-name: 'Build and push - Fedora bootc / Build AMD64 / Build Bootable Container'
+          wait-interval: 10
+      - name: Wait for build-container-fedora-arm64 to complete
+        uses: lewagon/wait-on-check-action@v1.3.4
+        with:
+          ref: ${{ github.ref }}
+          repo-token: ${{ secrets.GITHUB_TOKEN }} 
+          check-name: 'Build and push - Fedora bootc / Build ARM64 / Build Bootable Container'
           wait-interval: 10
 
 

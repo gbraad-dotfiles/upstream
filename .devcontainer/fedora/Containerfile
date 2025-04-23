@@ -4,6 +4,7 @@ ARG BASE_VERSION="41"
 FROM ${BASE_IMAGE}:${BASE_VERSION}
 
 ARG USER="gbraad"
+ARG USER_GROUP="users"
 ARG USER_PASSWD
 ARG HOMEBASE="/home"
 ARG USERHOME="${HOMEBASE}/${USER}"
@@ -31,7 +32,7 @@ RUN useradd -l -u 1000 -G wheel -md ${USERHOME} -s /bin/bash -p ${USER} ${USER} 
     && if [ -n "${USER_PASSWD}" ] ; then \
         echo "${USER}:${USER_PASSWD}" | sudo chpasswd && echo "Password set to: ${USER_PASSWD}"; \
     fi \
-    && usermod -a -G users ${USER}
+    && usermod -a -G ${USER_GROUP} ${USER}
 
 USER ${USER}
 

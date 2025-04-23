@@ -5,7 +5,7 @@ on:
 
 jobs:
   build-and-push:
-    name: build-and-push-containers-almalinux
+    name: Build and push - AlmaLinux
     uses: ./.github/workflows/reusable-build-and-push-containers.yml
     with:
       container_name: "almalinux"

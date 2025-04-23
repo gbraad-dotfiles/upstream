@@ -10,7 +10,7 @@ on:
 
 jobs:
   shared-config:
-    name: Shared configuration
+    name: Shared Configuration
     runs-on: ubuntu-latest
     outputs:
       container_name: ${{ inputs.container_name }}
@@ -32,7 +32,7 @@ jobs:
         id: config
         uses: gbraad-actions/shared-config@v2
         with:
-          config_repo: https://github.com/${{ github.repository_owner }}/shared-config.git
+          config_repo: https://github.com/gbraad-dotfiles/shared-config.git
           config_file: containers/${{ inputs.container_name }}.ini
           use_output: true
       - name: Set release tag
@@ -43,10 +43,10 @@ jobs:
   build-arm64:
     needs: shared-config
     name: Build ARM64
-    uses: ./.github/workflows/reusable-build-container.yml
+    uses: ./.github/workflows/reusable-build-bootable-container.yml
     with:
       container_name: ${{ needs.shared-config.outputs.container_name }}
-      base_image: ${{ needs.shared-config.outputs.base_image }}
+      bootc_image: ${{ needs.shared-config.outputs.bootc_image }}
       base_version: ${{ needs.shared-config.outputs.base_version }}
       arch: "arm64"
     secrets: inherit
@@ -54,10 +54,10 @@ jobs:
   build-amd64:
     needs: shared-config
     name: Build AMD64
-    uses: ./.github/workflows/reusable-build-container.yml
+    uses: ./.github/workflows/reusable-build-bootable-container.yml
     with:
       container_name: ${{ needs.shared-config.outputs.container_name }}
-      base_image: ${{ needs.shared-config.outputs.base_image }}
+      bootc_image: ${{ needs.shared-config.outputs.bootc_image }}
       base_version: ${{ needs.shared-config.outputs.base_version }}
       arch: "amd64"
     secrets: inherit
@@ -68,7 +68,7 @@ jobs:
       - build-arm64
       - build-amd64
     name: Push
-    uses: ./.github/workflows/reusable-push-manifest.yml
+    uses: ./.github/workflows/reusable-push-bootable-manifest.yml
     with:
       container_name: ${{ needs.shared-config.outputs.container_name }}
       base_version: ${{ needs.shared-config.outputs.base_version }}

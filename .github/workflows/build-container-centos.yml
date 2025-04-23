@@ -5,7 +5,7 @@ on:
 
 jobs:
   build-and-push:
-    name: build-and-push-containers-centos
+    name: Build and push - CentOS
     uses: ./.github/workflows/reusable-build-and-push-containers.yml
     with:
       container_name: "centos"

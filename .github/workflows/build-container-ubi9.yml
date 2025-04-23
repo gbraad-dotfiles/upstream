@@ -5,7 +5,7 @@ on:
 
 jobs:
   build-and-push:
-    name: build-and-push-containers-ubi9
+    name: Build and push - UBI9
     uses: ./.github/workflows/reusable-build-and-push-containers.yml
     with:
       container_name: "ubi9"

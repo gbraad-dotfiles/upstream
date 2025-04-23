@@ -1,52 +1,12 @@
-name: build container - centos-bootc
-run-name: Building container - CentOS bootc
+name: Build and Push CentOS BootC Container
 
 on:
   workflow_dispatch:
 
 jobs:
-  build:
-    name: build-container-centos-bootc
-    runs-on: ${{ matrix.os }}
-    strategy:
-      fail-fast: false
-      matrix:
-        os:
-          - ubuntu-latest
-
-    steps:
-      - name: Check out repository code
-        uses: actions/checkout@v4
-
-      - name: Run podman build - centos-bootc
-        run: |
-          podman build -t ghcr.io/gbraad-dotfiles/centos-bootc:latest \
-            --build-arg=BASE_IMAGE="quay.io/centos-bootc/centos-bootc" \
-            --build-arg=BASE_VERSION=stream9 \
-            --build-arg=HOMEBASE="/var/home" \
-            --build-arg=USER_PASSWD="password" \
-            --build-arg=ROOTHOME="/var/roothome" \
-            -f .devcontainer/centos/Containerfile .
-
-      - name: Set release tag
-        id: get-tag
-        run: |
-          echo "TAG=$(date +'%y%m%d')" >> $GITHUB_OUTPUT
-
-      - name: Tag container
-        run: |
-          podman tag ghcr.io/gbraad-dotfiles/centos-bootc:latest \
-            ghcr.io/gbraad-dotfiles/centos-bootc:stream9
-          podman tag ghcr.io/gbraad-dotfiles/centos-bootc:latest \
-            ghcr.io/gbraad-dotfiles/centos-bootc:${{steps.get-tag.outputs.TAG}}
-
-      - name: Login to registry
-        run: |
-          podman login ghcr.io -u ${{ github.actor }} \
-            -p ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Push container to registry
-        run: |
-          podman push ghcr.io/gbraad-dotfiles/centos-bootc:latest
-          podman push ghcr.io/gbraad-dotfiles/centos-bootc:stream9
-          podman push ghcr.io/gbraad-dotfiles/centos-bootc:${{steps.get-tag.outputs.TAG}}
+  build-and-push:
+    name: Build and push - CentOS bootc
+    uses: ./.github/workflows/reusable-build-and-push-bootable-containers.yml
+    with:
+      container_name: "centos"
+    secrets: inherit

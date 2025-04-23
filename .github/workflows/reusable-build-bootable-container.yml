@@ -1,0 +1,52 @@
+name: reusable-build-bootable-container
+
+on:
+  workflow_call:
+    inputs:
+      container_name:
+        description: "Name of the container (e.g., fedora, ubi9)"
+        required: true
+        type: string
+      arch:
+        description: "Architecture for the container (e.g., arm64, amd64)"
+        required: true
+        type: string
+      bootc_image:
+        description: "Bootc image identifier"
+        required: true
+        type: string
+      base_version:
+        description: "Base version identifier"
+        required: true
+        type: string 
+
+jobs:
+  build:
+    name: Build Bootable Container
+    runs-on: ${{ inputs.arch == 'arm64' && 'ubuntu-24.04-arm' || 'ubuntu-latest' }}
+
+    steps:
+      - name: Check out repository code
+        uses: actions/checkout@v4
+
+      - name: Build container
+        run: |
+          podman build -t ghcr.io/${{ github.repository_owner }}/${{ inputs.container_name }}-bootc:${{ inputs.arch }} \
+            --build-arg=BASE_IMAGE="${{ inputs.bootc_image }}" \
+            --build-arg=BASE_VERSION="${{ inputs.base_version }}" \
+            --build-arg=ARCH="${{ inputs.arch }}" \
+            --build-arg=HOMEBASE="/var/home" \
+            --build-arg=USER_PASSWD="password" \
+            --build-arg=ROOTHOME="/var/roothome" \
+            -f .devcontainer/${{ inputs.container_name }}/Containerfile
+
+      - name: Save container as OCI
+        run: |
+          podman save ghcr.io/${{ github.repository_owner }}/${{ inputs.container_name }}-bootc:${{ inputs.arch }} \
+            --format=oci-dir -o oci-bootc-${{ inputs.arch }}
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: oci-bootc-${{ inputs.arch }}
+          path: oci-bootc-${{ inputs.arch }}/
+          retention-days: 7

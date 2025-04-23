@@ -5,7 +5,7 @@ on:
 
 jobs:
   build-and-push:
-    name: build-and-push-containers-fedora
+    name: Build and push - Fedora
     uses: ./.github/workflows/reusable-build-and-push-containers.yml
     with:
       container_name: "fedora"
