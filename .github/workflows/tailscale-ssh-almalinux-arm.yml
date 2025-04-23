@@ -1,14 +1,13 @@
-name: tailscale-ssh-debian-arm64
+name: tailscale-ssh-almalinux-arm64
 
 on:
   workflow_dispatch:
 
 jobs:
   dotfiles-test:
-    name: Tailscale SSH - Debian ARM64
+    name: Tailscale SSH - AlmaLinux ARM64
     uses: ./.github/workflows/reusable-tailscale-ssh.yml
     with:
-      container_name: "debian"
+      container_name: "almalinux"
       base_version: "latest"
       arch: "arm64"
-    secrets: inherit

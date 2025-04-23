@@ -1,14 +1,14 @@
-name: tailscale-ssh-debian-arm64
+name: tailscale-ssh-ubi9-amd64
 
 on:
   workflow_dispatch:
 
 jobs:
   dotfiles-test:
-    name: Tailscale SSH - Debian ARM64
+    name: Tailscale SSH - UBI9 AMD64
     uses: ./.github/workflows/reusable-tailscale-ssh.yml
     with:
-      container_name: "debian"
+      container_name: "ubi9"
       base_version: "latest"
-      arch: "arm64"
+      arch: "amd64"
     secrets: inherit

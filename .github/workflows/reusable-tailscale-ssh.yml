@@ -1,0 +1,53 @@
+name: reusable-tailscale-ssh
+
+on:
+  workflow_call:
+    inputs:
+      container_name:
+        description: "Name of the container (e.g., fedora, ubi9)"
+        required: true
+        type: string
+      arch:
+        description: "Architecture for the container (e.g., arm64, amd64)"
+        required: true
+        type: string
+      base_version:
+        description: "Base version identifier"
+        required: false
+        type: string
+        default: latest
+
+jobs:
+  dotfiles-test:
+    runs-on: ${{ inputs.arch == 'arm64' && 'ubuntu-24.04-arm' || 'ubuntu-latest' }}
+    
+    steps:
+      - name: Remove unwanted stuff
+        uses: gbraad-devenv/remove-unwanted@v1
+
+      - name: Run system container with `podman`
+        run: |
+          podman run -d --name dotfiles --hostname code-${HOSTNAME} \
+            --systemd=always --cap-add=NET_RAW --cap-add=NET_ADMIN \
+            --cap-add=SYS_ADMIN --device=/dev/net/tun --device=/dev/fuse \
+            ghcr.io/gbraad-dotfiles/${{ inputs.container_name }}:${{ inputs.base_version }}
+
+      - name: Tailscale setup (root)
+        run: |
+          sleep 1
+          until podman exec dotfiles tailscale up --auth-key ${TAILSCALE_AUTHKEY} --ssh
+          do
+              sleep 0.1
+          done
+        env:
+          TAILSCALE_AUTHKEY: ${{ secrets.TAILSCALE_AUTHKEY}}
+
+      - name: Hang around
+        run: |
+          until podman exec dotfiles systemctl is-active --quiet tailscaled
+          do
+               sleep 1
+          done
+          IP=`podman exec dotfiles tailscale ip -4`
+          echo "Use the following command to connect \`tailscale ssh gbraad@${IP}\`"
+          sleep infinity

@@ -1,14 +1,14 @@
-name: tailscale-ssh-debian-arm64
+name: tailscale-ssh-centos-arm64
 
 on:
   workflow_dispatch:
 
 jobs:
   dotfiles-test:
-    name: Tailscale SSH - Debian ARM64
+    name: Tailscale SSH - CentOS ARM64
     uses: ./.github/workflows/reusable-tailscale-ssh.yml
     with:
-      container_name: "debian"
+      container_name: "centos"
       base_version: "latest"
       arch: "arm64"
     secrets: inherit
