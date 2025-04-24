@@ -1,4 +1,4 @@
-name: tailscale-ssh-runner-arm
+name: tailscale-ssh-runner-arm64
 run-name: Tailscale SSH with install action on Arm
 
 on:

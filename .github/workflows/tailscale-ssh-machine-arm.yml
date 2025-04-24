@@ -1,4 +1,4 @@
-name: tailscale-ssh-machine-arm
+name: tailscale-ssh-machine-arm64
 run-name: Tailscale SSH with machinefile action on Arm
 
 on:
