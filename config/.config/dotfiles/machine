@@ -8,11 +8,11 @@
 	dotalma = ghcr.io/gbraad-dotfiles/almalinux-bootc:latest
 	dotcentos = ghcr.io/gbraad-dotfiles/centos-bootc:latest
 	dotfedora = ghcr.io/gbraad-dotfiles/fedora-bootc:latest
-	systemd = ghcr.io/gbraad-devenv/fedora/systemd-bootc:41
+	systemd = ghcr.io/gbraad-devenv/fedora/systemd-bootc:latest
 	workstation = ghcr.io/gbraad-dotfiles/fedora-workstation-bootc:latest
 	devstation = ghcr.io/gbraad-devenv/fedora/workstation-bootc:latest
 	gostation = ghcr.io/gbraad-devenv/fedora-golang/workstation-bootc:latest
-	code = ghcr.io/gbraad-devenv/fedora/code-cli-bootclatest
+	code = ghcr.io/gbraad-devenv/fedora/code-cli-bootc:latest
 	rdesktop = ghcr.io/gbraad-devenv/fedora/rdesktop-bootc:latest
 	golang = ghcr.io/gbraad-devenv/fedora-golang/systemd-bootc:latest
 	gocode = ghcr.io/gbraad-devenv/fedora-golang/code-cli-bootc:latest
