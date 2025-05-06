@@ -11,9 +11,9 @@
     "remoteUser": "gbraad",
 
      "features": {
+        "ghcr.io/gbraad-dotfiles/devcontainer-features/dotfiles:latest": {},
         "ghcr.io/gbraad-vscode/devcontainer-features/tailscale:latest": {},
         "ghcr.io/gbraad-vscode/devcontainer-features/cloudflared:latest": {},
-        "ghcr.io/gbraad-vscode/devcontainer-features/dotfiles:latest": {},
         "ghcr.io/gbraad-vscode/devcontainer-features/ssh-keys:latest": {
             "username": "gbraad"
         }
