@@ -37,10 +37,13 @@ devenv() {
   )
   
   case "$COMMAND" in
-    "env" | "run")
+    "env" | "run" | "rootenv")
       podman run --rm -it --hostname ${HOSTNAME}-${PREFIX}env --entrypoint='' \
         "${START_ARGS[@]}" "${START_PATHS[@]}" \
-        $(generate_image_name $PREFIX) ${START_SHELL}
+        $(generate_image_name $PREFIX) ${START_SHELL} $@
+      ;;
+    "userenv" | "userrun")
+      devenv $PREFIX run -c "su - gbraad"
       ;;
     "sys" | "system" | "create")
       #for (( i=0; i < ${#START_PATHS[@]}; i++ )); do
