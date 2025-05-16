@@ -55,4 +55,4 @@
 	steamcmd = https://github.com/gbraad-gaming/personal-steamcmd/releases/download/latest/disk.qcow2
 	steamlink = https://github.com/gbraad-gaming/personal-steamlink/releases/download/latest/disk.qcow2_part[0-1]
 	minecraft-server = https://github.com/gbraad-gaming/personal-minecraft-bedrock-server/releases/download/latest/disk.qcow2
-
+        onion = https://github.com/gbraad-apps/personal-onion/releases/download/latest/disk.qcow2_part[0-1]
