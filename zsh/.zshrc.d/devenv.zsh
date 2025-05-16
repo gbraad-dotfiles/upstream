@@ -45,7 +45,10 @@ devenv() {
     "userenv" | "userrun")
       devenv $PREFIX run -c "su - gbraad"
       ;;
-    "sys" | "system" | "create")
+    "create")
+      # TODO: only create the container
+      ;;
+    "sys" | "system")
       #for (( i=0; i < ${#START_PATHS[@]}; i++ )); do
       #  START_PATHS[$i]="${START_PATHS[$i]/#\~/$HOME}"
       #done
@@ -58,7 +61,7 @@ devenv() {
       #&& systemctl --user daemon-reload \
       #&& systemctl --user start container-${PREFIX}sys
       ;;
-    "noinit")
+    "nosys" | "noinit")
       # For environments that can not start systemd
       podman run -d --name=${PREFIX}sys --hostname ${HOSTNAME}-${PREFIX}sys \
         "${START_ARGS[@]}" "${START_PATHS[@]}" --entrypoint "" \
@@ -66,7 +69,12 @@ devenv() {
       ;;
     "start")
       if (! podman ps -a --format "{{.Names}}" | grep -q ${PREFIX}sys); then
-        devenv ${PREFIX} sys
+        source /etc/os-release
+        if [[ "$ID" == "idx" ]]; then
+          devenv ${PREFIX} noinit
+        else
+          devenv ${PREFIX} system
+        fi
       else
         podman start ${PREFIX}sys
       fi
