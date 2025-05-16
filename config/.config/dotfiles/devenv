@@ -3,6 +3,7 @@
 	aliases = true
 	workdir = /var/home/gbraad
 	shell = /bin/zsh
+	noinit = sleep infinity
 
 [images]
 	dotalpine =	ghcr.io/gbraad-dotfiles/alpine:latest

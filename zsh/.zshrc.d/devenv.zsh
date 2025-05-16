@@ -58,6 +58,12 @@ devenv() {
       #&& systemctl --user daemon-reload \
       #&& systemctl --user start container-${PREFIX}sys
       ;;
+    "noinit")
+      # For environments that can not start systemd
+      podman run -d --name=${PREFIX}sys --hostname ${HOSTNAME}-${PREFIX}sys \
+        "${START_ARGS[@]}" "${START_PATHS[@]}" --entrypoint "" \
+        $(generate_image_name $PREFIX) $(devini --get devenv.noinit)
+      ;;
     "start")
       if (! podman ps -a --format "{{.Names}}" | grep -q ${PREFIX}sys); then
         devenv ${PREFIX} sys
