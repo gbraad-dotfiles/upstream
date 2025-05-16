@@ -3,6 +3,7 @@
 	aliases = true
 	workdir = /var/home/gbraad
 	shell = /bin/zsh
+	user = gbraad
 	noinit = sleep infinity
 
 [images]

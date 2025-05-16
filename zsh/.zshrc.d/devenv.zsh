@@ -18,6 +18,7 @@ devenv() {
   shift 2
 
   local START_SHELL=$(devini --get devenv.shell)
+  local IMAGE_USER=$(devini --get devenv.user)
   local START_ARGS=(
     "--user=root"
     "--systemd=always"
@@ -32,8 +33,8 @@ devenv() {
   # issue as some containers do not have this yet
   #"--workdir=$(devini --get devenv.workdir)"
   local START_PATHS=(
-    "-v" "${HOME}/Projects:/home/${USER}/Projects"
-    "-v" "${HOME}/Projects:/var/home/${USER}/Projects"
+    "-v" "${HOME}/Projects:/home/${IMAGE_USER}/Projects"
+    "-v" "${HOME}/Projects:/var/home/${IMAGE_USER}/Projects"
   )
   
   case "$COMMAND" in
