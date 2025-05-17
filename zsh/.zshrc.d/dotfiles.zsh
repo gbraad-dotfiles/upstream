@@ -218,6 +218,10 @@ if [ "$(expr "$0" : '.*install.sh')" -gt 0 ]; then
   _dotoldinstall
 fi
 
+if [ "$(expr "$0" : '.*source.sh')" -gt 0 ]; then
+  _dotresource
+fi
+
 if [ "$(dotini --get "dotfiles.aliases")" = true ]; then
   alias dot="dotfiles"
   alias dotup="dot up"
