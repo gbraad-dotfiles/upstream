@@ -5,6 +5,6 @@ _installnix() {
 }
 alias install-nix=_installnix
 
-if [ -e /var/home/gbraad/.nix-profile/etc/profile.d/nix.sh ]; then
-  . /var/home/gbraad/.nix-profile/etc/profile.d/nix.sh;
+if [ -e ~/.nix-profile/etc/profile.d/nix.sh ]; then
+  . ~/.nix-profile/etc/profile.d/nix.sh;
 fi
