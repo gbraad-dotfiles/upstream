@@ -25,11 +25,12 @@ devenv() {
     "--cap-add=NET_RAW"
     "--cap-add=NET_ADMIN"
     "--cap-add=SYS_ADMIN"
-    "--device=/dev/net/tun"
-    "--device=/dev/fuse"
     "--userns=keep-id"
     "--pull=newer"
   )
+  [[ -e /dev/net/tun ]] && START_ARGS+=("--device=/dev/net/tun")
+  [[ -e /dev/fuse ]] && START_ARGS+=("--device=/dev/fuse")
+
   # issue as some containers do not have this yet
   #"--workdir=$(devini --get devenv.workdir)"
   local START_PATHS=(
