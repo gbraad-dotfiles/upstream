@@ -121,7 +121,9 @@ _dotoldinstall() {
 }
 
 _dotresource() {
-  echo "Resourcing zsh."
+  if [[ -z "$DOTFILES_SOURCED_FROM_SOURCE_SH" ]]; then
+    echo "Resourcing zsh."
+  fi
   if [ -d $HOME/.zshrc.d ]; then
     for file in $HOME/.zshrc.d/*.?sh; do
       source $file
@@ -219,6 +221,7 @@ if [ "$(expr "$0" : '.*install.sh')" -gt 0 ]; then
 fi
 
 if [ "$(expr "$0" : '.*source.sh')" -gt 0 ]; then
+  export DOTFILES_SOURCED_FROM_SOURCE_SH=1
   _dotresource
 fi
 
