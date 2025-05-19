@@ -29,7 +29,7 @@ alias pssh='ssh -o "ProxyCommand=netcat -X 5 -x localhost:3222 %h %p"'
 alias install-tailscale="curl -fsSL https://tailscale.com/install.sh | bash"
 
 # Misc
-alias country="curl -s ifconfig.co/json | jq '.country'"
+alias country="curl -fsSL https://ifconfig.co/json | jq '.country'"
 
 # ANSI
 alias remove-ansi="sed -r 's/\x1b\[[0-9;]*m//g'"
