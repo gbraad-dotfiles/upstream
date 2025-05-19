@@ -9,6 +9,11 @@ jobs:
     runs-on: ubuntu-latest
     
     steps:
+      - name: Workaround - fixes compaudit
+        run: |
+          sudo chmod go-w /usr/share/zsh/vendor-completions
+          sudo chmod go-w /usr/share/zsh
+          
       - name: Remove unwanted stuff
         uses: gbraad-devenv/remove-unwanted@v1
 
