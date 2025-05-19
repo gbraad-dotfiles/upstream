@@ -13,7 +13,7 @@ jobs:
         run: |
           sudo chmod go-w /usr/share/zsh/vendor-completions
           sudo chmod go-w /usr/share/zsh
-          
+
       - name: Remove unwanted stuff
         uses: gbraad-devenv/remove-unwanted@v1
 
@@ -59,6 +59,12 @@ jobs:
       - name: Install containers tools (optional)
         continue-on-error: true
         uses: gbraad-actions/setup-container-tools@v1
+
+      - name: Codium Server
+        uses: gbraad-actions/codium-server-action@v1
+
+      - name: Jupyter Notebook
+        uses: gbraad-actions/jupyter-action@v1
 
       - name: Hang around
         run: |

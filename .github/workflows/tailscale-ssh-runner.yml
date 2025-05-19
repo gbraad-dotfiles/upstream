@@ -51,6 +51,12 @@ jobs:
         continue-on-error: true
         uses: gbraad-actions/setup-container-tools@v1
 
+      - name: Codium Server
+        uses: gbraad-actions/codium-server-action@v1
+
+      - name: Jupyter Notebook
+        uses: gbraad-actions/jupyter-action@v1
+
       - name: Hang around
         run: |
           sleep 18000
