@@ -14,5 +14,7 @@ if [[ $(dotini --get "dotfiles.userdirs") == true ]]; then
     mkdir -p ${HOME}/Documents
     mkdir -p ${HOME}/Downloads
   fi
+  mkdir -p ${HOME}/Documents/Notebooks
+  mkdir -p ${HOME}/Documents/Vaults
 
 fi
