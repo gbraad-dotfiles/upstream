@@ -19,9 +19,3 @@ if [ -d "$HOME/.local/bin" ]; then
     PATH="$HOME/.local/bin:$PATH"
 fi
 
-# User specific aliases and functions
-if [ -d $HOME/.zshrc.d ]; then
-  for file in $HOME/.zshrc.d/*.?sh; do
-    source $file
-  done
-fi
