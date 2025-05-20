@@ -12,6 +12,7 @@
 	tmux = true
 	vim = true
 	i3 = true
+	ipython = true
 
 [windows]
 	wsl = true
