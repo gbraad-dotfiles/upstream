@@ -1,1 +1,2 @@
 export JUPYTER_PATH="${HOME}/.ipython/extensions":$JUPYER_PATH
+export PYTHONPATH=$JUPYTER_PATH:$PYTHONPATH
