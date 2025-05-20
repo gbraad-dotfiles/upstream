@@ -21,7 +21,6 @@ devenv() {
   local IMAGE_USER=$(devini --get devenv.user)
   local START_ARGS=(
     "--user=root"
-    "--systemd=always"
     "--cap-add=NET_RAW"
     "--cap-add=NET_ADMIN"
     "--cap-add=SYS_ADMIN"
@@ -55,7 +54,7 @@ devenv() {
       #  START_PATHS[$i]="${START_PATHS[$i]/#\~/$HOME}"
       #done
       podman run -d --name=${PREFIX}sys --hostname ${HOSTNAME}-${PREFIX}sys \
-        "${START_ARGS[@]}" "${START_PATHS[@]}" \
+        --systemd=always "${START_ARGS[@]}" "${START_PATHS[@]}" \
         $(generate_image_name $PREFIX)
       # TODO: systemd only when able to check for running state
       #&& (mkdir -p ${HOME}/.config/systemd/user && cd ${HOME}/.config/systemd/user \
@@ -63,17 +62,23 @@ devenv() {
       #&& systemctl --user daemon-reload \
       #&& systemctl --user start container-${PREFIX}sys
       ;;
-    "nosys" | "noinit")
+    "noinit" | "dumb")
       # For environments that can not start systemd
       podman run -d --name=${PREFIX}sys --hostname ${HOSTNAME}-${PREFIX}sys \
-        "${START_ARGS[@]}" "${START_PATHS[@]}" --entrypoint "" \
+        --entrypoint "" "${START_ARGS[@]}" "${START_PATHS[@]}" \
+        $(generate_image_name $PREFIX) $(devini --get devenv.noinit)
+      ;;
+    "nosys" | "init")
+      # For environments that can not start systemd
+      podman run -d --name=${PREFIX}sys --hostname ${HOSTNAME}-${PREFIX}sys \
+        --init --entrypoint "" "${START_ARGS[@]}" "${START_PATHS[@]}" \
         $(generate_image_name $PREFIX) $(devini --get devenv.noinit)
       ;;
     "start")
       if (! podman ps -a --format "{{.Names}}" | grep -q ${PREFIX}sys); then
         source /etc/os-release
         if [[ "$ID" == "idx" ]]; then
-          devenv ${PREFIX} noinit
+          devenv ${PREFIX} init
         else
           devenv ${PREFIX} system
         fi
