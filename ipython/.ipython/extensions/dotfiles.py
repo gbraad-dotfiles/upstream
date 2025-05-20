@@ -8,5 +8,5 @@ def load_ipython_extension(ipython):
         command = line
         if cell:
             command += '\n' + cell
-        get_ipython().system(f"zsh -i -c '. ~/.dotfiles/source.sh; {command}'")
+        get_ipython().system(f"zsh -i -c 'if ! typeset -f dotfiles >/dev/null; then source ~/.dotfiles/source.sh; fi; {command}'")
 
