@@ -1,0 +1,15 @@
+{
+    "theme": "JupyterLab Dark",
+    "adaptive-theme": false,
+    "preferred-light-theme": "JupyterLab Light",
+    "preferred-dark-theme": "JupyterLab Dark",
+    "theme-scrollbars": false,
+    "overrides": {
+        "code-font-family": "Source Code Pro",
+        "code-font-size": null,
+        "content-font-family": "Source Sans Pro",
+        "content-font-size1": null,
+        "ui-font-family": "Source Sans Pro",
+        "ui-font-size1": null
+    }
+}

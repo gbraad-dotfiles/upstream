@@ -1,0 +1,51 @@
+{
+    "clearCellsOnExecute": false,
+    "clearCodeContentOnExecute": true,
+    "hideCodeInput": false,
+    "interactionMode": "notebook",
+    "showAllKernelActivity": false,
+    "promptCellConfig": {
+        "lineNumbers": false,
+        "customStyles": {
+            "fontFamily": "Source Code Pro",
+            "fontSize": null,
+            "lineHeight": null
+        }
+    },
+    "promptCellPosition": "bottom",
+    "showBanner": true,
+    "toolbar": [
+        {
+            "name": "run",
+            "command": "console:run-forced",
+            "rank": 0
+        },
+        {
+            "name": "restart",
+            "command": "console:restart-kernel",
+            "rank": 10
+        },
+        {
+            "name": "clear",
+            "command": "console:clear",
+            "rank": 20
+        },
+        {
+            "name": "spacer",
+            "type": "spacer",
+            "rank": 100
+        },
+        {
+            "name": "kernelName",
+            "rank": 1000
+        },
+        {
+            "name": "kernelStatus",
+            "rank": 1010
+        },
+        {
+            "name": "promptPosition",
+            "rank": 1020
+        }
+    ]
+}

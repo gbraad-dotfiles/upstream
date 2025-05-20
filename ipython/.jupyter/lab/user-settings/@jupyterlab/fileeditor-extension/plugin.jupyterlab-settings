@@ -1,0 +1,11 @@
+{
+    "editorConfig": {
+        "customStyles": {
+            "fontFamily": "Source Code Pro",
+            "fontSize": null,
+            "lineHeight": null
+        }
+    },
+    "scrollPastEnd": true,
+    "toolbar": []
+}
