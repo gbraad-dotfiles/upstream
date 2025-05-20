@@ -121,7 +121,7 @@ _dotoldinstall() {
 }
 
 _dotresource() {
-  if [[ -z "$DOTFILES_SOURCED_FROM_SOURCE_SH" ]]; then
+  if [[ "$DOTFILES_SOURCED_FROM_SOURCE_SH" == 0 || "$DOTFILES_SOURCED_FROM_SOURCE_SH" == false ]]; then
     echo "Resourcing zsh."
   fi
   if [ -d $HOME/.zshrc.d ]; then
@@ -198,6 +198,7 @@ dotfiles() {
       _dotinstall
       ;;
     "resource")
+      export DOTFILES_SOURCED_FROM_SOURCE_SH=0
       _dotresource
       ;;
     "reset")
