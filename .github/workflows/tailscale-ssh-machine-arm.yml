@@ -52,8 +52,9 @@ jobs:
           tailscale drive share documents ${{ github.workspace }}/Documents
           tailscale drive share downloads ${{ github.workspace }}/Downloads
 
-      - name: Dotfiles
-        uses: gbraad-dotfiles/install-dotfiles-action@v1
+      - name: Dotfiles (install from checkout)
+        run: |
+          ./install.sh
 
       - name: Install required virtualization software
         continue-on-error: true

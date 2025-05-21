@@ -40,7 +40,7 @@ jobs:
           tailscale drive share documents ${HOME}/Documents
           tailscale drive share downloads ${HOME}/Downloads
 
-      - name: Dotfiles
+      - name: Dotfiles (install from action)
         uses: gbraad-dotfiles/install-dotfiles-action@v1
 
       - name: Install required virtualization software
