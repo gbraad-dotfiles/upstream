@@ -1,6 +1,6 @@
 #!/bin/sh
 
-CONFIG="${HOME}/.tailscale"
+CONFIG="${HOME}/.config/dotfiles/tailscale"
 alias tailscaleini="git config -f $CONFIG"
 
 STATEDIR=$(tailscaleini --get "tailproxy.statedir")
