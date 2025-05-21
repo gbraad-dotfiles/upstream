@@ -15,7 +15,7 @@ jobs:
           sudo chmod go-w /usr/share/zsh
 
       - name: Remove unwanted stuff
-        uses: gbraad-devenv/remove-unwanted@v1
+        uses: gbraad-actions/remove-unwanted@v1
 
       - name: Tailscale
         uses: gbraad-actions/tailscale-action@v1
@@ -51,6 +51,9 @@ jobs:
           tailscale drive share projects  ${{ github.workspace }}/Projects
           tailscale drive share documents ${{ github.workspace }}/Documents
           tailscale drive share downloads ${{ github.workspace }}/Downloads
+
+      - name: Dotfiles
+        uses: gbraad-dotfiles/install-dotfiles-action@v1
 
       - name: Install required virtualization software
         continue-on-error: true
