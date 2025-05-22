@@ -1,0 +1,14 @@
+{
+ "argv": [
+  "python",
+  "-c",
+  "import sys, os; sys.path.append(os.path.expanduser('~/.dotfiles/ipython/.ipython/extensions')); from ipykernel import kernelapp as app; app.launch_new_instance(argv=['--ext', 'dotfiles', '-f', '{connection_file}'])",
+  "-f",
+  "{connection_file}"
+ ],
+ "display_name": "Python 3 (ipykernel)",
+ "language": "python",
+ "metadata": {
+  "debugger": true
+ }
+}
