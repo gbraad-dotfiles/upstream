@@ -7,7 +7,7 @@ on:
 
 jobs:
   trigger-build-diskimage-almalinux:
-    runs-on: ubuntu-latest
+    runs-on: blacksmith-4vcpu-ubuntu-2404
     steps:
       - name: Start AlmaLinux diskimage build
         uses: actions/github-script@v7
@@ -21,7 +21,7 @@ jobs:
             });
 
   trigger-build-diskimage-centos:
-    runs-on: ubuntu-latest
+    runs-on: blacksmith-4vcpu-ubuntu-2404
     steps:
       - name: Start CentOS diskimage build
         uses: actions/github-script@v7
@@ -35,7 +35,7 @@ jobs:
             });
 
   trigger-build-diskimage-fedora:
-    runs-on: ubuntu-latest
+    runs-on: blacksmith-4vcpu-ubuntu-2404
     steps:
       - name: Start Fedora diskimage build
         uses: actions/github-script@v7
@@ -50,7 +50,7 @@ jobs:
 
 
   wait-for-build-diskimage-almalinux:
-    runs-on: ubuntu-latest
+    runs-on: blacksmith-4vcpu-ubuntu-2404
     needs: trigger-build-diskimage-almalinux
     steps:
       - name: Wait for build-diskimage-almalinux to complete
@@ -62,7 +62,7 @@ jobs:
           wait-interval: 10
 
   wait-for-build-diskimage-centos:
-    runs-on: ubuntu-latest
+    runs-on: blacksmith-4vcpu-ubuntu-2404
     needs: trigger-build-diskimage-centos
     steps:
       - name: Wait for build-diskimage-centos to complete
@@ -74,7 +74,7 @@ jobs:
           wait-interval: 10
 
   wait-for-build-diskimage-fedora:
-    runs-on: ubuntu-latest
+    runs-on: blacksmith-4vcpu-ubuntu-2404
     needs: trigger-build-diskimage-fedora
     steps:
       - name: Wait for build-diskimage-fedora to complete

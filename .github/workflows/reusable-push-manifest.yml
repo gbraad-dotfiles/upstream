@@ -20,7 +20,7 @@ jobs:
   prepare-and-push-manifest:
     name: Prepare and Push Multi-Architecture Manifest
 
-    runs-on: ubuntu-latest
+    runs-on: blacksmith-4vcpu-ubuntu-2404
 
     steps:
       - name: Download OCI artifacts for arm64

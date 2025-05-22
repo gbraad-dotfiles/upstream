@@ -6,7 +6,7 @@ on:
 
 jobs:
   dotfiles-test:
-    runs-on: ubuntu-24.04-arm
+    runs-on: blacksmith-4vcpu-ubuntu-2404
     
     steps:
       - name: Workaround - fixes compaudit

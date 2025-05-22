@@ -6,7 +6,7 @@ on:
 
 jobs:
   dotfiles-test:
-    runs-on: ubuntu-latest
+    runs-on: blacksmith-4vcpu-ubuntu-2404
 
     container:
       image: ghcr.io/gbraad-dotfiles/fedora:latest

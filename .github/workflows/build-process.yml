@@ -11,7 +11,7 @@ on:
 jobs:
 
   trigger-build-container-almalinux:
-    runs-on: ubuntu-latest
+    runs-on: blacksmith-4vcpu-ubuntu-2404
     steps:
       - name: Start AlmaLinux container build
         uses: actions/github-script@v7
@@ -28,7 +28,7 @@ jobs:
           sleep 10
 
   trigger-build-container-centos:
-    runs-on: ubuntu-latest
+    runs-on: blacksmith-4vcpu-ubuntu-2404
     steps:
       - name: Start CentOS container build
         uses: actions/github-script@v7
@@ -45,7 +45,7 @@ jobs:
           sleep 10
 
   trigger-build-container-debian:
-    runs-on: ubuntu-latest
+    runs-on: blacksmith-4vcpu-ubuntu-2404
     steps:
       - name: Start Debian container build
         uses: actions/github-script@v7
@@ -62,7 +62,7 @@ jobs:
           sleep 10        
 
   trigger-build-container-fedora:
-    runs-on: ubuntu-latest
+    runs-on: blacksmith-4vcpu-ubuntu-2404
     steps:
       - name: Start Fedora container build
         uses: actions/github-script@v7
@@ -80,7 +80,7 @@ jobs:
 
 
   trigger-build-container-ubi9:
-    runs-on: ubuntu-latest
+    runs-on: blacksmith-4vcpu-ubuntu-2404
     steps:
       - name: Start UBI9 container build
         uses: actions/github-script@v7
@@ -98,7 +98,7 @@ jobs:
 
 
   trigger-build-container-alpine:
-    runs-on: ubuntu-latest
+    runs-on: blacksmith-4vcpu-ubuntu-2404
     steps:
       - name: Start Alpine container build
         uses: actions/github-script@v7
@@ -116,7 +116,7 @@ jobs:
 
 
   trigger-build-container-ubuntu:
-    runs-on: ubuntu-latest
+    runs-on: blacksmith-4vcpu-ubuntu-2404
     steps:
       - name: Start Ubuntu container build
         uses: actions/github-script@v7
@@ -134,7 +134,7 @@ jobs:
 
 
   trigger-build-container-almalinux-bootc:
-    runs-on: ubuntu-latest
+    runs-on: blacksmith-4vcpu-ubuntu-2404
     steps:
       - name: Start AlmaLinux (bootc) container build
         uses: actions/github-script@v7
@@ -152,7 +152,7 @@ jobs:
 
 
   trigger-build-container-centos-bootc:
-    runs-on: ubuntu-latest
+    runs-on: blacksmith-4vcpu-ubuntu-2404
     steps:
       - name: Start CentOS (bootc) container build
         uses: actions/github-script@v7
@@ -170,7 +170,7 @@ jobs:
 
             
   trigger-build-container-fedora-bootc:
-    runs-on: ubuntu-latest
+    runs-on: blacksmith-4vcpu-ubuntu-2404
     steps:
       - name: Start Fedora (bootc) container build
         uses: actions/github-script@v7
@@ -188,7 +188,7 @@ jobs:
 
 
   wait-for-build-container-almalinux:
-    runs-on: ubuntu-latest
+    runs-on: blacksmith-4vcpu-ubuntu-2404
     needs: trigger-build-container-almalinux
     steps:
       - name: Wait for build-container-almalinux-amd64 to complete
@@ -207,7 +207,7 @@ jobs:
           wait-interval: 10
 
   wait-for-build-container-centos:
-    runs-on: ubuntu-latest
+    runs-on: blacksmith-4vcpu-ubuntu-2404
     needs: trigger-build-container-centos
     steps:
       - name: Wait for build-container-centos-amd64 to complete
@@ -226,7 +226,7 @@ jobs:
           wait-interval: 10
 
   wait-for-build-container-debian:
-    runs-on: ubuntu-latest
+    runs-on: blacksmith-4vcpu-ubuntu-2404
     needs: trigger-build-container-debian
     steps:
       - name: Wait for build-container-debian-amd64 to complete
@@ -245,7 +245,7 @@ jobs:
           wait-interval: 10
 
   wait-for-build-container-fedora:
-    runs-on: ubuntu-latest
+    runs-on: blacksmith-4vcpu-ubuntu-2404
     needs: trigger-build-container-fedora
     steps:
       - name: Wait for build-container-fedora-amd64 to complete
@@ -264,7 +264,7 @@ jobs:
           wait-interval: 10
 
   wait-for-build-container-ubi9:
-    runs-on: ubuntu-latest
+    runs-on: blacksmith-4vcpu-ubuntu-2404
     needs: trigger-build-container-ubi9
     steps:
       - name: Wait for build-container-ubi9-amd64 to complete
@@ -283,7 +283,7 @@ jobs:
           wait-interval: 10
 
   wait-for-build-container-alpine:
-    runs-on: ubuntu-latest
+    runs-on: blacksmith-4vcpu-ubuntu-2404
     needs: trigger-build-container-alpine
     steps:
       - name: Wait for build-container-alpine-amd64 to complete
@@ -302,7 +302,7 @@ jobs:
           wait-interval: 10
 
   wait-for-build-container-ubuntu:
-    runs-on: ubuntu-latest
+    runs-on: blacksmith-4vcpu-ubuntu-2404
     needs: trigger-build-container-ubuntu
     steps:
       - name: Wait for build-container-ubuntu-amd64 to complete
@@ -322,7 +322,7 @@ jobs:
 
 
   wait-for-build-container-almalinux-bootc:
-    runs-on: ubuntu-latest
+    runs-on: blacksmith-4vcpu-ubuntu-2404
     needs: trigger-build-container-almalinux-bootc
     steps:
       - name: Wait for build-container-fedora-amd64 to complete
@@ -341,7 +341,7 @@ jobs:
           wait-interval: 10
 
   wait-for-build-container-centos-bootc:
-    runs-on: ubuntu-latest
+    runs-on: blacksmith-4vcpu-ubuntu-2404
     needs: trigger-build-container-centos-bootc
     steps:
       - name: Wait for build-container-fedora-amd64 to complete
@@ -360,7 +360,7 @@ jobs:
           wait-interval: 10
 
   wait-for-build-container-fedora-bootc:
-    runs-on: ubuntu-latest
+    runs-on: blacksmith-4vcpu-ubuntu-2404
     needs: trigger-build-container-fedora-bootc
     steps:
       - name: Wait for build-container-fedora-amd64 to complete
@@ -380,7 +380,7 @@ jobs:
 
 
   trigger-sync-repos:
-    runs-on: ubuntu-latest
+    runs-on: blacksmith-4vcpu-ubuntu-2404
     needs:
       - wait-for-build-container-almalinux
       - wait-for-build-container-centos

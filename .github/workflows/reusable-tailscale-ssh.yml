@@ -23,7 +23,7 @@ defaults:
 
 jobs:
   dotfiles-test:
-    runs-on: ${{ inputs.arch == 'arm64' && 'ubuntu-24.04-arm' || 'ubuntu-latest' }}
+    runs-on: ${{ inputs.arch == 'arm64' && 'ubuntu-24.04-arm' || 'blacksmith-4vcpu-ubuntu-2404' }}
     
     steps:
       - name: Remove unwanted stuff
