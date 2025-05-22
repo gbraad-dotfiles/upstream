@@ -1,5 +1,13 @@
 from IPython.core.magic import register_line_cell_magic, register_line_magic
 
+def in_jupyter():
+    try:
+        from IPython import get_ipython
+        shell = get_ipython().__class__.__name__
+        return shell == 'ZMQInteractiveShell'  # True in Jupyter
+    except:
+        return False
+
 def load_ipython_extension(ipython):
     print("dotfiles extension loaded!")
 
@@ -97,6 +105,9 @@ def dotini(line):
         return data
 
 from IPython.display import display, Markdown
+from pygments import highlight
+from pygments.lexers import get_lexer_by_name
+from pygments.formatters import TerminalFormatter
 
 @register_line_magic
 def code(line):
@@ -110,16 +121,20 @@ def code(line):
         print("Usage: %code variable_name [language]")
         return
     varname = parts[0]
-    language = parts[1] if len(parts) > 1 else ""
+    language = parts[1] if len(parts) > 1 else "text"
     ipy = get_ipython()
     if varname not in ipy.user_ns:
         print(f"Variable '{varname}' not found in user namespace.")
         return
     value = ipy.user_ns[varname]
-    text = str(value)
-
+    code = str(value)
     if language:
-        md = f"```{language}\n{text}\n```"
+        md = f"```{language}\n{code}\n```"
     else:
-        md = f"```\n{text}\n```"
-    display(Markdown(md))
+        md = f"```\n{code}\n```"
+    if in_jupyter():
+        display(Markdown(md))
+    else:
+        lexer = get_lexer_by_name(language)
+        print(highlight(code, lexer, TerminalFormatter()))
+
