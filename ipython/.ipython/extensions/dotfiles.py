@@ -95,3 +95,31 @@ def dotini(line):
         return data
     else:  # default: return
         return data
+
+from IPython.display import display, Markdown
+
+@register_line_magic
+def code(line):
+    """
+    Usage: %code variable_name [language]
+    Displays the value of the given variable as a Markdown code block.
+    Optionally specify a language for syntax highlighting.
+    """
+    parts = line.strip().split()
+    if not parts:
+        print("Usage: %code variable_name [language]")
+        return
+    varname = parts[0]
+    language = parts[1] if len(parts) > 1 else ""
+    ipy = get_ipython()
+    if varname not in ipy.user_ns:
+        print(f"Variable '{varname}' not found in user namespace.")
+        return
+    value = ipy.user_ns[varname]
+    text = str(value)
+
+    if language:
+        md = f"```{language}\n{text}\n```"
+    else:
+        md = f"```\n{text}\n```"
+    display(Markdown(md))
