@@ -69,7 +69,7 @@ jobs:
       - name: Dotfiles (install from checkout)
         run: |
           ./install.sh
-          sudo chsh -s `which zsh` runner
+          chsh -s `which zsh` || true
 
       - name: Install required virtualization software
         continue-on-error: true
