@@ -36,9 +36,6 @@ def dot(line):
     # Remove ANSI escape sequences
     ansi_escape = re.compile(r'\x1B\[[0-?]*[ -/]*[@-~]')
     clean_output = ansi_escape.sub('', result.stdout).strip()
-    # Remove surrounding quotes, if present
-    if clean_output.startswith('"') and clean_output.endswith('"'):
-        clean_output = clean_output[1:-1]
     return clean_output
 
 
