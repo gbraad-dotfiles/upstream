@@ -1,0 +1,8 @@
+{
+	"recommendations": [
+		"gbraad.dotfiles-checker",
+		"gbraad.dotfiles-tools"
+	],
+	"unwantedRecommendations": [
+	]
+}
