@@ -11,4 +11,5 @@ jobs:
     with:
       runs-on: "blacksmith-2vcpu-ubuntu-2404"
       hostname: "dotfiles-blacksmith"
+      sudo-change-shell: true
     secrets: inherit

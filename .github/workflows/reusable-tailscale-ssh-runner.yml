@@ -13,6 +13,11 @@ on:
         required: false
         type: string
         default: "dotfiles"
+      sudo-change-shell:
+        description: "Whether to use sudo for chsh"
+        required: false
+        type: boolean
+        default: false
 
 defaults:
   run:
@@ -56,6 +61,8 @@ jobs:
 
       - name: Dotfiles (install from action)
         uses: gbraad-dotfiles/install-action@main
+        with:
+          sudo-change-shell: ${{ inputs.sudo-change-shell }}
 
       - name: Install required virtualization software
         continue-on-error: true

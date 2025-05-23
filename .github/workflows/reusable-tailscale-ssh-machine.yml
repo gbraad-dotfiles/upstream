@@ -13,6 +13,11 @@ on:
         required: false
         type: string
         default: "dotfiles-machine"
+      sudo-change-shell:
+        description: "Whether to use sudo for chsh"
+        required: false
+        type: boolean
+        default: false
 
 defaults:
   run:
@@ -69,7 +74,13 @@ jobs:
       - name: Dotfiles (install from checkout)
         run: |
           ./install.sh
-          chsh -s `which zsh` || true
+          if [ "${SUDO_CHANGE_SHELL}" = "true" ]; then
+            sudo chsh -s "$(which zsh)"
+          else
+            chsh -s "$(which zsh)"
+          fi
+        env:
+          SUDO_CHANGE_SHELL: ${{ inputs.sudo-change-shell }}
 
       - name: Install required virtualization software
         continue-on-error: true
