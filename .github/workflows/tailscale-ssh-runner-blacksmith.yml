@@ -10,4 +10,5 @@ jobs:
     uses: ./.github/workflows/reusable-tailscale-ssh-runner.yml
     with:
       runs-on: "blacksmith-2vcpu-ubuntu-2404"
+      hostname: "dotfiles-blacksmith"
     secrets: inherit

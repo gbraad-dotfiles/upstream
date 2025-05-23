@@ -10,4 +10,5 @@ jobs:
     uses: ./.github/workflows/reusable-tailscale-ssh-runner.yml
     with:
       runs-on: "ubuntu-24.04-arm"
+      hostname: "dotfiles-arm"
     secrets: inherit

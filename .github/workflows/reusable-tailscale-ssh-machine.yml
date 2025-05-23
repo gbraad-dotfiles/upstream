@@ -8,6 +8,11 @@ on:
         required: true
         type: string
         default: "ubuntu-latest"
+      hostname:
+        description: "Hostname to identify with"
+        required: false
+        type: string
+        default: "dotfiles-machine"
 
 defaults:
   run:
@@ -31,7 +36,7 @@ jobs:
         with:
           authkey: ${{ secrets.TAILSCALE_AUTHKEY }}
           args: --ssh --accept-dns=false --operator=runner
-          hostname: dotfiles-machine
+          hostname: ${{ inputs.hostname }}
 
       - name: Check out repository code
         uses: actions/checkout@v4
@@ -64,7 +69,7 @@ jobs:
       - name: Dotfiles (install from checkout)
         run: |
           ./install.sh
-          chsh -s `which zsh`
+          sudo chsh -s `which zsh` runner
 
       - name: Install required virtualization software
         continue-on-error: true

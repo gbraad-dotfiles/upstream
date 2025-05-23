@@ -8,6 +8,11 @@ on:
         required: true
         type: string
         default: "ubuntu-latest"
+      hostname:
+        description: "Hostname to identify with"
+        required: false
+        type: string
+        default: "dotfiles"
 
 defaults:
   run:
@@ -31,7 +36,7 @@ jobs:
         with:
           authkey: ${{ secrets.TAILSCALE_AUTHKEY }}
           args: --ssh --accept-dns=false --operator=runner
-          hostname: dotfiles
+          hostname: ${{ inputs.hostname }}
 
       - name: Usage message
         run: |
