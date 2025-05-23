@@ -1,5 +1,5 @@
-name: tailscale-ssh-machine-blacksmith
-run-name: Tailscale SSH with machinefile action
+name: tailscale-ssh-machine-blacksmith-arm
+run-name: Tailscale SSH with machinefile action (Arm)
 
 on:
   workflow_dispatch:
@@ -9,7 +9,7 @@ jobs:
     name: Tailscale SSH Machine - Blacksmith
     uses: ./.github/workflows/reusable-tailscale-ssh-machine.yml
     with:
-      runs-on: "blacksmith-2vcpu-ubuntu-2404"
-      hostname: "dotfiles-blacksmith"
+      runs-on: "blacksmith-2vcpu-ubuntu-2404-arm"
+      hostname: "dotfiles-blacksmith-arm"
       sudo-change-shell: true
     secrets: inherit
