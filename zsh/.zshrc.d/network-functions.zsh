@@ -6,3 +6,6 @@ function netcheck() {
   fi
   echo 'Network [  OK  ]'
 }
+
+alias externalip="curl -fsSL https://ifconfig.co/ip"
+
