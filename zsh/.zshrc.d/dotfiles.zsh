@@ -44,7 +44,7 @@ get_cmd_prefix() {
   if is_root; then
     echo ""
   else
-    echo "sudo "
+    echo "sudo"
   fi
 }
 
@@ -53,8 +53,8 @@ _dotpackageinstall_apt() {
   # Get the appropriate command prefix
   CMD_PREFIX=$(get_cmd_prefix)
 
-  ${CMD_PREFIX}apt-get update
-  ${CMD_PREFIX}apt-get install -y \
+  "${CMD_PREFIX}" apt-get update
+  "${CMD_PREFIX}" apt-get install -y \
     git zsh stow vim tmux screen fzf jq \
     powerline
 }
@@ -64,7 +64,7 @@ _dotpackageinstall_dnf() {
   # Get the appropriate command prefix
   CMD_PREFIX=$(get_cmd_prefix)
 
-  ${CMD_PREFIX}dnf install -y \
+  "${CMD_PREFIX}" dnf install -y \
     git-core zsh stow vim tmux screen fzf jq \
     powerline vim-powerline tmux-powerline
   # allow first-time system install
