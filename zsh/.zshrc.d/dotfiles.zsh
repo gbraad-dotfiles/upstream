@@ -197,14 +197,14 @@ dotfiles() {
     "in" | "install")
       _dotinstall
       ;;
-    "resource")
+    "source" | "resource")
       export DOTFILES_SOURCED_FROM_SOURCE_SH=0
       _dotresource
       ;;
     "reset")
       _dotreset
       ;;
-    "restow")
+    "stow" | "restow")
       _dotrestow
       ;;
     "switch" | "upstream")
