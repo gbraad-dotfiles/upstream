@@ -7,15 +7,21 @@ on:
         description: "Name of the container (e.g., fedora, ubi9)"
         required: true
         type: string
-      arch:
-        description: "Architecture for the container (e.g., arm64, amd64)"
-        required: true
-        type: string
       base_version:
         description: "Base version identifier"
         required: false
         type: string
         default: "latest"
+      runs-on:
+        description: "Target runner"
+        required: true
+        type: string
+        default: "ubuntu-latest"
+      arch:
+        description: "Architecture for the container (e.g., arm64, amd64)"
+        required: true
+        type: string
+        default: "amd64"
 
 defaults:
   run:
@@ -23,9 +29,17 @@ defaults:
 
 jobs:
   dotfiles-test:
-    runs-on: ${{ inputs.arch == 'arm64' && 'ubuntu-24.04-arm' || 'ubuntu-latest' }}
+    runs-on: ${{ inputs.runs-on }}${{ inputs.arch == 'arm64' && '-arm' || '' }}
     
     steps:
+
+      - name: Enable linger and create user session (workaround)
+        if: ${{ startsWith(runner.name, 'blacksmith-') }}
+        run: |
+          sudo loginctl enable-linger runner
+          sudo apt-get install -y systemd-container
+          sudo machinectl shell runner@ /usr/bin/echo "User session created"
+
       - name: Remove unwanted stuff
         uses: gbraad-devenv/remove-unwanted@v1
 

@@ -1,15 +1,15 @@
-name: tailscale-ssh-fedora-arm64
+name: tailscale-ssh-fedora-amd64
 
 on:
   workflow_dispatch:
 
 jobs:
   dotfiles-test:
-    name: Tailscale SSH - Fedora ARM64
+    name: Tailscale SSH - Fedora AMD64
     uses: ./.github/workflows/reusable-tailscale-ssh.yml
     with:
       container_name: "fedora"
       base_version: "latest"
-      runs-on: "ubuntu-24.04"
-      arch: "arm64"
+      runs-on: "blacksmith-2vcpu-ubuntu-2404"
+      arch: "amd64"
     secrets: inherit

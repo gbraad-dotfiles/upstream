@@ -10,6 +10,6 @@ jobs:
     with:
       container_name: "alpine"
       base_version: "latest"
-      runs-on: "ubuntu-24.04"
+      runs-on: "blacksmith-2vcpu-ubuntu-2404"
       arch: "arm64"
     secrets: inherit

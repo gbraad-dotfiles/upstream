@@ -10,5 +10,6 @@ jobs:
     with:
       container_name: "alpine"
       base_version: "latest"
+      runs-on: "ubuntu-latest"
       arch: "amd64"
     secrets: inherit

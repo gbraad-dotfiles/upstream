@@ -10,5 +10,6 @@ jobs:
     with:
       container_name: "ubi9"
       base_version: "latest"
+      runs-on: "ubuntu-24.04"
       arch: "arm64"
     secrets: inherit

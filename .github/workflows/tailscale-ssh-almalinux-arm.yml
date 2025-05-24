@@ -10,4 +10,5 @@ jobs:
     with:
       container_name: "almalinux"
       base_version: "latest"
+      runs-on: "ubuntu-24.04"
       arch: "arm64"

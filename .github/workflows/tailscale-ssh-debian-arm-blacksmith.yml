@@ -1,15 +1,15 @@
-name: tailscale-ssh-alpine-arm64
+name: tailscale-ssh-debian-arm64
 
 on:
   workflow_dispatch:
 
 jobs:
   dotfiles-test:
-    name: Tailscale SSH - Alpine ARM64
+    name: Tailscale SSH - Debian ARM64
     uses: ./.github/workflows/reusable-tailscale-ssh.yml
     with:
-      container_name: "alpine"
+      container_name: "debian"
       base_version: "latest"
-      runs-on: "ubuntu-24.04"
+      runs-on: "blacksmith-2vcpu-ubuntu-2404"
       arch: "arm64"
     secrets: inherit
