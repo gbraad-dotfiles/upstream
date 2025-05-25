@@ -1,4 +1,4 @@
-name: tailscale-ssh-alpine-amd64
+name: tailscale-ssh-alpine-amd64-blacksmith
 
 on:
   workflow_dispatch:
@@ -6,10 +6,11 @@ on:
 jobs:
   dotfiles-test:
     name: Tailscale SSH - Alpine AMD64
-    uses: ./.github/workflows/reusable-tailscale-ssh.yml
+    uses: ./.github/workflows/reusable-tailscale-ssh-container.yml
     with:
       container_name: "alpine"
       base_version: "latest"
       runs-on: "blacksmith-2vcpu-ubuntu-2404"
       arch: "amd64"
+      sudo-change-shell: true
     secrets: inherit

@@ -6,10 +6,11 @@ on:
 jobs:
   dotfiles-test:
     name: Tailscale SSH - AlmaLinux AMD64
-    uses: ./.github/workflows/reusable-tailscale-ssh.yml
+    uses: ./.github/workflows/reusable-tailscale-ssh-container.yml
     with:
       container_name: "almalinux"
       base_version: "latest"
       runs-on: "ubuntu-latest"
       arch: "amd64"
+      sudo-change-shell: false
     secrets: inherit
