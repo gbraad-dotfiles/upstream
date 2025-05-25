@@ -92,6 +92,9 @@ jobs:
             -v ${HOME}/Documents:/home/${IMAGE_USER}/Documents \
             -v ${HOME}/Downloads:/home/${IMAGE_USER}/Downloads \
             ghcr.io/gbraad-dotfiles/${{ inputs.container_name }}:${{ inputs.base_version }}
+          podman exec dotfiles chown ${IMAGE_USER} /home/${IMAGE_USER}/Projects
+          podman exec dotfiles chown ${IMAGE_USER} /home/${IMAGE_USER}/Documents
+          podman exec dotfiles chown ${IMAGE_USER} /home/${IMAGE_USER}/Downloads
 
       - name: Tailscale setup (root)
         run: |
