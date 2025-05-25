@@ -45,12 +45,10 @@ jobs:
           sudo apt-get install -y systemd-container
           sudo machinectl shell runner@ /usr/bin/echo "User session created"
 
-      - name: Get last 3 chars of runner name
+      - name: Get last 3 chars of hostname
         id: runner_id
         run: |
-          echo "last3=${RUNNER_NAME: -3}" >> $GITHUB_OUTPUT
-        env:
-          RUNNER_NAME: ${{ runner.name }}
+          echo "last3=${HOSTNAME: -3}" >> $GITHUB_OUTPUT
 
       - name: Remove unwanted stuff
         uses: gbraad-devenv/remove-unwanted@v1
