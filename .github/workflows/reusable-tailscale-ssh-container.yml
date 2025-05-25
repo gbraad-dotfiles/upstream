@@ -45,6 +45,13 @@ jobs:
           sudo apt-get install -y systemd-container
           sudo machinectl shell runner@ /usr/bin/echo "User session created"
 
+      - name: Get last 3 chars of runner name
+        id: runner_id
+        run: |
+          echo "last3=${RUNNER_NAME: -3}" >> $GITHUB_OUTPUT
+        env:
+          RUNNER_NAME: ${{ runner.name }}
+
       - name: Remove unwanted stuff
         uses: gbraad-devenv/remove-unwanted@v1
 
@@ -53,7 +60,7 @@ jobs:
         with:
           authkey: ${{ secrets.TAILSCALE_AUTHKEY }}
           args: --ssh --accept-dns=false --operator=runner --advertise-exit-node
-          hostname: "dotfiles-${{ inputs.arch }}-${HOSTNAME: -3}"
+          hostname: "dotfiles-${{ inputs.arch }}-${{ steps.runner_id.outputs.last3 }}"
 
       - name: Create and share userdirs
         run: |
@@ -73,7 +80,8 @@ jobs:
 
       - name: Run system container with `podman`
         run: |
-          podman run -d --name dotfiles --hostname dot${{ inputs.container_name }}-${{ inputs.arch }}-${HOSTNAME: -3} \
+          podman run -d --name dotfiles \
+            --hostname dot${{ inputs.container_name }}-${{ inputs.arch }}-${{ steps.runner_id.outputs.last3 }} \
             --systemd=always --cap-add=NET_RAW --cap-add=NET_ADMIN \
             --cap-add=SYS_ADMIN --device=/dev/net/tun --device=/dev/fuse \
             ghcr.io/gbraad-dotfiles/${{ inputs.container_name }}:${{ inputs.base_version }}
