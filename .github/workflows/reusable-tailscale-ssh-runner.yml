@@ -43,11 +43,6 @@ jobs:
           args: --ssh --accept-dns=false --operator=runner --advertise-exit-node
           hostname: ${{ inputs.hostname }}
 
-      - name: Usage message
-        run: |
-          IP=`tailscale ip -4`
-          echo "Use the following command to connect \`tailscale ssh runner@${IP}\`"
-
       - name: Create and share userdirs
         run: |
           cd ${{ github.workspace }}
@@ -80,6 +75,8 @@ jobs:
 
       - name: Hang around
         run: |
+          IP=`tailscale ip -4`
+          echo "Use the following command to connect \`tailscale ssh runner@${IP}\`"
           sleep 18000
 
       - name: Message user; 1 hour
