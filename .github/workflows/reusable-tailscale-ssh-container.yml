@@ -81,26 +81,26 @@ jobs:
         with:
           sudo-change-shell: ${{ inputs.sudo-change-shell }}
 
-      - name: Run system container with `podman`
+      - name: Run devenv command - initialize system container
+        id: devenv
+        uses: gbraad-dotfiles/devenv-action@main
+        with:
+          prefix: dot${{ inputs.container_name }}
+          command: system
+
+      - name: Fix permissions on shared folders inside the container
         run: |
           IMAGE_USER="gbraad"
-          podman run -d --name dotfiles \
-            --hostname dot${{ inputs.container_name }}-${{ inputs.arch }}-${{ steps.runner_id.outputs.last3 }} \
-            --systemd=always --cap-add=NET_RAW --cap-add=NET_ADMIN \
-            --cap-add=SYS_ADMIN --device=/dev/net/tun --device=/dev/fuse \
-            -v ${HOME}/Projects:/home/${IMAGE_USER}/Projects \
-            -v ${HOME}/Documents:/home/${IMAGE_USER}/Documents \
-            -v ${HOME}/Downloads:/home/${IMAGE_USER}/Downloads \
-            ghcr.io/gbraad-dotfiles/${{ inputs.container_name }}:${{ inputs.base_version }}
-          podman exec dotfiles chown ${IMAGE_USER} /home/${IMAGE_USER}/Projects
-          podman exec dotfiles chown ${IMAGE_USER} /home/${IMAGE_USER}/Documents
-          podman exec dotfiles chown ${IMAGE_USER} /home/${IMAGE_USER}/Downloads
+          podman exec dot${{ inputs.container_name }}sys chown ${IMAGE_USER} /home/${IMAGE_USER}/Projects
+          #podman exec dot${{ inputs.container_name }}sys chown ${IMAGE_USER} /home/${IMAGE_USER}/Documents
+          #podman exec dot${{ inputs.container_name }}sys chown ${IMAGE_USER} /home/${IMAGE_USER}/Downloads
 
       - name: Tailscale setup (root)
         run: |
           sleep 1
-          until podman exec dotfiles tailscale up \
+          until podman exec dot${{ inputs.container_name }}sys tailscale up \
             --auth-key ${TAILSCALE_AUTHKEY} \
+            --hostname dot${{ inputs.container_name }}-${{ inputs.arch }}-${{ steps.runner_id.outputs.last3 }} \
             --ssh --accept-dns=false \
             --operator=gbraad \
             --advertise-exit-node
@@ -115,11 +115,11 @@ jobs:
 
       - name: Hang around
         run: |
-          until podman exec dotfiles systemctl is-active --quiet tailscaled
+          until podman exec dot${{ inputs.container_name }}sys systemctl is-active --quiet tailscaled
           do
                sleep 1
           done
-          IP=`podman exec dotfiles tailscale ip -4`
+          IP=`podman exec dot${{ inputs.container_name }}sys tailscale ip -4`
           echo "Use the following command to connect \`tailscale ssh gbraad@${IP}\`"
           IP=`tailscale ip -4`
           echo "Use the following command to debug from the host \`tailscale ssh runner@${IP}\`"
