@@ -6,10 +6,9 @@ on:
 jobs:
   dotfiles-test:
     name: Tailscale SSH - CentOS AMD64
-    uses: ./.github/workflows/reusable-tailscale-ssh-container.yml
+    uses: ./.github/workflows/reusable-tailscale-ssh-devenv.yml
     with:
-      container_name: "centos"
-      base_version: "latest"
+      prefix_name: "dotcentos"
       runs-on: "ubuntu-latest"
       arch: "amd64"
       sudo-change-shell: false

@@ -1,4 +1,4 @@
-name: tailscale-ssh-machine-amd64
+name: tailscale-ssh-machinefile-amd64
 run-name: Tailscale SSH with machinefile action
 
 on:
@@ -7,7 +7,7 @@ on:
 jobs:
   dotfiles-test:
     name: Tailscale SSH Machine - Ubuntu
-    uses: ./.github/workflows/reusable-tailscale-ssh-machine.yml
+    uses: ./.github/workflows/reusable-tailscale-ssh-machinefile.yml
     with:
       runs-on: "ubuntu-latest"
       hostname: "dotfiles-machine"

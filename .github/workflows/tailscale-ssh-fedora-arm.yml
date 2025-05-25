@@ -6,10 +6,9 @@ on:
 jobs:
   dotfiles-test:
     name: Tailscale SSH - Fedora ARM64
-    uses: ./.github/workflows/reusable-tailscale-ssh-container.yml
+    uses: ./.github/workflows/reusable-tailscale-ssh-devenv.yml
     with:
-      container_name: "fedora"
-      base_version: "latest"
+      prefix_name: "dotfedora"
       runs-on: "ubuntu-24.04"
       arch: "arm64"
       sudo-change-shell: false

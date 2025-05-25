@@ -6,10 +6,9 @@ on:
 jobs:
   dotfiles-test:
     name: Tailscale SSH - Alpine AMD64
-    uses: ./.github/workflows/reusable-tailscale-ssh-container.yml
+    uses: ./.github/workflows/reusable-tailscale-ssh-devenv.yml
     with:
-      container_name: "alpine"
-      base_version: "latest"
+      prefix_name: "dotalpine"
       runs-on: "ubuntu-latest"
       arch: "amd64"
       sudo-change-shell: false

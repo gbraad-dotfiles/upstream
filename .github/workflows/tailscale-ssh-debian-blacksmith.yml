@@ -6,10 +6,9 @@ on:
 jobs:
   dotfiles-test:
     name: Tailscale SSH - Debian AMD64
-    uses: ./.github/workflows/reusable-tailscale-ssh-container.yml
+    uses: ./.github/workflows/reusable-tailscale-ssh-devenv.yml
     with:
-      container_name: "debian"
-      base_version: "latest"
+      prefix_name: "dotdebian"
       runs-on: "blacksmith-2vcpu-ubuntu-2404"
       arch: "amd64"
       sudo-change-shell: true

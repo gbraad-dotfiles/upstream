@@ -6,10 +6,9 @@ on:
 jobs:
   dotfiles-test:
     name: Tailscale SSH - Ubuntu ARM64
-    uses: ./.github/workflows/reusable-tailscale-ssh-container.yml
+    uses: ./.github/workflows/reusable-tailscale-ssh-devenv.yml
     with:
-      container_name: "ubuntu"
-      base_version: "latest"
+      prefix_name: "dotubuntu"
       runs-on: "blacksmith-2vcpu-ubuntu-2404"
       arch: "arm64"
       sudo-change-shell: true
