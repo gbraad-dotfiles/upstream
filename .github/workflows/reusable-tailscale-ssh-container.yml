@@ -110,6 +110,9 @@ jobs:
         env:
           TAILSCALE_AUTHKEY: ${{ secrets.TAILSCALE_AUTHKEY}}
 
+      - name: Codium Server
+        uses: gbraad-actions/codium-server-action@v1
+
       - name: Hang around
         run: |
           until podman exec dotfiles systemctl is-active --quiet tailscaled
