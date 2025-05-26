@@ -28,6 +28,14 @@ jobs:
     runs-on: ${{ inputs.runs-on }}
     
     steps:
+
+      - name: Enable linger and create user session (workaround)
+        if: ${{ startsWith(runner.name, 'blacksmith-') }}
+        run: |
+          sudo loginctl enable-linger runner
+          sudo apt-get install -y systemd-container
+          sudo machinectl shell runner@ /usr/bin/echo "User session created"      
+      
       - name: Workaround - fixes compaudit
         run: |
           sudo chmod go-w /usr/share/zsh/vendor-completions
