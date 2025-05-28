@@ -34,7 +34,11 @@ devenv() {
   #"--workdir=$(devini --get devenv.workdir)"
   local START_PATHS=(
     "-v" "${HOME}/Projects:/home/${IMAGE_USER}/Projects"
+    "-v" "${HOME}/Documents:/home/${IMAGE_USER}/Documents"
+    "-v" "${HOME}/Downloads:/home/${IMAGE_USER}/Downloads"
     "-v" "${HOME}/Projects:/var/home/${IMAGE_USER}/Projects"
+    "-v" "${HOME}/Documents:/var/home/${IMAGE_USER}/Documents"
+    "-v" "${HOME}/Downloads:/var/home/${IMAGE_USER}/Downloads"
   )
   
   case "$COMMAND" in

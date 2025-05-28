@@ -83,8 +83,8 @@ jobs:
         run: |
           IMAGE_USER="gbraad"
           podman exec ${{ inputs.prefix_name }}sys chown ${IMAGE_USER} /home/${IMAGE_USER}/Projects
-          #podman exec ${{ inputs.prefix_name }}sys chown ${IMAGE_USER} /home/${IMAGE_USER}/Documents
-          #podman exec ${{ inputs.prefix_name }}sys chown ${IMAGE_USER} /home/${IMAGE_USER}/Downloads
+          podman exec ${{ inputs.prefix_name }}sys chown ${IMAGE_USER} /home/${IMAGE_USER}/Documents
+          podman exec ${{ inputs.prefix_name }}sys chown ${IMAGE_USER} /home/${IMAGE_USER}/Downloads
 
       - name: Tailscale setup (root)
         run: |
