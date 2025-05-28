@@ -1,0 +1,15 @@
+name: tailscale-ssh-runner-warpbuild-spot
+run-name: Tailscale SSH with install action
+
+on:
+  workflow_dispatch:
+
+jobs:
+  dotfiles-test:
+    name: Tailscale SSH Machine - WarpBuild Spot
+    uses: ./.github/workflows/reusable-tailscale-ssh-runner.yml
+    with:
+      runs-on: "warp-ubuntu-latest-x64-2x-spot"
+      hostname: "dotfiles-warpbuild"
+      sudo-change-shell: true
+    secrets: inherit
