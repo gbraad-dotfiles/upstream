@@ -11,5 +11,5 @@ jobs:
     with:
       runs-on: "warp-ubuntu-latest-x64-2x"
       hostname: "dotfiles-warpbuild"
-      sudo-change-shell: false
+      sudo-change-shell: true
     secrets: inherit
