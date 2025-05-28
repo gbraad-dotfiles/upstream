@@ -32,10 +32,16 @@ jobs:
       - name: Enable linger and create user session (workaround)
         uses: gbraad-actions/blacksmith-user-session@main  
       
+      - name: Allow unprivileged userns (workaround)
+        uses: gbraad-actions/warpbuild-unprivileged-userns@main
+
       - name: Workaround - fixes compaudit
         run: |
           sudo chmod go-w /usr/share/zsh/vendor-completions
           sudo chmod go-w /usr/share/zsh
+          #sudo chmod go-w /home/linuxbrew/.linuxbrew/share/zsh/site-functions
+          #sudo chmod go-w /home/linuxbrew/.linuxbrew/share/zsh
+          #sudo chmod go-w /home/linuxbrew/.linuxbrew/share/zsh/site-functions/_brew
 
       - name: Remove unwanted stuff
         uses: gbraad-actions/remove-unwanted@v1
