@@ -79,13 +79,6 @@ jobs:
           prefix: ${{ inputs.prefix_name }}
           command: system
 
-      - name: Fix permissions on shared folders inside the container
-        run: |
-          IMAGE_USER="gbraad"
-          podman exec ${{ inputs.prefix_name }}sys chown ${IMAGE_USER} /home/${IMAGE_USER}/Projects
-          podman exec ${{ inputs.prefix_name }}sys chown ${IMAGE_USER} /home/${IMAGE_USER}/Documents
-          podman exec ${{ inputs.prefix_name }}sys chown ${IMAGE_USER} /home/${IMAGE_USER}/Downloads
-
       - name: Tailscale setup (root)
         run: |
           sleep 1
