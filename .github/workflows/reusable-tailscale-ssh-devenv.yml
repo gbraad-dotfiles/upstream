@@ -71,6 +71,7 @@ jobs:
         uses: gbraad-dotfiles/install-action@main
         with:
           sudo-change-shell: ${{ inputs.sudo-change-shell }}
+          upstream: true
 
       - name: Run devenv command - initialize system container
         id: devenv

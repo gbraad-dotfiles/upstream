@@ -68,6 +68,7 @@ jobs:
         uses: gbraad-dotfiles/install-action@main
         with:
           sudo-change-shell: ${{ inputs.sudo-change-shell }}
+          upstream: true
 
       - name: Install required virtualization software
         continue-on-error: true
