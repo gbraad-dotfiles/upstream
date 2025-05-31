@@ -33,13 +33,16 @@
 	alpine = 	ghcr.io/gbraad-devenv/alpine/systemd:3.18
 	suse = 		ghcr.io/gbraad-devenv/opensuse/systemd:15.5
 	tumble = 	ghcr.io/gbraad-devenv/tumbleweed/systemd:latest
-	tail = 		ghcr.io/spotsnel/tailscale-systemd/fedora:latest
 	obsidian = 	ghcr.io/gbraad-apps/obsidian:latest
+	onion = 	ghcr.io/gbraad-apps/onion:latest
 	nextcloud = 	ghcr.io/gbraad-homelab/nextcloud/hub9:latest
 	forgejo = 	ghcr.io/gbraad-homelab/private-forgejo:latest
 	jellyfin = 	ghcr.io/gbraad-homelab/jellyfin:latest
 	cardforge  = 	ghcr.io/gbraad-gaming/cardforge:latest
 	steam = 	ghcr.io/gbraad-gaming/steam:latest
 	steamcmd = 	ghcr.io/gbraad-gaming/steamcmd:latest
+	minecraft-server	= ghcr.io/gbraad-gaming/minecraft-server:latest
+	minecraft-launcher	= ghcr.io/gbraad-gaming/minecraft-launcher:latest
 	actfedora = 	ghcr.io/gbraad-actions/fedora:stable
 	actcentos =	ghcr.io/gbraad-actions/centos:stable
+	tailscale = 	ghcr.io/spotsnel/tailscale-systemd/fedora:latest
