@@ -1,4 +1,4 @@
-name: mark latest as stable
+name: reusable mark latest as stable
 
 on:
     workflow_call:
