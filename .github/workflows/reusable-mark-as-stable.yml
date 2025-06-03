@@ -1,0 +1,39 @@
+name: mark latest as stable
+
+on:
+    workflow_call:
+      inputs:
+        container_name:
+          description: "Name of the container (e.g., fedora, ubi9)"
+          required: true
+          type: string
+
+jobs:
+  mark-as-stable:
+    name: mark-as-stable
+    permissions:
+      contents: read
+      packages: write
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os:
+          - ubuntu-24.04
+    container: 
+      image: ghcr.io/gbraad-actions/fedora:stable
+      options: --privileged
+
+    steps:
+      - name: Create manifest
+        run: |
+          podman manifest create --all ${{ inputs.container_name }}-manifest docker://ghcr.io/${{ github.repository_owner }}/${{ inputs.container_name }}:latest
+
+      - name: Login to registry
+        run: |
+          podman login ghcr.io -u ${{ github.actor }} \
+            -p ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Push container tag to registry
+        run: |
+          podman manifest push --all ${{ inputs.container_name }}-manifest docker://ghcr.io/${{ github.repository_owner }}/${{ inputs.container_name }}:stable
