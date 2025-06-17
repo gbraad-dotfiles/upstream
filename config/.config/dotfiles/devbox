@@ -1,0 +1,6 @@
+[devbox]
+	aliases = true
+
+[images]
+	fedora =	ghcr.io/gbraad-devenv/fedora/toolbox:41
+
