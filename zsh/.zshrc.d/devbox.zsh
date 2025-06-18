@@ -23,12 +23,16 @@ devbox() {
       echo "$0 $PREFIX enter"
       ;;
     "stop")
+      distrobox stop ${PREFIX}box
       ;;
     "kill" | "rm" | "remove")
       distrobox rm ${PREFIX}box
       ;;
     "enter" | "shell")
       distrobox enter ${PREFIX}box
+      ;;
+    "export")
+      podman exec ${PREFIX}box su ${USER} -c "export XDG_DATA_DIRS=/usr/local/share:/usr/share; export XDG_DATA_HOME=${HOME}/.local/share; distrobox-export --app $@"
       ;;
     *)
       echo "Unknown command: $0 $PREFIX $COMMAND"
