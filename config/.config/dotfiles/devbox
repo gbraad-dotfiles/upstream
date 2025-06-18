@@ -2,5 +2,6 @@
 	aliases = true
 
 [images]
+	dotfedora = 	ghcr.io/gbraad-dotfiles/fedora-toolbox:41
 	fedora =	ghcr.io/gbraad-devenv/fedora/toolbox:41
 
