@@ -36,7 +36,14 @@ detect_pkg() {
     fi
 }
 
-extract_section() {
+get_os_id() {
+    if [ -f /etc/os-release ]; then
+        . /etc/os-release
+        echo "$ID"
+    fi
+}
+
+_extract_apps_section_script() {
     # $1: section name (e.g., flatpak-run), $2: file
     awk -v section="## $1" '
     $0 == section { in_section=1; next }
@@ -45,44 +52,73 @@ extract_section() {
     ' "$2"
 }
 
+_extract_apps_section_markdown() {
+    # $1: section name, $2: file
+    awk -v section="## $1" '
+    $0 == section {in_section=1; next}
+    /^## / && in_section {exit}
+    in_section {print}
+    ' "$2"
+}
+
 apps() {
-  if ! _appsdefexists; then
-    _appsdefclone
-  fi
+    if ! _appsdefexists; then
+        _appsdefclone
+    fi
 
     local app="$1"
     local action="$2"
     local force_pkg="$3"
-    [[ -z "$app" || -z "$action" ]] && { echo "Usage: apps [appname] [install|remove|run] [optional:pkg]"; return 1; }
+    [[ -z "$app" || -z "$action" ]] && { echo "Usage: apps [filename] [install|remove|run|info] [optional:pkg]"; return 1; }
     local desc_file="${_appsdefpath}/${app}.md"
     [[ ! -f "$desc_file" ]] && { echo "No description file for '$app' found in $_appsdefpath"; return 2; }
+
+    if [[ "$action" == "info" ]]; then
+        local info_block
+        info_block="$(_extract_apps_section_markdown "info" "$desc_file")"
+        if [[ -n "$info_block" ]]; then
+            if command -v glow &>/dev/null; then
+                echo "$info_block" | glow -
+            else
+                echo "$info_block"
+            fi
+        else
+            echo "No info section found for $app"
+        fi
+        return
+    fi
+
     local pkg=""
     local script=""
-    local used_pkg=""
+    local used_block=""
+    local osid=""
 
     if [[ -n "$force_pkg" ]]; then
         pkg="$force_pkg"
-        script="$(extract_section "${pkg}-${action}" "$desc_file")"
+        script="$(_extract_apps_section_script "${pkg}-${action}" "$desc_file")"
+        [[ -n "$script" ]] && used_block="${pkg}-${action}"
         if [[ -z "$script" ]]; then
             echo "No block for ${pkg}-${action} in $desc_file"
             return 4
         fi
-        used_pkg="$pkg"
     else
-        pkg="$(detect_pkg)"
-        if [[ -n "$pkg" ]]; then
-            script="$(extract_section "${pkg}-${action}" "$desc_file")"
-            [[ -n "$script" ]] && used_pkg="$pkg"
+        osid="$(get_os_id)"
+        if [[ -n "$osid" ]]; then
+            script="$(_extract_apps_section_script "${osid}-${action}" "$desc_file")"
+            [[ -n "$script" ]] && used_block="${osid}-${action}"
         fi
-        [[ -z "$script" ]] && script="$(extract_section "${action}" "$desc_file")"
-        [[ -z "$script" ]] && { echo "No block for ${pkg}-${action} or ${action} in $desc_file"; return 4; }
+        if [[ -z "$script" ]]; then
+            pkg="$(detect_pkg)"
+            if [[ -n "$pkg" ]]; then
+                script="$(_extract_apps_section_script "${pkg}-${action}" "$desc_file")"
+                [[ -n "$script" ]] && used_block="${pkg}-${action}"
+            fi
+        fi
+        [[ -z "$script" ]] && script="$(_extract_apps_section_script "${action}" "$desc_file")"
+        [[ -z "$used_block" && -n "$script" ]] && used_block="${action}"
+        [[ -z "$script" ]] && { echo "No block for ${osid}-${action}, ${pkg}-${action} or ${action} in $desc_file"; return 4; }
     fi
 
-    if [[ -n "$used_pkg" ]]; then
-        echo "Executing ${action} for ${app} using ${used_pkg}..."
-    else
-        echo "Executing ${action} for ${app}..."
-    fi
-
+    echo "Executing ${action} for ${app} using block: ${used_block}"
     eval "$script"
 }
