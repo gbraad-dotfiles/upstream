@@ -132,7 +132,11 @@ devenv() {
       devenv ${PREFIX} exec ps -ax $@
       ;;
     "status")
-      devenv ${PREFIX} sysctl status $@
+      PAGER=""
+      if [[ $- != *i* ]]; then
+        PAGER="--no-pager"
+      fi
+      devenv ${PREFIX} sysctl status ${PAGER} $@
       ;;
     "tmux")
       command="-c tmux -2 $@"
