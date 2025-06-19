@@ -51,7 +51,9 @@ devenv() {
       devenv $PREFIX run -c "su - gbraad"
       ;;
     "create")
-      # TODO: only create the container
+      podman create --name=${PREFIX}sys --hostname ${HOSTNAME}-${PREFIX}sys \
+        --systemd=always "${START_ARGS[@]}" "${START_PATHS[@]}" \
+        $(generate_image_name $PREFIX)
       ;;
     "sys" | "system")
       #for (( i=0; i < ${#START_PATHS[@]}; i++ )); do
@@ -104,7 +106,7 @@ devenv() {
         devenv ${PREFIX} sys
         sleep 1
       fi
-      if (podman ps --filter "name=${PREFIX}sys" --filter "status=stopped" | grep -q ${PREFIX}sys); then
+      if (podman ps --filter "name=${PREFIX}sys"  --filter "status=created" --filter "status=stopped" | grep -q ${PREFIX}sys); then
         devenv ${PREFIX} start
         sleep 2
       fi
