@@ -8,6 +8,7 @@ eval _appsdefpath=$(echo ${_appsdefpath})
 _appsinstallpath=$(appsini --get applications.path || echo "${HOME}/Applications")
 eval APPSHOME=$(echo ${_appsinstallpath})
 mkdir -p $APPSHOME
+export LOCALBIN=${HOME}/.local/bin
 
 _appsdefexists() {
     if [ -d "${_appsdefpath}" ]; then
