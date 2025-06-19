@@ -5,8 +5,9 @@ alias appsini="git config -f ${CONFIG}"
 
 _appsdefpath=$(appsini --get applications.definitions || echo "${HOME}/.dotapps")
 eval _appsdefpath=$(echo ${_appsdefpath})
-#_appsinstallpath=$(appsini --get applications.path || echo "${HOME}/Applications")
-#eval _APPLICATIONS=$(echo ${_appsinstallpath})
+_appsinstallpath=$(appsini --get applications.path || echo "${HOME}/Applications")
+eval APPSHOME=$(echo ${_appsinstallpath})
+mkdir -p $APPSHOME
 
 _appsdefexists() {
     if [ -d "${_appsdefpath}" ]; then
