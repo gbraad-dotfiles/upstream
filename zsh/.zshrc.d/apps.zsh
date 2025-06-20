@@ -78,21 +78,37 @@ _select_app_section() {
     echo "$section"
 }
 
+_apps_fuzzy_pick() {
+    # Picks app (if not given) and section (always), returns both as $app $section
+    local app="$1"
+    local desc_file section
+
+    if [[ -z "$app" ]]; then
+        app=$(_select_app_md)
+        [[ -z "$app" ]] && return 1
+    fi
+
+    desc_file="${_appsdefpath}/${app}.md"
+    [[ ! -f "$desc_file" ]] && { echo "No description file for '$app' found in $_appsdefpath"; return 2; }
+
+    section=$(_select_app_section "$desc_file")
+    [[ -z "$section" ]] && return 1
+
+    echo "$app" "$section"
+}
+
 apps() {
     if ! _appsdefexists; then
         _appsdefclone
     fi
 
     # Fuzzy app and section picker if no arguments
-    if [[ -z "$1" ]]; then
-        local app
-        app=$(_select_app_md)
-        [[ -z "$app" ]] && return 1
-        local desc_file="${_appsdefpath}/${app}.md"
-        local section
-        section=$(_select_app_section "$desc_file")
-        [[ -z "$section" ]] && return 1
-        # For 'info', treat as info action; other sections treated as action names
+    if [[ -z "$1" || ( -n "$1" && -z "$2" ) ]]; then
+        local pick app section
+        pick=($(_apps_fuzzy_pick "$1"))
+        [[ ${#pick} -eq 0 ]] && return 1
+        app="${pick[1]}"
+        section="${pick[2]}"
         if [[ "$section" == "info" ]]; then
             apps "$app" "info"
         else
