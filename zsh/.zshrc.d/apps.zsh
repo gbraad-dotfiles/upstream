@@ -170,6 +170,7 @@ apps() {
         [[ -z "$script" ]] && { echo "No block for ${osid}-${action}, ${pkg}-${action} or ${action} in $desc_file"; return 4; }
     fi
 
-    echo "Executing ${action} for ${app} using block: ${used_block}"
-    eval "$script"
+    #[[ -n "$used_block" ]] && echo "Executing ${action} for ${app} using section: ${used_block}" >&2
+    output=$(eval "$script")
+    echo "$output"
 }
