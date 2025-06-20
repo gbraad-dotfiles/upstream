@@ -172,5 +172,8 @@ apps() {
 
     #[[ -n "$used_block" ]] && echo "Executing ${action} for ${app} using section: ${used_block}" >&2
     output=$(eval "$script")
+    exitcode=$?
     echo "$output"
+    return $exitcode
+    
 }
