@@ -65,7 +65,7 @@ _extract_apps_section_markdown() {
 _select_app_md() {
     local relfiles app
     # Find all .md files except README.md, return relative paths without .md
-    relfiles=("${(@f)$(find "${_appsdefpath}" -type f -name '*.md' ! -name 'README.md' | sed "s|^${_appsdefpath}/||" | sed 's/\.md$//' | sort)}")
+    relfiles=("${(@f)$(find -L "${_appsdefpath}" -type f -name '*.md' ! -name 'README.md' | sed "s|^${_appsdefpath}/||" | sed 's/\.md$//' | sort)}")
     app=$(printf "%s\n" "${relfiles[@]}" | fzf --prompt="Select app: ")
     [[ -z "$app" ]] && return 1
     echo "$app"
