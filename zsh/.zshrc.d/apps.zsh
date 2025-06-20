@@ -62,9 +62,43 @@ _extract_apps_section_markdown() {
     ' "$2"
 }
 
+_select_app_md() {
+    local relfiles app
+    # Find all .md files except README.md, return relative paths without .md
+    relfiles=("${(@f)$(find "${_appsdefpath}" -type f -name '*.md' ! -name 'README.md' | sed "s|^${_appsdefpath}/||" | sed 's/\.md$//' | sort)}")
+    app=$(printf "%s\n" "${relfiles[@]}" | fzf --prompt="Select app: ")
+    [[ -z "$app" ]] && return 1
+    echo "$app"
+}
+
+_select_app_section() {
+    local file="$1"
+    local section
+    section=$(awk '/^## / {sub(/^## /,""); print}' "$file" | fzf --prompt="Select action: ")
+    echo "$section"
+}
+
 apps() {
     if ! _appsdefexists; then
         _appsdefclone
+    fi
+
+    # Fuzzy app and section picker if no arguments
+    if [[ -z "$1" ]]; then
+        local app
+        app=$(_select_app_md)
+        [[ -z "$app" ]] && return 1
+        local desc_file="${_appsdefpath}/${app}.md"
+        local section
+        section=$(_select_app_section "$desc_file")
+        [[ -z "$section" ]] && return 1
+        # For 'info', treat as info action; other sections treated as action names
+        if [[ "$section" == "info" ]]; then
+            apps "$app" "info"
+        else
+            apps "$app" "$section"
+        fi
+        return
     fi
 
     local app="$1"
