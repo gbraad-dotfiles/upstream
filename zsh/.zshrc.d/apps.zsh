@@ -3,9 +3,9 @@
 CONFIG="${HOME}/.config/dotfiles/applications"
 alias appsini="git config -f ${CONFIG}"
 
-_appsdefpath=$(appsini --get applications.definitions || echo "${HOME}/.dotapps")
+_appsdefpath=$(appsini --get "applications.definitions" || echo "${HOME}/.dotapps")
 eval _appsdefpath=$(echo ${_appsdefpath})
-_appsinstallpath=$(appsini --get applications.path || echo "${HOME}/Applications")
+_appsinstallpath=$(appsini --get "applications.path" || echo "${HOME}/Applications")
 eval APPSHOME=$(echo ${_appsinstallpath})
 mkdir -p $APPSHOME
 export LOCALBIN=${HOME}/.local/bin
@@ -19,7 +19,7 @@ _appsdefexists() {
 }
 
 _appsdefclone() {
-  local repo=$(appsini --get applications.repository)
+  local repo=$(appsini --get "applications.repository")
   git clone ${repo} ${_appsdefpath} --depth 2
 }
 
@@ -177,3 +177,7 @@ apps() {
     return $exitcode
     
 }
+
+if [[ $(appsini --get "applications.aliases") == true ]]; then
+    alias a="apps"
+fi
