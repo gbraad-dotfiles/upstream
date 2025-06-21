@@ -116,7 +116,7 @@ devenv() {
       devenv ${PREFIX} exec ${START_SHELL}
       ;;
     "user" | "sh" | "shell")
-      devenv ${PREFIX} exec su - gbraad $*
+      devenv ${PREFIX} exec sudo -i -u ${USER} $*
       ;;
     "sysctl" | "systemctl" | "systemd")
       if (podman ps --filter "name=${PREFIX}sys" --filter "status=stopped" | grep -q ${PREFIX}sys); then
@@ -143,6 +143,15 @@ devenv() {
     "tmux")
       command="-c tmux -2 $@"
       devenv ${PREFIX} user $command
+      ;;
+    "apps")
+      devenv ${PREFIX} dot apps $*
+      ;;
+    "dot")
+      devenv ${PREFIX} exec sudo -i -u ${USER} zsh -c "dotfiles source; $*"
+      ;;
+    "dotfiles")
+      devenv ${PREFIX} user dotfiles $@
       ;;
     *)
       echo "Unknown command: $0 $PREFIX $COMMAND"

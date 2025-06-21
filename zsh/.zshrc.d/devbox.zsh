@@ -34,6 +34,21 @@ devbox() {
     "export")
       podman exec ${PREFIX}box su ${USER} -c "export XDG_DATA_DIRS=/usr/local/share:/usr/share; export XDG_DATA_HOME=${HOME}/.local/share; distrobox-export --app $@"
       ;;
+    "apps")
+      devbox ${PREFIX} dot apps $*
+      ;;
+    "dot")
+      devbox ${PREFIX} exec sudo -i -u ${USER} zsh -c "dotfiles source; $*" 
+      ;;
+    "dotfiles")
+      devbox ${PREFIX} user dotfiles $*
+      ;;
+    "user")
+      devbox ${PREFIX} exec sudo -i -u ${USER} $*
+      ;;
+    "exec")
+      podman exec -it ${PREFIX}box $@
+      ;;
     *)
       echo "Unknown command: $0 $PREFIX $COMMAND"
       ;;
