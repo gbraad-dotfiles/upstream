@@ -170,6 +170,14 @@ apps() {
         [[ -z "$script" ]] && { echo "No block for ${osid}-${action}, ${pkg}-${action} or ${action} in $desc_file"; return 4; }
     fi
 
+    # shared section for variables
+    for shared_section in shared vars; do
+      shared_script="$(_extract_apps_section_script "${shared_section}" "$desc_file")"
+      if [[ -n "$shared_script" ]]; then
+        eval "$shared_script"
+      fi
+    done
+
     #[[ -n "$used_block" ]] && echo "Executing ${action} for ${app} using section: ${used_block}" >&2
     output=$(eval "$script")
     exitcode=$?
