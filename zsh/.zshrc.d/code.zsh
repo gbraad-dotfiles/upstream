@@ -55,45 +55,6 @@ _codeexists() {
     fi
 }
 
-_installcode() {
-    # does not handle architecture yet
-    arch=$(uname -m)
-    case "$arch" in
-      x86_64)
-        download_target="x64"
-        ;;
-      i386 | i686)
-        download_target="x86"
-        ;;
-      armv7l)
-        download_target="arm32"
-        ;;
-      aarch64)
-        download_target="arm64"
-        ;;
-      *)
-        echo "Unsupported architecture: $arch"
-        return 1
-        ;;
-    esac
-
-    echo "Installing code-cli for: ${download_target}"
-    tempfile=$(mktemp)
-    curl -fsSL "https://code.visualstudio.com/sha/download?build=stable&os=cli-alpine-${download_target}" -o ${tempfile}
-    tar -zxvf ${tempfile} -C ${_codepath} > /dev/null 2>&1
-    rm -f ${tempfile}
-}
-
-_installcodesystemduser() {
-    mkdir -p ~/.config/systemd/user/
-    #https://github.com/gbraad-vscode/code-systemd/blob/main/README.md
-    curl -fsSL  https://raw.githubusercontent.com/gbraad-vscode/codecli-systemd/refs/heads/main/user/code-serveweb.service \
-        -o ~/.config/systemd/user/code-serveweb.service
-    curl -fsSL  https://raw.githubusercontent.com/gbraad-vscode/codecli-systemd/refs/heads/main/user/code-tunnel.service   \
-        -o ~/.config/systemd/user/code-tunnel.service
-    systemctl --user daemon-reload
-}
-
 _startcodetunnel() {
     if ! _codeexists; then
         _installcode
@@ -117,8 +78,6 @@ _startcodeserveweb() {
     screen ${_codepath}/code serve-web --without-connection-token --host ${host} --port ${port}
 }
 
-alias install-code="_installcode"
-alias install-code-systemd-user="_installcodesystemduser"
 alias start-code-tunnel="_startcodetunnel"
 alias start-code-serveweb="_startcodeserveweb"
 
