@@ -117,9 +117,22 @@ apps() {
         return
     fi
 
-    local app="$1"
-    local action="$2"
-    local force_pkg="$3"
+    background=0
+    args=()
+
+    # Loop through all arguments
+    for arg in "$@"; do
+      if [[ "$arg" == "-bg" || "$arg" == "--background" ]]; then
+        background=1
+      else
+        args+=("$arg")
+      fi
+    done
+
+    local app="${args[1]}"
+    local action="${args[2]}"
+    local force_pkg="${args[3]}"
+
     [[ -z "$app" || -z "$action" ]] && { echo "Usage: apps [filename] [install|remove|run|info] [optional:pkg]"; return 1; }
     local desc_file="${_appsdefpath}/${app}.md"
     [[ ! -f "$desc_file" ]] && { echo "No description file for '$app' found in $_appsdefpath"; return 2; }
@@ -179,11 +192,17 @@ apps() {
     done
 
     #[[ -n "$used_block" ]] && echo "Executing ${action} for ${app} using section: ${used_block}" >&2
-    output=$(eval "$script")
-    exitcode=$?
-    echo "$output"
-    return $exitcode
-    
+    if (( background )); then
+      eval "$script" &
+      bg_pid=$!
+      echo "Started in background (PID $bg_pid)"
+      return 0
+    else
+      output=$(eval "$script")
+      exitcode=$?
+      echo "$output"
+      return $exitcode
+    fi 
 }
 
 if [[ $(appsini --get "applications.aliases") == true ]]; then
