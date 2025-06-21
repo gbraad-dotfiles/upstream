@@ -39,6 +39,7 @@ devenv() {
     "-v" "${HOME}/Projects:/var/home/${IMAGE_USER}/Projects"
     "-v" "${HOME}/Documents:/var/home/${IMAGE_USER}/Documents"
     "-v" "${HOME}/Downloads:/var/home/${IMAGE_USER}/Downloads"
+    "-v" "/tmp/.X11-unix:/tmp/.X11-unix"
   )
   
   case "$COMMAND" in
@@ -148,7 +149,7 @@ devenv() {
       devenv ${PREFIX} dot apps $*
       ;;
     "dot")
-      devenv ${PREFIX} exec sudo -i -u ${USER} zsh -c "dotfiles source; $*"
+      devenv ${PREFIX} exec sudo -i -u ${USER} zsh -c "dotfiles source; export DISPLAY=:0; $*"
       ;;
     "dotfiles")
       devenv ${PREFIX} user dotfiles $@

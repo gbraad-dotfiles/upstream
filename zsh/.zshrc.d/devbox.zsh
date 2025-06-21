@@ -38,7 +38,7 @@ devbox() {
       devbox ${PREFIX} dot apps $*
       ;;
     "dot")
-      devbox ${PREFIX} exec sudo -i -u ${USER} zsh -c "dotfiles source; $*" 
+      devbox ${PREFIX} exec sudo -i -u ${USER} zsh -c "dotfiles source; export DISPLAY=:0; $*" 
       ;;
     "dotfiles")
       devbox ${PREFIX} user dotfiles $*
