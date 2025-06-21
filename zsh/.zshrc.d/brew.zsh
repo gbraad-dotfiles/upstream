@@ -1,11 +1,5 @@
 #!/bin/zsh
 
-# Bash is required to interpret this script
-_installhomebrew() {
-  NONINTERACTIVE=1 bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
-}
-alias install-homebrew=_installhomebrew
-
 if [ -d "/home/linuxbrew/.linuxbrew" ]; then
   export HOMEBREW_PREFIX="/home/linuxbrew/.linuxbrew";
   export HOMEBREW_CELLAR="/home/linuxbrew/.linuxbrew/Cellar";
