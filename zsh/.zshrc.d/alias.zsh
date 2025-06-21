@@ -1,6 +1,4 @@
 #!/bin/zsh
-# LibreOffice (convert: --headless --convert-to odt *.docx)
-alias libreoffice='flatpak run org.libreoffice.LibreOffice'
 
 # Sublime Text
 alias st='/opt/sublime_text_3/sublime_text $PWD'
@@ -24,9 +22,6 @@ alias sscurl='curl --proxy socks5h://localhost:3222'
 alias cssh='ssh -o "ProxyCommand=netcat -X 5 -x localhost:3211 %h %p"'
 alias tpsh='ssh -o "ProxyCommand=netcat -X 5 -x localhost:3215 %h %p"'
 alias pssh='ssh -o "ProxyCommand=netcat -X 5 -x localhost:3222 %h %p"'
-
-# Tailscale
-alias install-tailscale="curl -fsSL https://tailscale.com/install.sh | bash"
 
 # Misc
 alias country="curl -fsSL https://ifconfig.co/json | jq -r '.country'"
