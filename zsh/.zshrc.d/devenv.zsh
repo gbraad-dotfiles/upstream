@@ -29,6 +29,7 @@ devenv() {
   )
   [[ -e /dev/net/tun ]] && START_ARGS+=("--device=/dev/net/tun")
   [[ -e /dev/fuse ]] && START_ARGS+=("--device=/dev/fuse")
+  [[ -e /dev/dri ]] && START_ARGS+=("--device=/dev/dri")
 
   # issue as some containers do not have this yet
   #"--workdir=$(devini --get devenv.workdir)"
