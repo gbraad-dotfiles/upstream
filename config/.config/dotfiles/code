@@ -1,5 +1,0 @@
-[code]
-	path = $HOME/.local/bin
-	autoinstall = false
-	host = 0.0.0.0
-	port = 8000
