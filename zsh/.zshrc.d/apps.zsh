@@ -45,9 +45,18 @@ get_os_id() {
 }
 
 _extract_apps_section_script() {
-    # $1: section name (e.g., flatpak-run), $2: file
-    awk -v section="## $1" '
-    $0 == section { in_section=1; next }
+    # $1: action (e.g., run, user-run, dnf-run), $2: file
+    awk -v action="$1" '
+    /^## / {
+        split($0, arr, " ")
+        in_section = 0
+        for (i = 2; i <= length(arr); i++) {
+            if (arr[i] == action) {
+                in_section = 1
+                next
+            }
+        }
+    }
     in_section && /^```/ { if (++fence==1) next; else {in_section=0; exit} }
     in_section && fence==1 { print }
     ' "$2"
@@ -104,26 +113,23 @@ _select_app_section() {
 
 _apps_fuzzy_pick() {
     # Picks app (if not given) and section (always), returns both as $app $section
-    local app="$1"
-    local desc_file section action
+    local input="$1"
+    local desc_file section action app
 
-    if [[ -z "$app" ]]; then
-        app=$(_select_app_md)
-        [[ -z "$app" ]] && return 1
+    if [[ -z "$input" ]]; then
+        input=$(_select_app_md)
+        [[ -z "$input" ]] && return 1
     fi
 
-    local app_name
-    if [[ "$app" == *" "* ]]; then
-        app_name="${app%% *}"      # everything before the first space
-        action="${app#* }"         # everything after the first space
+    if [[ "$input" == *" "* ]]; then
+        app="${input%% *}"
+        action="${input#* }"
     else
-        app_name="$app"
+        app="$input"
         action=""
     fi
 
-    desc_file="${_appsdefpath}/${app_name}.md"
-    [[ ! -f "$desc_file" ]] && { echo "No description file for '${app_name}' found in ${_appsdefpath}"; return 2; }
-
+    desc_file="${_appsdefpath}/${app}.md"
     if [[ -n "$action" ]]; then
         section="$action"
     else
@@ -139,18 +145,24 @@ apps() {
         _appsdefclone
     fi
 
+    local desc_file
+    # If $1 is given, check for its existence right away
+    if [[ -n "$1" ]]; then
+        desc_file="${_appsdefpath}/${1}.md"
+        if [[ ! -f "$desc_file" ]]; then
+            echo "No description file for '${1}' found in ${_appsdefpath}"
+            return 2
+        fi
+    fi
+
     # Fuzzy app and section picker if no arguments
     if [[ -z "$1" || ( -n "$1" && -z "$2" ) ]]; then
-        local pick app section
+        local pick app action
         pick=($(_apps_fuzzy_pick "$1"))
         [[ ${#pick} -eq 0 ]] && return 1
         app="${pick[1]}"
-        section="${pick[2]}"
-        if [[ "$section" == "info" ]]; then
-            apps "$app" "info"
-        else
-            apps "$app" "$section"
-        fi
+        action="${pick[2]}"
+        apps "$app" "$action"
         return
     fi
 
@@ -170,9 +182,7 @@ apps() {
     local action="${args[2]}"
     local force_pkg="${args[3]}"
 
-    [[ -z "$app" || -z "$action" ]] && { echo "Usage: apps [filename] [install|remove|run|info] [optional:pkg]"; return 1; }
-    local desc_file="${_appsdefpath}/${app}.md"
-    [[ ! -f "$desc_file" ]] && { echo "No description file for '$app' found in $_appsdefpath"; return 2; }
+    [[ -z "$app" || -z "$action" ]] && { echo "Usage: apps [appname] [install|remove|run|info] [optional:pkg]"; return 1; }
 
     if [[ "$action" == "info" ]]; then
         local info_block
