@@ -118,7 +118,7 @@ devenv() {
       devenv ${PREFIX} exec ${START_SHELL}
       ;;
     "user" | "sh" | "shell")
-      devenv ${PREFIX} exec sudo -i -u ${USER} $*
+      devenv ${PREFIX} exec sudo -i -u ${IMAGE_USER} $*
       ;;
     "sysctl" | "systemctl" | "systemd")
       if (podman ps --filter "name=${PREFIX}sys" --filter "status=stopped" | grep -q ${PREFIX}sys); then
@@ -150,7 +150,7 @@ devenv() {
       devenv ${PREFIX} dot apps $*
       ;;
     "dot")
-      devenv ${PREFIX} exec sudo -i -u ${USER} zsh -c "dotfiles source; export DISPLAY=:0; $*"
+      devenv ${PREFIX} exec sudo -i -u ${IMAGE_USER} zsh -c "dotfiles source; export DISPLAY=:0; $*"
       ;;
     "dotfiles")
       devenv ${PREFIX} user dotfiles $@
