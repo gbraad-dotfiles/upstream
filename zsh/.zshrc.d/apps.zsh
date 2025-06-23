@@ -255,3 +255,12 @@ apps() {
 if [[ $(appsini --get "applications.aliases") == true ]]; then
     alias a="apps"
 fi
+
+function apps-launcher-widget() {
+  zle -I
+  apps
+  print 
+  zle reset-prompt 
+}
+zle -N apps-launcher-widget
+bindkey '^E' apps-launcher-widget
