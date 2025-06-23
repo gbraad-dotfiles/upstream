@@ -13,8 +13,11 @@ devenv() {
     return 1
   fi
 
+  local SUFFIX="sys"
   local PREFIX=$1
   local COMMAND=$2
+  local ENVNAME=${PREFIX}env
+  local SYSNAME=${PREFIX}${SUFFIX}
   shift 2
 
   local START_SHELL=$(devini --get devenv.shell)
@@ -45,7 +48,7 @@ devenv() {
   
   case "$COMMAND" in
     "env" | "run" | "rootenv")
-      podman run --rm -it --hostname ${HOSTNAME}-${PREFIX}env --entrypoint='' \
+      podman run --rm -it --hostname ${HOSTNAME}-${ENVNAME} --entrypoint='' \
         "${START_ARGS[@]}" "${START_PATHS[@]}" \
         $(generate_image_name $PREFIX) ${START_SHELL} $@
       ;;
@@ -53,7 +56,7 @@ devenv() {
       devenv $PREFIX run -c "su - gbraad"
       ;;
     "create")
-      podman create --name=${PREFIX}sys --hostname ${HOSTNAME}-${PREFIX}sys \
+      podman create --name=${SYSNAME} --hostname ${HOSTNAME}-${SYSNAME} \
         --systemd=always "${START_ARGS[@]}" "${START_PATHS[@]}" \
         $(generate_image_name $PREFIX)
       ;;
@@ -61,7 +64,7 @@ devenv() {
       #for (( i=0; i < ${#START_PATHS[@]}; i++ )); do
       #  START_PATHS[$i]="${START_PATHS[$i]/#\~/$HOME}"
       #done
-      podman run -d --name=${PREFIX}sys --hostname ${HOSTNAME}-${PREFIX}sys \
+      podman run -d --name=${SYSNAME} --hostname ${HOSTNAME}-${SYSNAME} \
         --systemd=always "${START_ARGS[@]}" "${START_PATHS[@]}" \
         $(generate_image_name $PREFIX)
       # TODO: systemd only when able to check for running state
@@ -72,18 +75,18 @@ devenv() {
       ;;
     "noinit" | "dumb")
       # For environments that can not start systemd
-      podman run -d --name=${PREFIX}sys --hostname ${HOSTNAME}-${PREFIX}sys \
+      podman run -d --name=${SYSNAME} --hostname ${HOSTNAME}-${SYSNAME} \
         --entrypoint "" "${START_ARGS[@]}" "${START_PATHS[@]}" \
         $(generate_image_name $PREFIX) $(devini --get devenv.noinit)
       ;;
     "nosys" | "init")
       # For environments that can not start systemd
-      podman run -d --name=${PREFIX}sys --hostname ${HOSTNAME}-${PREFIX}sys \
+      podman run -d --name=${SYSNAME} --hostname ${HOSTNAME}-${SYSNAME} \
         --init --entrypoint "" "${START_ARGS[@]}" "${START_PATHS[@]}" \
         $(generate_image_name $PREFIX) $(devini --get devenv.noinit)
       ;;
     "start")
-      if (! podman ps -a --format "{{.Names}}" | grep -q ${PREFIX}sys); then
+      if (! podman ps -a --format "{{.Names}}" | grep -q ${SYSNAME}); then
         source /etc/os-release
         if [[ "$ID" == "idx" ]]; then
           devenv ${PREFIX} init
@@ -91,20 +94,20 @@ devenv() {
           devenv ${PREFIX} system
         fi
       else
-        podman start ${PREFIX}sys
+        podman start ${SYSNAME}
       fi
       #systemctl --user start container-${PREFIX}sys
       ;;
     "stop")
       #systemctl --user stop container-${PREFIX}sys
-      podman stop ${PREFIX}sys
+      podman stop ${SYSNAME}
       ;;
     "kill" | "rm" | "remove")
       #systemctl --user stop container-${PREFIX}sys
-      podman rm -f ${PREFIX}sys
+      podman rm -f ${SYSNAME}
       ;;
     "exec" | "execute")
-      if (! podman ps -a --format "{{.Names}}" | grep -q ${PREFIX}sys); then
+      if (! podman ps -a --format "{{.Names}}" | grep -q ${SYSNAME}); then
         devenv ${PREFIX} sys
         sleep 1
       fi
@@ -112,7 +115,7 @@ devenv() {
         devenv ${PREFIX} start
         sleep 2
       fi
-      podman exec -it ${PREFIX}sys $@
+      podman exec -it ${SYSNAME} $@
       ;;
     "root" | "su")
       devenv ${PREFIX} exec ${START_SHELL}
@@ -122,11 +125,11 @@ devenv() {
       ;;
     "sysctl" | "systemctl" | "systemd")
       if (podman ps --filter "name=${PREFIX}sys" --filter "status=stopped" | grep -q ${PREFIX}sys); then
-        echo "${PREFIX}sys not running"
+        echo "${SYSNAME} not running"
         return
       fi
       if (! podman ps -a --format "{{.Names}}" | grep -q ${PREFIX}sys); then
-        echo "${PREFIX}sys not created"
+        echo "${SYSNAME} not created"
         return
       fi
 

@@ -13,26 +13,32 @@ devbox() {
     return 1
   fi
 
+  local SUFFIX="box"
   local PREFIX=$1
   local COMMAND=$2
+  local BOXNAME=${PREFIX}${SUFFIX}
   shift 2
 
   case "$COMMAND" in
     "create")
-      distrobox create --yes --init -i $(generate_devbox_name $PREFIX) ${PREFIX}box
+      distrobox create --yes --init -i $(generate_devbox_name $PREFIX) ${BOXNAME}
       echo "$0 $PREFIX enter"
       ;;
     "stop")
-      distrobox stop ${PREFIX}box
+      distrobox stop ${BOXNAME}
       ;;
     "kill" | "rm" | "remove")
-      distrobox rm ${PREFIX}box
+      distrobox rm ${BOXNAME}
       ;;
     "enter" | "shell")
-      distrobox enter ${PREFIX}box
+      if (! podman ps -a --format "{{.Names}}" | grep -q ${BOXNAME}); then
+        devbox ${PREFIX} create
+        sleep 1
+      fi
+      distrobox enter ${BOXNAME}
       ;;
     "export")
-      podman exec ${PREFIX}box su ${USER} -c "export XDG_DATA_DIRS=/usr/local/share:/usr/share; export XDG_DATA_HOME=${HOME}/.local/share; distrobox-export --app $@"
+      podman exec ${BOXNAME} su ${USER} -c "export XDG_DATA_DIRS=/usr/local/share:/usr/share; export XDG_DATA_HOME=${HOME}/.local/share; distrobox-export --app $@"
       ;;
     "apps")
       devbox ${PREFIX} dot apps $*
@@ -47,7 +53,7 @@ devbox() {
       devbox ${PREFIX} exec sudo -i -u ${USER} $*
       ;;
     "exec")
-      podman exec -it ${PREFIX}box $@
+      podman exec -it ${BOXNAME} $@
       ;;
     *)
       echo "Unknown command: $0 $PREFIX $COMMAND"
