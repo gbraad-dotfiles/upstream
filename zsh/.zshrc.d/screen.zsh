@@ -9,7 +9,7 @@ screen () {
     local screenname="screen"
 
     if [[ -n "${TMUX}" ]]; then
-      tmux split-window -h "$*"
+      tmux new-window "$*"
 
     else 
      
