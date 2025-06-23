@@ -262,5 +262,13 @@ function apps-launcher-widget() {
   print 
   zle reset-prompt 
 }
-zle -N apps-launcher-widget
-bindkey '^E' apps-launcher-widget
+
+if [[ $(appsini --get "applications.launcher") == true ]]; then
+  zle -N apps-launcher-widget
+  shortcut=$(appsini --get "applications.shortcut")
+  if [[ $shortcut == \^? ]]; then
+    char=${shortcut#^}
+    eval "shortcut=\$'\\C-$char'"
+  fi
+  bindkey "$shortcut" apps-launcher-widget
+fi

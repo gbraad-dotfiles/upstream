@@ -3,3 +3,5 @@
 	defintions = ~/.dotapps
 	path = ~/Applications
 	aliases = true
+	launcher = true
+	shortcut = "^E"
