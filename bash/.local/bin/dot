@@ -1,5 +1,4 @@
 #!/bin/sh
 
 export ZDOTDIR="${HOME}/.dotfiles/zsh/"
-zsh -c "dotfiles source; $@"
-
+zsh -c 'dotfiles source; "$@"' _ "$@"
