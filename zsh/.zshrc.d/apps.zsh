@@ -63,12 +63,22 @@ _extract_apps_section_markdown() {
 }
 
 _select_app_md() {
-    local relfiles app
-    # Find all .md files except README.md, return relative paths without .md
-    relfiles=("${(@f)$(find -L "${_appsdefpath}" -type f -name '*.md' ! -name 'README.md' | sed "s|^${_appsdefpath}/||" | sed 's/\.md$//' | sort)}")
-    app=$(printf "%s\n" "${relfiles[@]}" | fzf --prompt="Select app: ")
+    local appspath="${_appsdefpath:-$HOME/.dotapps}"
+    local lines app relpath desc file
+
+    # Build a list: "relative/path <TAB> Title string"
+    lines=()
+    while IFS= read -r file; do
+        relpath="${file#$appspath/}"
+        relpath="${relpath%.md}"
+        desc=$(grep -m1 '^# ' "$file" | sed 's/^# //')
+            lines+=("$(printf "%-30s %s" "$relpath" "$desc")")
+    done < <(find -L "$appspath" -type f -name '*.md' ! -name 'README.md' | sort)
+
+    app=$(printf "%s\n" "${lines[@]}" | fzf --prompt="Select app: ")
     [[ -z "$app" ]] && return 1
-    echo "$app"
+
+    echo "${app%% *}"  # Return only the relative path (before the first tab)
 }
 
 _select_app_section() {
