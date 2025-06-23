@@ -53,7 +53,7 @@ if [[ $(uname) == "Darwin" ]]; then
 fi
 
 # install for other platforms
-alias install-tailscale="curl -fsSL https://tailscale.com/install.sh | sh"
+alias install-tailscale="apps tailscale install"
 
 # tailproxy (user mode instance)
 alias tailproxy=". ~/.local/bin/start-tailproxy"
