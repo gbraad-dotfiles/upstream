@@ -5,6 +5,10 @@ if [[ -r ~/.local/lib/python2.7/site-packages/powerline/bindings/zsh/powerline.z
 # pip install --user powerline (nix)
 elif [[ -r ~/.local/lib/python3.11/site-packages/powerline/bindings/zsh/powerline.zsh ]]; then
     source ~/.local/lib/python3.11/site-packages/powerline/bindings/zsh/powerline.zsh
+# installed on bluefin (need a better solution) !
+elif [[ -r ~/.local/lib/python3.13/site-packages/powerline/bindings/zsh/powerline.zsh ]]; then
+    source ~/.local/lib/python3.13/site-packages/powerline/bindings/zsh/powerline.zsh
+
 # else use distro installed powerline
 elif [[ -f `which powerline-daemon` ]]; then
     #powerline-daemon -q
