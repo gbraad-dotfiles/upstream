@@ -64,9 +64,8 @@ _extract_apps_section_markdown() {
 
 _select_app_md() {
     local appspath="${_appsdefpath:-$HOME/.dotapps}"
-    local lines app relpath desc file
+    local lines app key selected relpath desc file
 
-    # Build a list: "relative/path <TAB> Title string"
     lines=()
     while IFS= read -r file; do
         relpath="${file#$appspath/}"
@@ -75,10 +74,25 @@ _select_app_md() {
             lines+=("$(printf "%-30s %s" "$relpath" "$desc")")
     done < <(find -L "$appspath" -type f -name '*.md' ! -name 'README.md' | sort)
 
-    app=$(printf "%s\n" "${lines[@]}" | fzf --prompt="Select app: ")
-    [[ -z "$app" ]] && return 1
+    app=$(printf "%s\n" "${lines[@]}" | \
+      fzf --prompt="Select app: " \
+          --header=$'Enter: select\tCtrl+R: run\tCtrl+I: install\tCtrl+N: info' \
+          --bind "ctrl-r:accept" \
+          --expect=enter,ctrl-r,ctrl-i,ctrl-n )
 
-    echo "${app%% *}"  # Return only the relative path (before the first tab)
+    local -a app_lines
+    app_lines=("${(@f)app}")
+    key="${app_lines[1]}"
+    selected="${app_lines[2]}"
+
+    [[ -z "$selected" ]] && return 1
+    local path="${selected%% *}"
+    case "$key" in
+      ctrl-r) echo "$path run" ;;
+      ctrl-i) echo "$path install" ;;
+      ctrl-n) echo "$path info" ;;
+      *)      echo "$path" ;;
+    esac
 }
 
 _select_app_section() {
@@ -91,18 +105,31 @@ _select_app_section() {
 _apps_fuzzy_pick() {
     # Picks app (if not given) and section (always), returns both as $app $section
     local app="$1"
-    local desc_file section
+    local desc_file section action
 
     if [[ -z "$app" ]]; then
         app=$(_select_app_md)
         [[ -z "$app" ]] && return 1
     fi
 
-    desc_file="${_appsdefpath}/${app}.md"
-    [[ ! -f "$desc_file" ]] && { echo "No description file for '$app' found in $_appsdefpath"; return 2; }
+    local app_name
+    if [[ "$app" == *" "* ]]; then
+        app_name="${app%% *}"      # everything before the first space
+        action="${app#* }"         # everything after the first space
+    else
+        app_name="$app"
+        action=""
+    fi
 
-    section=$(_select_app_section "$desc_file")
-    [[ -z "$section" ]] && return 1
+    desc_file="${_appsdefpath}/${app_name}.md"
+    [[ ! -f "$desc_file" ]] && { echo "No description file for '${app_name}' found in ${_appsdefpath}"; return 2; }
+
+    if [[ -n "$action" ]]; then
+        section="$action"
+    else
+        section=$(_select_app_section "$desc_file")
+        [[ -z "$section" ]] && return 1
+    fi
 
     echo "$app" "$section"
 }
