@@ -145,9 +145,8 @@ devenv() {
       fi
       devenv ${PREFIX} sysctl status ${PAGER} $@
       ;;
-    "tmux")
-      command="-c tmux -2 $@"
-      devenv ${PREFIX} user $command
+    "screen")
+      devenv ${PREFIX} dot screen
       ;;
     "apps")
       devenv ${PREFIX} dot apps $*

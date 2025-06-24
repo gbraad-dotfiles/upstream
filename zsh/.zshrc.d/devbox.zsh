@@ -40,6 +40,9 @@ devbox() {
     "export")
       podman exec ${BOXNAME} su ${USER} -c "export XDG_DATA_DIRS=/usr/local/share:/usr/share; export XDG_DATA_HOME=${HOME}/.local/share; distrobox-export --app $@"
       ;;
+    "screen")
+      devbox ${PREFIX} dot screen
+      ;;
     "apps")
       devbox ${PREFIX} dot apps $*
       ;;
