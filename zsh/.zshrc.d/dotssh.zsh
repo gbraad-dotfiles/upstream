@@ -9,5 +9,5 @@ dotssh() {
   local ADDRESS=$1
   shift 1
 
-  ssh -X -t ${ADDRESS} "dotfiles source; $@"
+  ssh -X -t ${ADDRESS} "export LANG=en_US.UTF-8; export LC_ALL=en_US.UTF-8; export TERM=xterm-256color; dotfiles source; $@"
 }
