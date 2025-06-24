@@ -1,8 +1,5 @@
 #!/bin/zsh
 
-# Sublime Text
-alias st='/opt/sublime_text_3/sublime_text $PWD'
-
 # colorized cat
 alias ccat='pygmentize -g -O style=tomorrownightbright,linenos=1'
 alias jcat="jq '.'"
@@ -22,9 +19,6 @@ alias sscurl='curl --proxy socks5h://localhost:3222'
 alias cssh='ssh -o "ProxyCommand=netcat -X 5 -x localhost:3211 %h %p"'
 alias tpsh='ssh -o "ProxyCommand=netcat -X 5 -x localhost:3215 %h %p"'
 alias pssh='ssh -o "ProxyCommand=netcat -X 5 -x localhost:3222 %h %p"'
-
-# Misc
-alias country="curl -fsSL https://ifconfig.co/json | jq -r '.country'"
 
 # ANSI
 alias remove-ansi="sed -r 's/\x1b\[[0-9;]*m//g'"
