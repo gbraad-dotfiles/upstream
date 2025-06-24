@@ -11,3 +11,12 @@ dotssh() {
 
   ssh -X -t ${ADDRESS} "export LANG=en_US.UTF-8; export LC_ALL=en_US.UTF-8; export TERM=xterm-256color; dotfiles source; $@"
 }
+
+dotscreen() {
+  if [ $# -lt 1 ]; then
+    echo "Usage: $0 <address>"
+    return 1
+  fi 
+
+  dotssh $1 screen
+}  
