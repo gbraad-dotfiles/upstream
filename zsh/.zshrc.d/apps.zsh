@@ -85,9 +85,9 @@ _select_app_md() {
 
     app=$(printf "%s\n" "${lines[@]}" | \
       fzf --prompt="Select app: " \
-          --header=$'Enter: select\tCtrl+R: run\tCtrl+I: install\tCtrl+N: info' \
+          --header=$'Enter: select\tCtrl+R: run\tCtrl+B: run bg\tCtrl+I: install\tCtrl+N: info' \
           --bind "ctrl-r:accept" \
-          --expect=enter,ctrl-r,ctrl-i,ctrl-n )
+          --expect=enter,ctrl-r,ctrl-i,ctrl-n,ctrl-b )
 
     local -a app_lines
     app_lines=("${(@f)app}")
@@ -97,7 +97,8 @@ _select_app_md() {
     [[ -z "$selected" ]] && return 1
     local path="${selected%% *}"
     case "$key" in
-      ctrl-r) echo "$path run" ;;
+      ctrl-r) echo "$path run --interactive" ;;
+      ctrl-b) echo "$path run --background" ;;
       ctrl-i) echo "$path install" ;;
       ctrl-n) echo "$path info" ;;
       *)      echo "$path" ;;
@@ -166,13 +167,16 @@ apps() {
         return
     fi
 
-    background=0
-    args=()
+    local background=0
+    local interactive=0
+    local args=()
 
     # Loop through all arguments
     for arg in "$@"; do
       if [[ "$arg" == "-bg" || "$arg" == "--background" ]]; then
         background=1
+      elif [[ "$arg" == "-i" || "$arg" == "--interactive" ]]; then
+        interactive=1
       else
         args+=("$arg")
       fi
@@ -245,10 +249,14 @@ apps() {
       echo "Started in background (PID $bg_pid)"
       return 0
     else
-      output=$(eval "$script")
-      exitcode=$?
-      echo "$output"
-      return $exitcode
+      if (( interactive )); then
+        $script
+      else
+        output=$(eval "$script")
+        exitcode=$?
+        echo "$output"
+        return $exitcode
+      fi
     fi 
 }
 
