@@ -19,6 +19,8 @@ devbox() {
   local BOXNAME=${PREFIX}${SUFFIX}
   shift 2
 
+  local START_SHELL=$(boxini --get devbox.shell)
+
   case "$COMMAND" in
     "create")
       distrobox create --yes --init -i $(generate_devbox_name $PREFIX) ${BOXNAME}
@@ -83,6 +85,9 @@ devbox() {
       ;;
     "dotfiles")
       devbox ${PREFIX} user dotfiles $*
+      ;;
+    "root" | "su")
+      devbox ${PREFIX} exec ${START_SHELL}
       ;;
     "user")
       devbox ${PREFIX} exec sudo -i -u ${USER} $*
