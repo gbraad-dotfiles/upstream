@@ -111,7 +111,7 @@ devenv() {
         devenv ${PREFIX} sys
         sleep 1
       fi
-      if (podman ps --filter "name=${PREFIX}sys"  --filter "status=created" --filter "status=stopped" | grep -q ${PREFIX}sys); then
+      if (podman ps --filter "name=${SYSNAME}" --filter "status=created" --filter "status=stopped" | grep -q ${SYSNAME}); then
         devenv ${PREFIX} start
         sleep 2
       fi
@@ -124,11 +124,11 @@ devenv() {
       devenv ${PREFIX} exec sudo -i -u ${IMAGE_USER} $*
       ;;
     "sysctl" | "systemctl" | "systemd")
-      if (podman ps --filter "name=${PREFIX}sys" --filter "status=stopped" | grep -q ${PREFIX}sys); then
+      if (podman ps --filter "name=${SYSNAME}" --filter "status=stopped" | grep -q ${SYSNAME}); then
         echo "${SYSNAME} not running"
         return
       fi
-      if (! podman ps -a --format "{{.Names}}" | grep -q ${PREFIX}sys); then
+      if (! podman ps -a --format "{{.Names}}" | grep -q ${SYSNAME}); then
         echo "${SYSNAME} not created"
         return
       fi

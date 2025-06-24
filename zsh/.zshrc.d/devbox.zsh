@@ -24,6 +24,12 @@ devbox() {
       distrobox create --yes --init -i $(generate_devbox_name $PREFIX) ${BOXNAME}
       echo "$0 $PREFIX enter"
       ;;
+    "start")
+      if (! podman ps -a --format "{{.Names}}" | grep -q ${BOXNAME}); then
+        devbox ${PREFIX} create
+      fi
+      distrobox enter ${BOXNAME} -T -- :
+      ;;
     "stop")
       distrobox stop ${BOXNAME}
       ;;
@@ -35,10 +41,36 @@ devbox() {
         devbox ${PREFIX} create
         sleep 1
       fi
+      if (podman ps --filter "name=${BOXNAME}" --filter "status=created" --filter "status=stopped" | grep -q ${BOXNAME}); then
+        devbox ${PREFIX} start
+        sleep 2
+      fi
       distrobox enter ${BOXNAME}
       ;;
     "export")
       podman exec ${BOXNAME} su ${USER} -c "export XDG_DATA_DIRS=/usr/local/share:/usr/share; export XDG_DATA_HOME=${HOME}/.local/share; distrobox-export --app $@"
+      ;;
+    "sysctl" | "systemctl" | "systemd")
+      if (podman ps --filter "name=${BOXNAME}" --filter "status=stopped" | grep -q ${BOXNAME}); then
+        echo "${BOXNAME} not running"
+        return
+      fi
+      if (! podman ps -a --format "{{.Names}}" | grep -q ${BOXNAME}); then
+        echo "${BOXNAME} not created"
+        return
+      fi
+
+      devbox ${PREFIX} exec systemctl $@
+      ;;
+    "ps")
+      devbox ${PREFIX} exec ps -ax $@
+      ;;
+    "status")
+      PAGER=""
+      if [[ $- != *i* ]]; then
+        PAGER="--no-pager"
+      fi
+      devbox ${PREFIX} sysctl status ${PAGER} $@
       ;;
     "screen")
       devbox ${PREFIX} dot screen
@@ -56,6 +88,14 @@ devbox() {
       devbox ${PREFIX} exec sudo -i -u ${USER} $*
       ;;
     "exec")
+      if (! podman ps -a --format "{{.Names}}" | grep -q ${BOXNAME}); then
+        devbox ${PREFIX} create
+        sleep 1
+      fi
+      if (podman ps --filter "name=${BOXNAME}" --filter "status=created" --filter "status=stopped" | grep -q ${BOXNAME}); then
+        devbox ${PREFIX} start
+        sleep 2
+      fi
       podman exec -it ${BOXNAME} $@
       ;;
     *)
