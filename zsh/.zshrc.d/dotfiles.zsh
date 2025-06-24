@@ -121,9 +121,10 @@ _dotoldinstall() {
 }
 
 _dotresource() {
-  if [[ "$DOTFILES_SOURCED_FROM_SOURCE_SH" == 0 || "$DOTFILES_SOURCED_FROM_SOURCE_SH" == false ]]; then
-    echo "Resourcing zsh."
-  fi
+  # Disable message
+  #if [[ "$DOTFILES_SOURCED_FROM_SOURCE_SH" == 0 || "$DOTFILES_SOURCED_FROM_SOURCE_SH" == false ]]; then
+  #  echo "Resourcing zsh."
+  #fi
   if [ -d $HOME/.zshrc.d ]; then
     for file in $HOME/.zshrc.d/*.?sh; do
       source $file
@@ -216,13 +217,16 @@ dotfiles() {
   esac
 }
 
+# The file *dotfiles.sh exists to enable to dotfiles command
+# Unlike the next checks, it does not perform any action
+
 if [ "$(expr "$0" : '.*install.sh')" -gt 0 ]; then
   echo "Performing install"
   _dotoldinstall
 fi
 
 if [ "$(expr "$0" : '.*source.sh')" -gt 0 ]; then
-  export DOTFILES_SOURCED_FROM_SOURCE_SH=1
+  #export DOTFILES_SOURCED_FROM_SOURCE_SH=1
   _dotresource
 fi
 
