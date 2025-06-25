@@ -189,7 +189,7 @@ generate_aliases() {
 }
 
 if [[ $(devini --get "devenv.aliases") == true ]]; then
-  alias dev="devenv"
+  dev() { devenv "$@" }
 
   generate_aliases "fed"
   generate_aliases "deb"

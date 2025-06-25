@@ -123,5 +123,5 @@ generate_devbox_name() {
 }
 
 if [[ $(boxini --get "devbox.aliases") == true ]]; then
-  alias box="devbox"
+  box() { devbox "$@" }
 fi
