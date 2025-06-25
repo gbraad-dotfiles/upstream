@@ -1,4 +1,8 @@
 #!/bin/sh
-
 export ZDOTDIR="${HOME}/.dotfiles/zsh/"
-zsh -c 'dotfiles source; "$@"' _ "$@"
+
+if [ "$#" -eq 0 ]; then
+  exec zsh --login
+else
+  exec zsh -c 'dotfiles source; "$@"' _ "$@"
+fi
