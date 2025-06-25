@@ -17,7 +17,7 @@ on:
         description: "Whether to use sudo for chsh"
         required: false
         type: boolean
-        default: false
+        default: true
 
 defaults:
   run:
