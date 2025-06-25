@@ -31,6 +31,9 @@ jobs:
 
       - name: Enable linger and create user session (workaround)
         uses: gbraad-actions/blacksmith-user-session@main
+      
+      - name: Allow unprivileged userns (workaround)
+        uses: gbraad-actions/warpbuild-unprivileged-userns@main
                 
       - name: Workaround - fixes compaudit
         run: |
