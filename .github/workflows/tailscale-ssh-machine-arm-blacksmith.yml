@@ -11,5 +11,4 @@ jobs:
     with:
       runs-on: "blacksmith-2vcpu-ubuntu-2404-arm"
       hostname: "dotfiles-blacksmith-arm"
-      sudo-change-shell: true
     secrets: inherit

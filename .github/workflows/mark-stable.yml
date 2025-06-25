@@ -1,0 +1,58 @@
+name: mark latest as stable
+run-name: Mark latest as stable
+
+on:
+  workflow_dispatch:
+  #schedule:
+  #  - cron: "0 0 * * 0"
+
+jobs:
+  mark-as-stable-fedora:
+    name: mark-as-stable-fedora
+    uses: ./.github/workflows/reusable-mark-as-stable.yml
+    with:
+      container_name: "fedora"
+    secrets: inherit
+
+  mark-as-stable-fedora-bootc:
+    name: mark-as-stable-fedora
+    uses: ./.github/workflows/reusable-mark-as-stable.yml
+    with:
+      container_name: "fedora"
+    secrets: inherit
+
+  trigger-sync-repos:
+    runs-on: ubuntu-latest
+    needs:
+      - mark-as-stable-fedora
+    steps:
+      - name: Trigger sync-repo-gbraad.yml
+        uses: actions/github-script@v7
+        with:
+          script: |
+            await github.rest.actions.createWorkflowDispatch({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              workflow_id: 'sync-repo-gbraad.yml',
+              ref: context.ref,
+            });
+      - name: Trigger sync-repo-devenv.yml
+        uses: actions/github-script@v7
+        with:
+          script: |
+            await github.rest.actions.createWorkflowDispatch({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              workflow_id: 'sync-repo-devenv.yml',
+              ref: context.ref,
+            });
+      - name: Trigger sync-repo-redhat.yml
+        uses: actions/github-script@v7
+        with:
+          script: |
+            await github.rest.actions.createWorkflowDispatch({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              workflow_id: 'sync-repo-redhat.yml',
+              ref: context.ref,
+            });

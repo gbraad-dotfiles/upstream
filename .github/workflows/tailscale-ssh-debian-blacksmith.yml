@@ -11,5 +11,4 @@ jobs:
       prefix_name: "dotdebian"
       runs-on: "blacksmith-2vcpu-ubuntu-2404"
       arch: "amd64"
-      sudo-change-shell: true
     secrets: inherit

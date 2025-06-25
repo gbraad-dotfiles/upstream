@@ -11,5 +11,4 @@ jobs:
       prefix_name: "dotubuntu"
       runs-on: "blacksmith-2vcpu-ubuntu-2404"
       arch: "arm64"
-      sudo-change-shell: true
     secrets: inherit

@@ -11,5 +11,4 @@ jobs:
       prefix_name: "dotubuntu"
       runs-on: "ubuntu-24.04"
       arch: "arm64"
-      sudo-change-shell: false
     secrets: inherit

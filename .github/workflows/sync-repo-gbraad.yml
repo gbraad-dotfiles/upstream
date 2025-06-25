@@ -5,16 +5,8 @@ on:
 
 jobs:
   sync:
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Checkout source repository
-        uses: actions/checkout@v2
-
-      - name: Push to destination repository
-        run: |
-          git config --unset-all http.https://github.com/.extraheader
-          git remote add downstream https://gbraad:${{ secrets.PAT }}@github.com/gbraad/dotfiles-downstream.git
-          git push -f downstream main
-        env:
-          GITHUB_TOKEN: ${{ secrets.PAT }}
+    name: Sync to gbraad/dotfiles-stable
+    uses: ./.github/workflows/reusable-sync-repo.yml
+    with:
+      repo: "github.com/gbraad/dotfiles-stable"
+    secrets: inherit

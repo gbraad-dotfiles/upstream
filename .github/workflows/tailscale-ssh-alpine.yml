@@ -11,5 +11,4 @@ jobs:
       prefix_name: "dotalpine"
       runs-on: "ubuntu-latest"
       arch: "amd64"
-      sudo-change-shell: false
     secrets: inherit
