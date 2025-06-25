@@ -35,6 +35,27 @@ jobs:
       container_name: "centos-bootc"
     secrets: inherit
 
+  mark-as-stable-almalinux:
+    name: mark-as-stable-almalinux
+    uses: ./.github/workflows/reusable-mark-as-stable.yml
+    with:
+      container_name: "almalinux"
+    secrets: inherit
+
+  mark-as-stable-almalinux-bootc:
+    name: mark-as-stable-almalinux-bootc
+    uses: ./.github/workflows/reusable-mark-as-stable.yml
+    with:
+      container_name: "almalinux-bootc"
+    secrets: inherit
+
+  mark-as-stable-ubi9:
+    name: mark-as-stable-ubi9
+    uses: ./.github/workflows/reusable-mark-as-stable.yml
+    with:
+      container_name: "ubi9"
+    secrets: inherit
+
   mark-as-stable-debian:
     name: mark-as-stable-debian
     uses: ./.github/workflows/reusable-mark-as-stable.yml
@@ -47,6 +68,13 @@ jobs:
     uses: ./.github/workflows/reusable-mark-as-stable.yml
     with:
       container_name: "ubuntu"
+    secrets: inherit
+
+  mark-as-stable-alpine:
+    name: mark-as-stable-alpine
+    uses: ./.github/workflows/reusable-mark-as-stable.yml
+    with:
+      container_name: "alpine"
     secrets: inherit
 
 
