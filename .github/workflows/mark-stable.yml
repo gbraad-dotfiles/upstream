@@ -85,8 +85,12 @@ jobs:
       - mark-as-stable-fedora-bootc
       - mark-as-stable-centos
       - mark-as-stable-centos-bootc
+      - mark-as-stable-almalinux
+      - mark-as-stable-almalinux-bootc
+      - mark-as-stable-ubi9
       - mark-as-stable-debian
       - mark-as-stable-ubuntu
+      - mark-as-stable-alpine
     steps:
       - name: Trigger sync-repo-gbraad.yml
         uses: actions/github-script@v7
