@@ -1,11 +1,11 @@
 #!/usr/bin/zsh
 
-CONFIG="${HOME}/.config/dotfiles/applications"
+CONFIG="${HOME}/.config/dotfiles/apps"
 alias appsini="git config -f ${CONFIG}"
 
-_appsdefpath=$(appsini --get "applications.definitions" || echo "${HOME}/.dotapps")
+_appsdefpath=$(appsini --get "apps.definitions" || echo "${HOME}/.dotapps")
 eval _appsdefpath=$(echo ${_appsdefpath})
-_appsinstallpath=$(appsini --get "applications.path" || echo "${HOME}/Applications")
+_appsinstallpath=$(appsini --get "apps.path" || echo "${HOME}/Applications")
 eval APPSHOME=$(echo ${_appsinstallpath})
 mkdir -p $APPSHOME
 export LOCALBIN=${HOME}/.local/bin
@@ -19,7 +19,7 @@ _appsdefexists() {
 }
 
 _appsdefclone() {
-  local repo=$(appsini --get "applications.repository")
+  local repo=$(appsini --get "apps.repository")
   git clone ${repo} ${_appsdefpath} --depth 2
 }
 
@@ -260,7 +260,7 @@ apps() {
     fi 
 }
 
-if [[ $(appsini --get "applications.aliases") == true ]]; then
+if [[ $(appsini --get "apps.aliases") == true ]]; then
     alias a="apps"
 fi
 
@@ -271,9 +271,9 @@ function apps-launcher-widget() {
   zle reset-prompt 
 }
 
-if [[ $(appsini --get "applications.launcher") == true ]]; then
+if [[ $(appsini --get "apps.launcher") == true ]]; then
   zle -N apps-launcher-widget
-  shortcut=$(appsini --get "applications.shortcut")
+  shortcut=$(appsini --get "apps.shortcut")
   if [[ $shortcut == \^? ]]; then
     char=${shortcut#^}
     eval "shortcut=\$'\\C-$char'"

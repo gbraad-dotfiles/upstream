@@ -231,9 +231,30 @@ if [ "$(expr "$0" : '.*source.sh')" -gt 0 ]; then
 fi
 
 if [ "$(dotini --get "dotfiles.aliases")" = true ]; then
-  alias dotup="dotfiles up"
+  #alias dotup="dotfiles up"
 fi
 
 if [ "$(dotini --get "dotfiles.autoupdate")" = true ]; then
-  dotfiles up
+  dotup
 fi
+
+dotup() {
+
+   if [ "$(dotini --get "dotup.dotfiles")" = true ]; then
+     dotfiles update
+   fi
+
+   if [ "$(dotini --get "dotup.apps")" = true ]; then
+     apps list update
+   fi
+
+   if [ "$(dotini --get "dotup.secrets")" = true ]; then
+     # TODO: make sure dotini exists as a reusable function
+     # The path is defined in secrets.ini
+     if [ -d "${HOME}/.dotsecrets" ]; then
+       secrets update
+     fi
+   fi
+
+
+}

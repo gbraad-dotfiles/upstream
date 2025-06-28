@@ -18,3 +18,7 @@
 	wsl = true
 	cygwin = true
 
+[dotup]
+	dotfiles = true
+	apps = true
+	secrets = true

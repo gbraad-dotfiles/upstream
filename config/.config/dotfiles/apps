@@ -1,4 +1,4 @@
-[applications]
+[apps]
 	repository = https://github.com/gbraad-dotfiles/applications
 	defintions = ~/.dotapps
 	path = ~/Applications
