@@ -1,8 +1,8 @@
 [Desktop Entry]
 Version=1.0
 Type=Application
-Name=apps launcher
-Exec=zsh -ic "dotfiles source; apps"
+Name=dotfiles screen
+Exec=zsh -ic "dotfiles source; screen"
 Icon=prompt-icon-128.png
 Keywords=apps
 Terminal=true

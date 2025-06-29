@@ -250,7 +250,7 @@ apps() {
     if (( background )); then
       eval "$script" &
       bg_pid=$!
-      echo "Started in background (PID $bg_pid)"
+      #echo "Started in background (PID $bg_pid)"
       return 0
     else
       if (( interactive )); then
@@ -294,7 +294,7 @@ apps-export() {
   fi
 
   local desktop_dir="${HOME}/.local/share/applications"
-  local desktop_file="${desktop_dir}/apps-${appname}.desktop"
+  local desktop_file="${desktop_dir}/dotfiles-apps-${appname}.desktop"
 
   mkdir -p "$desktop_dir"
   cat > "$desktop_file" <<EOF
