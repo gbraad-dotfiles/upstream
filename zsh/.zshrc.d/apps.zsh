@@ -275,14 +275,26 @@ function apps-launcher-widget() {
   zle reset-prompt 
 }
 
+function apps-launcher-command() {
+  LBUFFER="apps"
+  zle accept-line
+}
+
 if [[ $(appsini --get "apps.launcher") == true ]]; then
-  zle -N apps-launcher-widget
   shortcut=$(appsini --get "apps.shortcut")
   if [[ $shortcut == \^? ]]; then
     char=${shortcut#^}
     eval "shortcut=\$'\\C-$char'"
   fi
-  bindkey "$shortcut" apps-launcher-widget
+
+  # launcher (issues with tty)
+  #zle -N apps-launcher-widget
+  #bindkey "$shortcut" apps-launcher-widget
+
+  # insert command (alternative)
+  bindkey "$shortcut" self-insert
+  zle -N apps-launcher-command
+  bindkey "$shortcut" apps-launcher-command
 fi
 
 apps-export() {
