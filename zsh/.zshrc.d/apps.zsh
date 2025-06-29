@@ -167,7 +167,7 @@ apps() {
         [[ ${#pick} -eq 0 ]] && return 1
         app="${pick[1]}"
         action="${pick[2]}"
-        apps "$app" "$action"
+        apps "$app" "$action" "${pick[3]}"
         return
     fi
 
