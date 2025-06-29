@@ -85,23 +85,25 @@ _select_app_md() {
 
     app=$(printf "%s\n" "${lines[@]}" | \
       fzf --prompt="Select app: " \
-          --header=$'Enter: select\tCtrl+R: run\tCtrl+B: run bg\tCtrl+I: install\tCtrl+N: info' \
+          --header=$'Enter: select\tCtrl+R: run\tCtrl+B: run bg\tCtrl+I: install\tCtrl+N: info\tF5: export .desktop' \
           --bind "ctrl-r:accept" \
-          --expect=enter,ctrl-r,ctrl-i,ctrl-n,ctrl-b )
+          --expect=enter,ctrl-r,ctrl-i,ctrl-n,ctrl-b,f5 )
 
     local -a app_lines
     app_lines=("${(@f)app}")
     key="${app_lines[1]}"
     selected="${app_lines[2]}"
+    apptitle="apps $selected"
 
     [[ -z "$selected" ]] && return 1
-    local path="${selected%% *}"
+    local appname="${selected%% *}"
     case "$key" in
-      ctrl-r) echo "$path run --interactive" ;;
-      ctrl-b) echo "$path run --background" ;;
-      ctrl-i) echo "$path install" ;;
-      ctrl-n) echo "$path info" ;;
-      *)      echo "$path" ;;
+      ctrl-r) echo "$appname run --interactive" ;;
+      ctrl-b) echo "$appname run --background" ;;
+      ctrl-i) echo "$appname install" ;;
+      ctrl-n) echo "$appname info" ;;
+      f5)     apps-export "$appname" "$apptitle"; return ;;
+      *)      echo "$appname" ;;
     esac
 }
 
@@ -280,3 +282,29 @@ if [[ $(appsini --get "apps.launcher") == true ]]; then
   fi
   bindkey "$shortcut" apps-launcher-widget
 fi
+
+apps-export() {
+  local appname="$1"
+  local title="$2"
+  if [[ -z "$appname" || -z "$title" ]]; then
+    echo "Usage: apps-export <appname> <title>"
+    return 1
+  fi
+
+  local desktop_dir="${HOME}/.local/share/applications"
+  local desktop_file="${desktop_dir}/apps-${appname}.desktop"
+
+  mkdir -p "$desktop_dir"
+  cat > "$desktop_file" <<EOF
+[Desktop Entry]
+Version=1.0
+Type=Application
+Name=${title}
+Exec=zsh -c "dotfiles source; apps ${appname} run -bg"
+Icon=prompt-icon-128.png
+Keywords=apps
+Terminal=false
+Categories=Utility;
+EOF
+  notify-send "Exported" "$desktop_file"
+}
