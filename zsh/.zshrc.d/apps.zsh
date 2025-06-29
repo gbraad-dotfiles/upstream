@@ -287,8 +287,8 @@ fi
 
 apps-export() {
   local appname="$1"
-  local title="$2"
-  if [[ -z "$appname" || -z "$title" ]]; then
+  local apptitle="$2"
+  if [[ -z "$appname" || -z "$apptitle" ]]; then
     echo "Usage: apps-export <appname> <title>"
     return 1
   fi
@@ -301,12 +301,14 @@ apps-export() {
 [Desktop Entry]
 Version=1.0
 Type=Application
-Name=${title}
+Name=${apptitle}
 Exec=zsh -c "dotfiles source; apps ${appname} run -bg"
 Icon=prompt-icon-128.png
 Keywords=apps
 Terminal=false
 Categories=Utility;
 EOF
-  notify-send "Exported" "$desktop_file"
+
+  notify-send "Exported" "$apptitle"
+  update-desktop-database ~/.local/share/applications/
 }
