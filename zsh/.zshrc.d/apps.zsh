@@ -89,14 +89,16 @@ _select_app_md() {
           --bind "ctrl-r:accept" \
           --expect=enter,ctrl-r,ctrl-i,ctrl-n,ctrl-b,f5 )
 
-    local -a app_lines
+    local -a app_lines appname apptitle
     app_lines=("${(@f)app}")
     key="${app_lines[1]}"
     selected="${app_lines[2]}"
-    apptitle="apps $selected"
 
     [[ -z "$selected" ]] && return 1
-    local appname="${selected%% *}"
+    fields=(${(z)selected})
+    appname="${fields[1]}"
+    apptitle="${fields[2, -1]}"
+
     case "$key" in
       ctrl-r) echo "$appname run --interactive" ;;
       ctrl-b) echo "$appname run --background" ;;
