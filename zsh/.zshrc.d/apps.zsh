@@ -254,7 +254,7 @@ apps() {
       return 0
     else
       if (( interactive )); then
-        $script
+        eval "$script"
       else
         output=$(eval "$script")
         exitcode=$?
