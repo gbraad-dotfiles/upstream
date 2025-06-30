@@ -11,13 +11,14 @@ alias comment_filter='grep -Ev "^\s*($|#)"'
 
 if [[ $(tailscaleini --get "tailscale.aliases") == true ]]; then
   # tailscale helpers
+  alias td='apps taildrop run'
   alias ts='tailscale'
   alias tss='ts status | comment_filter'
   alias tsh='ts ssh'
   alias tsip='ts ip -4'
-  alias tsfon='tss | offline_filter'
-  alias tsfdir='tss | direct_filter'
-  alias tsfexit='tss | exitnode_filter'
+  alias tsfon='apps tailscale status online'
+  alias tsfdir='apps tailscale status direct'
+  alias tsfexit='apps tailscale status exitnode'
   alias tskey='secrets var tailscale_authkey'
   alias tsup='sudo tailscale up --auth-key $TAILSCALE_AUTHKEY'
   alias tsconnect='tskey; tsup'
