@@ -231,7 +231,7 @@ if [ "$(expr "$0" : '.*source.sh')" -gt 0 ]; then
 fi
 
 if [ "$(dotini --get "dotfiles.aliases")" = true ]; then
-  #alias dotup="dotfiles up"
+  :
 fi
 
 if [ "$(dotini --get "dotfiles.autoupdate")" = true ]; then
