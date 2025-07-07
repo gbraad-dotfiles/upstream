@@ -2,6 +2,11 @@
 export ZDOTDIR="${HOME}/.dotfiles/zsh/"
 export COLORTERM=truecolor
 
+# If the first argument is -c, shift it off
+if [ "$1" = "-c" ]; then
+  shift
+fi
+
 if [ "$#" -eq 0 ]; then
   exec zsh --login
 else
