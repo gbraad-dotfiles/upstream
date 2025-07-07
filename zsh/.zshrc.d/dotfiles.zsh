@@ -125,8 +125,13 @@ _dotresource() {
   #if [[ "$DOTFILES_SOURCED_FROM_SOURCE_SH" == 0 || "$DOTFILES_SOURCED_FROM_SOURCE_SH" == false ]]; then
   #  echo "Resourcing zsh."
   #fi
-  if [ -d $HOME/.zshrc.d ]; then
-    for file in $HOME/.zshrc.d/*.?sh; do
+  if [ -d ${HOME}/.zshrc.d ]; then
+    for file in ${HOME}/.zshrc.d/*.?sh; do
+      source $file
+    done
+  # allow dotfiles to function without being installed (dot-command)
+  elif [ -d ${HOME}/.dotfiles/zsh/.zshrc.d ]; then
+    for file in ${HOME}/.dotfiles/zsh/.zshrc.d/*.?sh; do
       source $file
     done
   fi
