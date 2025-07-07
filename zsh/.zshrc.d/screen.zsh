@@ -1,22 +1,26 @@
 #!/bin/zsh
 
 screen () {
+  local tmux="tmux"
+  if [ ! -L "${HOME}/.tmux.conf" ] || [ "$(readlink "${HOME}/.tmux.conf")" != "${HOME}/.dotfiles/tmux/.tmux.conf" ]; then
+    tmux=("tmux" "-f" "${HOME}/.dotfiles/tmux/.tmuxdot.conf")
+  fi
+
   local OVERRIDE=$(dotini screen --bool "screen.override")
   if [[ ${OVERRIDE} == true ]]; then
     local screenname="screen"
 
     if [[ -n "${TMUX}" ]]; then
-      tmux new-window "$*"
-
-    else 
-     
-      tmux has-session -t ${screenname} 2>/dev/null
+      $tmux new-window "$*"
+    else
+      $tmux has-session -t ${screenname} 2>/dev/null
       if [[ $? != 0 ]]; then
-        tmux new-session -d -s ${screenname}
-        tmux send-keys -t ${screenname} "$*" C-m
-        tmux attach-session -t ${screenname}
+
+        $tmux new-session -d -s ${screenname}
+        $tmux send-keys -t ${screenname} "$*" C-m
+        $tmux attach-session -t ${screenname}
       else
-        tmux attach-session -t ${screenname}
+        $tmux attach-session -t ${screenname}
       fi
     fi
 
