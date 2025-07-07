@@ -1,10 +1,7 @@
 #!/bin/zsh
 
-CONFIG="${HOME}/.config/dotfiles/screen"
-alias screenini="git config -f ${CONFIG}"
-
 screen () {
-  local OVERRIDE=$(screenini --bool "screen.override")
+  local OVERRIDE=$(dotini screen --bool "screen.override")
   if [[ ${OVERRIDE} == true ]]; then
     local screenname="screen"
 

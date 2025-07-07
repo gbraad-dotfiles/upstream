@@ -1,5 +1,6 @@
 #!/bin/sh
 export ZDOTDIR="${HOME}/.dotfiles/zsh/"
+export COLORTERM=truecolor
 
 if [ "$#" -eq 0 ]; then
   exec zsh --login
