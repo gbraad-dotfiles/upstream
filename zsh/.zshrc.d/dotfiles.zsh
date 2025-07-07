@@ -147,6 +147,12 @@ _dotresource() {
 }
 
 _dotrestow() {
+  # Only run if ~/.zshrc is a symlink to ~/.dotfiles/zsh/.zshrc
+  if [ ! -L "${HOME}/.zshrc" ] || [ "$(readlink "${HOME}/.zshrc")" != "${HOME}/.dotfiles/zsh/.zshrc" ]; then
+    echo "Aborting: ~/.zshrc is not a symlink to ~/.dotfiles/zsh/.zshrc"
+    return 1
+  fi
+
   echo "Restowing ..."
   cd ~/.dotfiles
 
