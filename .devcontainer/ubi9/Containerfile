@@ -50,8 +50,9 @@ RUN mkdir -p ~/.ssh/ \
 USER root
 
 RUN git clone https://github.com/gbraad-dotfiles/upstream.git ${ROOTHOME}/.dotfiles --depth 2 \
+    && mkdir -p ${ROOTHOME}/.config \
     && cd ${ROOTHOME}/.dotfiles \
-    && . ./zsh/.zshrc.d/dotfiles.zsh \
+    && . ./dotfiles.sh \
     && stow config \
     && dotfiles restow
 

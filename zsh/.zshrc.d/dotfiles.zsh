@@ -6,10 +6,10 @@ dotini() {
   shift
 
   local config_file="${HOME}/.config/dotfiles/${config_name}"
-  if [[ ! -f "$config_file" ]]; then
+  if [ ! -f "$config_file" ]; then
     config_file="${HOME}/.dotfiles/config/.config/dotfiles/${config_name}"
   fi
-  if [[ ! -f "$config_file" ]]; then
+  if [ ! -f "$config_file" ]; then
     echo "Config file not found: $config_file"
     return 1
   fi
@@ -147,9 +147,9 @@ _dotresource() {
 }
 
 _dotrestow() {
-  # Only run if ~/.zshrc is a symlink to ~/.dotfiles/zsh/.zshrc
-  if [ ! -L "${HOME}/.zshrc" ] || [ "$(readlink "${HOME}/.zshrc")" != "${HOME}/.dotfiles/zsh/.zshrc" ]; then
-    echo "Aborting: ~/.zshrc is not a symlink to ~/.dotfiles/zsh/.zshrc"
+  # Only run if ~/.config/dotfiles/ is a symlink
+  if [ ! -L "${HOME}/.config/dotfiles" ]; then
+    echo "Aborting: ~/.config/dotfiles does not exist"
     return 1
   fi
 
