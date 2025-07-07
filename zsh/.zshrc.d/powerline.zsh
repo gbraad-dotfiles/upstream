@@ -6,6 +6,9 @@ if [[ -r ~/.local/lib/python2.7/site-packages/powerline/bindings/zsh/powerline.z
 elif [[ -r ~/.local/lib/python3.11/site-packages/powerline/bindings/zsh/powerline.zsh ]]; then
     source ~/.local/lib/python3.11/site-packages/powerline/bindings/zsh/powerline.zsh
 # installed on bluefin (need a better solution) !
+elif [[ -r ~/.local/lib/python3.12/site-packages/powerline/bindings/zsh/powerline.zsh ]]; then
+    export POWERLINE_CONFIG_COMMAND=${HOME}/.local/bin/powerline-config
+    source ~/.local/lib/python3.12/site-packages/powerline/bindings/zsh/powerline.zsh
 elif [[ -r ~/.local/lib/python3.13/site-packages/powerline/bindings/zsh/powerline.zsh ]]; then
     export POWERLINE_CONFIG_COMMAND=${HOME}/.local/bin/powerline-config
     source ~/.local/lib/python3.13/site-packages/powerline/bindings/zsh/powerline.zsh

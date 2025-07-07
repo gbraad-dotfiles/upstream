@@ -1,12 +1,5 @@
 #!/bin/zsh
 
-CONFIG="${HOME}/.config/dotfiles/devenv"
-if [[ ! -f $CONFIG ]]; then
-  echo "Configuration file missing: $CONFIG"
-  return
-fi
-alias devini="git config -f $CONFIG"
-
 devenv() {
   if [ $# -lt 2 ]; then
     echo "Usage: $0 <prefix> <command> [args...]"
@@ -20,8 +13,9 @@ devenv() {
   local SYSNAME=${PREFIX}${SUFFIX}
   shift 2
 
-  local START_SHELL=$(devini --get devenv.shell)
-  local IMAGE_USER=$(devini --get devenv.user)
+  local START_SHELL=$(dotini devenv --get devenv.shell)
+  local IMAGE_USER=$(dotini devenv --get devenv.user)
+
   local START_ARGS=(
     "--user=root"
     "--cap-add=NET_RAW"
@@ -35,7 +29,7 @@ devenv() {
   [[ -e /dev/dri ]] && START_ARGS+=("--device=/dev/dri")
 
   # issue as some containers do not have this yet
-  #"--workdir=$(devini --get devenv.workdir)"
+  #"--workdir=$(dotini devenv --get devenv.workdir)"
   local START_PATHS=(
     "-v" "${HOME}/Projects:/home/${IMAGE_USER}/Projects"
     "-v" "${HOME}/Documents:/home/${IMAGE_USER}/Documents"
@@ -77,13 +71,13 @@ devenv() {
       # For environments that can not start systemd
       podman run -d --name=${SYSNAME} --hostname ${HOSTNAME}-${SYSNAME} \
         --entrypoint "" "${START_ARGS[@]}" "${START_PATHS[@]}" \
-        $(generate_image_name $PREFIX) $(devini --get devenv.noinit)
+        $(generate_image_name $PREFIX) $(dotini devenv --get devenv.noinit)
       ;;
     "nosys" | "init")
       # For environments that can not start systemd
       podman run -d --name=${SYSNAME} --hostname ${HOSTNAME}-${SYSNAME} \
         --init --entrypoint "" "${START_ARGS[@]}" "${START_PATHS[@]}" \
-        $(generate_image_name $PREFIX) $(devini --get devenv.noinit)
+        $(generate_image_name $PREFIX) $(dotini devenv --get devenv.noinit)
       ;;
     "start")
       if (! podman ps -a --format "{{.Names}}" | grep -q ${SYSNAME}); then
@@ -166,7 +160,7 @@ devenv() {
 
 generate_image_name() {
   local PREFIX=$1
-  local IMAGE=$(devini --get "images.${PREFIX}")
+  local IMAGE=$(dotini devenv --get "images.${PREFIX}")
 
   if [ -z "${IMAGE}" ]; then
     echo "Unknown distro: $PREFIX"
@@ -188,7 +182,7 @@ generate_aliases() {
   alias ${PREFIX}build="devenv ${PREFIX} tmux attach-session -t build || dev ${PREFIX} tmux new-session -s build"
 }
 
-if [[ $(devini --get "devenv.aliases") == true ]]; then
+if [[ $(dotini devenv --get "devenv.aliases") == true ]]; then
   dev() { devenv "$@" }
 
   generate_aliases "fed"

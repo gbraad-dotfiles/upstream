@@ -1,12 +1,5 @@
 #!/bin/zsh
 
-CONFIG="${HOME}/.config/dotfiles/devbox"
-if [[ ! -f $CONFIG ]]; then
-  echo "Configuration file missing: $CONFIG"
-  return
-fi
-alias boxini="git config -f $CONFIG"
-
 devbox() {
   if [ $# -lt 2 ]; then
     echo "Usage: $0 <prefix> <command> [args...]"
@@ -19,7 +12,7 @@ devbox() {
   local BOXNAME=${PREFIX}${SUFFIX}
   shift 2
 
-  local START_SHELL=$(boxini --get devbox.shell)
+  local START_SHELL=$(dotini devbot --get devbox.shell)
 
   case "$COMMAND" in
     "create")
@@ -112,7 +105,7 @@ devbox() {
 
 generate_devbox_name() {
   local PREFIX=$1
-  local IMAGE=$(boxini --get "images.${PREFIX}")
+  local IMAGE=$(dotini devbot --get "images.${PREFIX}")
 
   if [ -z "${IMAGE}" ]; then
     echo "Unknown distro: $PREFIX"
@@ -122,6 +115,6 @@ generate_devbox_name() {
   echo ${IMAGE}
 }
 
-if [[ $(boxini --get "devbox.aliases") == true ]]; then
+if [[ $(dotini devbot --get "devbox.aliases") == true ]]; then
   box() { devbox "$@" }
 fi

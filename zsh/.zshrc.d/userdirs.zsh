@@ -1,10 +1,5 @@
 #!/bin/zsh
 
-CONFIG="${HOME}/.config/dotfiles/dotfiles"
-dotini() {
-  git config -f $CONFIG "$@"
-}
-
 chown_if_needed() {
   local expected_user="$1"
   local target="$2"
@@ -24,7 +19,7 @@ chown_if_needed() {
   fi
 }
 
-if [[ $(dotini --get "dotfiles.userdirs") == true ]]; then
+if [[ $(dotini dotfiles --get "dotfiles.userdirs") == true ]]; then
   chown_if_needed ${USER} ${HOME}/Projects
   chown_if_needed ${USER} ${HOME}/Documents
   chown_if_needed ${USER} ${HOME}/Downloads

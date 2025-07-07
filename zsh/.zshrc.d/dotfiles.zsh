@@ -1,11 +1,20 @@
 #!/bin/zsh
 
-CONFIG="${HOME}/.config/dotfiles/dotfiles"
-#alias dotini="git config -f $CONFIG"
-
 # this is to make this work with the restricted bash from Debian
 dotini() {
-  git config -f $CONFIG "$@"
+  local config_name="$1"
+  shift
+
+  local config_file="${HOME}/.config/dotfiles/${config_name}"
+  if [[ ! -f "$config_file" ]]; then
+    config_file="${HOME}/.dotfiles/config/.config/dotfiles/${config_name}"
+  fi
+  if [[ ! -f "$config_file" ]]; then
+    echo "Config file not found: $config_file"
+    return 1
+  fi
+
+  git config -f "$config_file" "$@"
 }
 
 _dotinstall() {
@@ -19,7 +28,7 @@ _dotinstall() {
   stow config
 
   # stow
-  stowlist=$(dotini --list | grep '^stow\.' | awk -F '=' '$2 == "true" {print $1}' | sed 's/^stow\.//g')
+  stowlist=$(dotini dotfiles --list | grep '^stow\.' | awk -F '=' '$2 == "true" {print $1}' | sed 's/^stow\.//g')
   for tostow in $stowlist; do
     stow $( echo $tostow | xargs )
   done
@@ -144,7 +153,7 @@ _dotrestow() {
   # (re)stow
   stow -R config
 
-  stowlist=$(dotini --list | grep '^stow\.' | awk -F '=' '$2 == "true" {print $1}' | sed 's/^stow\.//g')
+  stowlist=$(dotini dotfiles --list | grep '^stow\.' | awk -F '=' '$2 == "true" {print $1}' | sed 's/^stow\.//g')
   for tostow in $stowlist; do
     stow -R $(echo "$tostow" | xargs)
   done
@@ -235,25 +244,25 @@ if [ "$(expr "$0" : '.*source.sh')" -gt 0 ]; then
   _dotresource
 fi
 
-if [ "$(dotini --get "dotfiles.aliases")" = true ]; then
+if [ "$(dotini dotfiles --get "dotfiles.aliases")" = true ]; then
   :
 fi
 
-if [ "$(dotini --get "dotfiles.autoupdate")" = true ]; then
+if [ "$(dotini dotfiles --get "dotfiles.autoupdate")" = true ]; then
   dotup
 fi
 
 dotup() {
 
-   if [ "$(dotini --get "dotup.dotfiles")" = true ]; then
+   if [ "$(dotini dotfiles --get "dotup.dotfiles")" = true ]; then
      dotfiles update
    fi
 
-   if [ "$(dotini --get "dotup.apps")" = true ]; then
+   if [ "$(dotini dotfiles --get "dotup.apps")" = true ]; then
      apps list update
    fi
 
-   if [ "$(dotini --get "dotup.secrets")" = true ]; then
+   if [ "$(dotini dotfiles --get "dotup.secrets")" = true ]; then
      # TODO: make sure dotini exists as a reusable function
      # The path is defined in secrets.ini
      if [ -d "${HOME}/.dotsecrets" ]; then
