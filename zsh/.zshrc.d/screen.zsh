@@ -2,9 +2,10 @@
 
 screen () {
   local tmux="tmux"
-  if [ ! -L "${HOME}/.tmux.conf" ] || [ "$(readlink "${HOME}/.tmux.conf")" != "${HOME}/.dotfiles/tmux/.tmux.conf" ]; then
-    tmux=("tmux" "-f" "${HOME}/.dotfiles/tmux/.tmuxdot.conf")
-  fi
+  # Already handled in tmux.zsh
+  #if [ ! -L "${HOME}/.tmux.conf" ] || [ "$(readlink "${HOME}/.tmux.conf")" != "${HOME}/.dotfiles/tmux/.tmux.conf" ]; then
+  #  tmux=("tmux" "-f" "${HOME}/.dotfiles/tmux/.tmuxdot.conf")
+  #fi
 
   local OVERRIDE=$(dotini screen --bool "screen.override")
   if [[ ${OVERRIDE} == true ]]; then
