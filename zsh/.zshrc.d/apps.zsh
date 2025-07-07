@@ -1,11 +1,8 @@
 #!/usr/bin/zsh
 
-CONFIG="${HOME}/.config/dotfiles/apps"
-alias appsini="git config -f ${CONFIG}"
-
-_appsdefpath=$(appsini --get "apps.definitions" || echo "${HOME}/.dotapps")
+_appsdefpath=$(dotini apps --get "apps.definitions" || echo "${HOME}/.dotapps")
 eval _appsdefpath=$(echo ${_appsdefpath})
-_appsinstallpath=$(appsini --get "apps.path" || echo "${HOME}/Applications")
+_appsinstallpath=$(dotini apps --get "apps.path" || echo "${HOME}/Applications")
 eval APPSHOME=$(echo ${_appsinstallpath})
 mkdir -p $APPSHOME
 export LOCALBIN=${HOME}/.local/bin
@@ -19,7 +16,7 @@ _appsdefexists() {
 }
 
 _appsdefclone() {
-  local repo=$(appsini --get "apps.repository")
+  local repo=$(dotini apps --get "apps.repository")
   git clone ${repo} ${_appsdefpath} --depth 2
 }
 
@@ -264,7 +261,7 @@ apps() {
     fi 
 }
 
-if [[ $(appsini --get "apps.aliases") == true ]]; then
+if [[ $(dotini apps --get "apps.aliases") == true ]]; then
     alias a="apps"
 fi
 
@@ -280,8 +277,8 @@ function apps-launcher-command() {
   zle accept-line
 }
 
-if [[ $(appsini --get "apps.launcher") == true ]]; then
-  shortcut=$(appsini --get "apps.shortcut")
+if [[ $(dotini apps --get "apps.launcher") == true ]]; then
+  shortcut=$(dotini apps --get "apps.shortcut")
   if [[ $shortcut == \^? ]]; then
     char=${shortcut#^}
     eval "shortcut=\$'\\C-$char'"
