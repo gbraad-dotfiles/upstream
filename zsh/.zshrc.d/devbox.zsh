@@ -32,7 +32,7 @@ devbox() {
     "kill" | "rm" | "remove")
       distrobox rm ${BOXNAME}
       ;;
-    "enter" | "shell")
+    "enter")
       if (! podman ps -a --format "{{.Names}}" | grep -q ${BOXNAME}); then
         devbox ${PREFIX} create
         sleep 1
@@ -44,7 +44,7 @@ devbox() {
       distrobox enter ${BOXNAME}
       ;;
     "export")
-      podman exec ${BOXNAME} su ${USER} -c "export XDG_DATA_DIRS=/usr/local/share:/usr/share; export XDG_DATA_HOME=${HOME}/.local/share; distrobox-export --app $@"
+      podman exec ${BOXNAME} su ${IMAGE_USER} -c "export XDG_DATA_DIRS=/usr/local/share:/usr/share; export XDG_DATA_HOME=${HOME}/.local/share; distrobox-export --app $@"
       ;;
     "sysctl" | "systemctl" | "systemd")
       if (podman ps --filter "name=${BOXNAME}" --filter "status=stopped" | grep -q ${BOXNAME}); then
@@ -83,7 +83,8 @@ devbox() {
     "root" | "su")
       devbox ${PREFIX} exec ${START_SHELL}
       ;;
-    "user")
+    "user" | "sh" | "shell")
+      # enter has no --user option
       devbox ${PREFIX} exec sudo -i -u ${IMAGE_USER} $*
       ;;
     "exec")
