@@ -33,6 +33,10 @@ devbox() {
       distrobox rm ${BOXNAME}
       ;;
     "enter")
+      if [[ "${USER}" != "${IMAGE_USER}" ]]; then
+         echo "User is different from image. Please use '$0 ${PREFIX} shell' instead."
+         return 1
+      fi
       if (! podman ps -a --format "{{.Names}}" | grep -q ${BOXNAME}); then
         devbox ${PREFIX} create
         sleep 1
