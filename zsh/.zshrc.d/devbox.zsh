@@ -12,7 +12,7 @@ devbox() {
   local BOXNAME=${PREFIX}${SUFFIX}
   shift 2
 
-  local START_SHELL=$(dotini devbot --get devbox.shell)
+  local START_SHELL=$(dotini devbox --get devbox.shell)
 
   case "$COMMAND" in
     "create")
@@ -105,7 +105,7 @@ devbox() {
 
 generate_devbox_name() {
   local PREFIX=$1
-  local IMAGE=$(dotini devbot --get "images.${PREFIX}")
+  local IMAGE=$(dotini devbox --get "images.${PREFIX}")
 
   if [ -z "${IMAGE}" ]; then
     echo "Unknown distro: $PREFIX"
@@ -115,6 +115,6 @@ generate_devbox_name() {
   echo ${IMAGE}
 }
 
-if [[ $(dotini devbot --get "devbox.aliases") == true ]]; then
+if [[ $(dotini devbox --get "devbox.aliases") == true ]]; then
   box() { devbox "$@" }
 fi
