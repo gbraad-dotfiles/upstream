@@ -139,7 +139,7 @@ _apps_fuzzy_pick() {
         [[ -z "$section" ]] && return 1
     fi
 
-    echo "$app" "$section"
+    echo "$app" "${section%% *}"
 }
 
 apps() {
