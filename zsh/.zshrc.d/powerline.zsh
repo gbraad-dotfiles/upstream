@@ -1,37 +1,25 @@
 #!/bin/zsh
-# check if powerline-local
-if [[ -r ~/.local/lib/python2.7/site-packages/powerline/bindings/zsh/powerline.zsh ]]; then
-    source ~/.local/lib/python2.7/site-packages/powerline/bindings/zsh/powerline.zsh
-# pip install --user powerline (nix)
-elif [[ -r ~/.local/lib/python3.11/site-packages/powerline/bindings/zsh/powerline.zsh ]]; then
-    source ~/.local/lib/python3.11/site-packages/powerline/bindings/zsh/powerline.zsh
-# installed on bluefin (need a better solution) !
-elif [[ -r ~/.local/lib/python3.12/site-packages/powerline/bindings/zsh/powerline.zsh ]]; then
-    export POWERLINE_CONFIG_COMMAND=${HOME}/.local/bin/powerline-config
-    source ~/.local/lib/python3.12/site-packages/powerline/bindings/zsh/powerline.zsh
-elif [[ -r ~/.local/lib/python3.13/site-packages/powerline/bindings/zsh/powerline.zsh ]]; then
-    export POWERLINE_CONFIG_COMMAND=${HOME}/.local/bin/powerline-config
-    source ~/.local/lib/python3.13/site-packages/powerline/bindings/zsh/powerline.zsh
 
-# else use distro installed powerline
-elif [[ -f `which powerline-daemon` ]]; then
-    #powerline-daemon -q
+# Try user Python installs (finds first matching powerline.zsh)
+local found=0
+local matches=($HOME/.local/lib/python*/site-packages/powerline/bindings/zsh/powerline.zsh(N))
+if [[ ${#matches} -gt 0 ]]; then
+    export POWERLINE_CONFIG_COMMAND="$HOME/.local/bin/powerline-config"
+    source "$matches[1]"
+    found=1
+fi
+
+# System-wide or custom installs
+if (( !found )) && command -v powerline-daemon &>/dev/null; then
     POWERLINE_ZSH_CONTINUATION=1
     POWERLINE_ZSH_SELECT=1
 
-    # fedora
-    if [[ -f "/usr/share/powerline/zsh/powerline.zsh" ]]; then
-        . /usr/share/powerline/zsh/powerline.zsh
-    fi
-    # debian
-    if [[ -f "/usr/share/powerline/bindings/zsh/powerline.zsh" ]]; then
-        . /usr/share/powerline/bindings/zsh/powerline.zsh
-    fi
+    # Fedora
+    [[ -f /usr/share/powerline/zsh/powerline.zsh ]] && source /usr/share/powerline/zsh/powerline.zsh
 
+    # Debian
+    [[ -f /usr/share/powerline/bindings/zsh/powerline.zsh ]] && source /usr/share/powerline/bindings/zsh/powerline.zsh
 
-    # powerline-local
-    if [[ -f ".dotfiles/powerline-local/.local/share/powerline/zsh/powerline.zsh" ]]; then
-        . .dotfiles/powerline-local/.local/share/powerline/zsh/powerline.zsh
-    fi
+    # custom local repo
+    [[ -f .dotfiles/powerline-local/.local/share/powerline/zsh/powerline.zsh ]] && source .dotfiles/powerline-local/.local/share/powerline/zsh/powerline.zsh
 fi
-
