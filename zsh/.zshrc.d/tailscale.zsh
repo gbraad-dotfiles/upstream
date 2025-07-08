@@ -1,21 +1,18 @@
 #!/bin/zsh
 
-CONFIG="${HOME}/.config/dotfiles/tailscale"
-alias tailscaleini="git config -f $CONFIG"
-
 # general helpers
 alias offline_filter='grep -v "offline"'
 alias direct_filter='grep "direct"'
 alias exitnode_filter='grep "offers exit node"'
 alias comment_filter='grep -Ev "^\s*($|#)"'
 
-if [[ $(tailscaleini --get "tailscale.aliases") == true ]]; then
+if [[ $(dotini tailscale --get "tailscale.aliases") == true ]]; then
   # tailscale helpers
   alias td='apps taildrop run'
-  alias ts='tailscale'
-  alias tss='ts status | comment_filter'
-  alias tsh='ts ssh'
-  alias tsip='ts ip -4'
+  alias ts='apps tailscale'
+  alias tss='apps tailscale status'
+  alias tsh='tailscale ssh'
+  alias tsip='tailscale ip -4'
   alias tsfon='apps tailscale status online'
   alias tsfdir='apps tailscale status direct'
   alias tsfexit='apps tailscale status exitnode'
@@ -24,21 +21,21 @@ if [[ $(tailscaleini --get "tailscale.aliases") == true ]]; then
   alias tsconnect='tskey; tsup'
 fi
 
-if [[ $(tailscaleini --get "tailproxy.aliases") == true ]]; then
+if [[ $(dotini tailscale --get "tailproxy.aliases") == true ]]; then
   # tailproxy helpers
-  alias tp='tailproxy'
-  alias tpkill='tailproxy-kill'
-  alias tps='tp status | comment_filter'
-  alias tph='tp ssh'
-  alias tpip='tp ip -4'
-  alias tpfon='tps | offline_filter'
-  alias tpfdir='tps | direct_filter'
-  alias tpfexit='tps | exitnode_filter'
-  alias tpexit='tailproxy-exit'
-  alias tpmull='tailproxy-mull'
-  alias tptp='tailproxy; tpexit; proxy tailproxy-resolve'
+  alias tp='apps tailproxy'
+  alias tpkill='apps tailproxy kill'
+  alias tps='apps tailproxy status'
+  alias tph='tailproxy ssh'
+  alias tpip='tailproxy ip -4'
+  alias tpfon='apps tailproxy status online'
+  alias tpfdir='apps tailproxy status direct'
+  alias tpfexit='apps tailproxy status exitnode'
+  alias tpexit='apps tailproxy exitnode select'
+  alias tpmull='apps tailproxy exitmull select'
+  alias tptp='tailproxy; proxy tailproxy-resolve'
   alias tpkey='secrets var tailscale_authkey'
-  alias tpup='tp up --auth-key $TAILSCALE_AUTHKEY'
+  alias tpup='tailproxy up --auth-key $TAILSCALE_AUTHKEY'
   alias tpconnect='tpkey; tpup'
 
   # ssh/scp over tailproxy
@@ -55,12 +52,6 @@ fi
 
 # install for other platforms
 alias install-tailscale="apps tailscale install"
-
-# tailproxy (user mode instance)
-alias tailproxy=". ~/.local/bin/start-tailproxy"
-
-# tailscale (user mode)
-alias start-tailscale="screen -d -m tailscaled --tun='userspace-networking' --socket=/var/run/tailscale/tailscaled.sock"
 
 # containers
 alias tailpod='podman run -d   --name=tailscaled --env TS_AUTHKEY=$TAILSCALE_AUTHKEY -v /var/lib:/var/lib --network=host --cap-add=NET_ADMIN --cap-add=NET_RAW --device=/dev/net/tun tailscale/tailscale'
