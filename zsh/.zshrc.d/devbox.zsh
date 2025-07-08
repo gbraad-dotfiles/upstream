@@ -13,6 +13,7 @@ devbox() {
   shift 2
 
   local START_SHELL=$(dotini devbox --get devbox.shell)
+  local IMAGE_USER=$(dotini devbox --get devbox.user)
 
   case "$COMMAND" in
     "create")
@@ -74,7 +75,7 @@ devbox() {
       devbox ${PREFIX} dot apps $*
       ;;
     "dot")
-      devbox ${PREFIX} exec sudo -i -u ${USER} zsh -c "dotfiles source; export DISPLAY=:0; $*" 
+      devbox ${PREFIX} exec sudo -i -u ${IMAGE_USER} zsh -c "dotfiles source; export DISPLAY=:0; $*" 
       ;;
     "dotfiles")
       devbox ${PREFIX} user dotfiles $*
@@ -83,7 +84,7 @@ devbox() {
       devbox ${PREFIX} exec ${START_SHELL}
       ;;
     "user")
-      devbox ${PREFIX} exec sudo -i -u ${USER} $*
+      devbox ${PREFIX} exec sudo -i -u ${IMAGE_USER} $*
       ;;
     "exec")
       if (! podman ps -a --format "{{.Names}}" | grep -q ${BOXNAME}); then

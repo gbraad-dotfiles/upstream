@@ -1,6 +1,7 @@
 [devbox]
 	aliases = true
 	shell = /bin/zsh
+	user = gbraad
 
 [images]
 	dotfedora = 	ghcr.io/gbraad-dotfiles/fedora-toolbox:41
