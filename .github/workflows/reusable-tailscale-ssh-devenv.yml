@@ -99,9 +99,9 @@ jobs:
                sleep 1
           done
           IP=`podman exec ${{ inputs.prefix_name }}sys tailscale ip -4`
-          echo "Use the following command to connect \`tailscale ssh gbraad@${IP}\`"
+          echo "Use the following command to connect \`tailscale ssh gbraad@${IP}\` or \`dotscreen gbraad@${IP}\`"
           IP=`tailscale ip -4`
-          echo "Use the following command to debug from the host \`tailscale ssh runner@${IP}\`"
+          echo "Use the following command to debug from the host \`tailscale ssh runner@${IP}\` or \`dotscreen runner@${IP}\`"
           sleep 18000
 
       - name: Message user; 1 hour
