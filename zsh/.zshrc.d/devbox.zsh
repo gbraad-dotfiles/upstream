@@ -33,10 +33,10 @@ devbox() {
       distrobox rm ${BOXNAME}
       ;;
     "enter")
-      if [[ "${USER}" != "${IMAGE_USER}" ]]; then
-         echo "User is different from image. Please use '$0 ${PREFIX} shell' instead."
-         return 1
-      fi
+      #if [[ "${USER}" != "${IMAGE_USER}" ]]; then
+      #   echo "User is different from image. Please use '$0 ${PREFIX} shell' instead."
+      #   return 1
+      #fi
       if (! podman ps -a --format "{{.Names}}" | grep -q ${BOXNAME}); then
         devbox ${PREFIX} create
         sleep 1
@@ -45,7 +45,7 @@ devbox() {
         devbox ${PREFIX} start
         sleep 2
       fi
-      distrobox enter ${BOXNAME}
+      distrobox enter ${BOXNAME} -- ${START_SHELL}
       ;;
     "export")
       podman exec ${BOXNAME} su ${IMAGE_USER} -c "export XDG_DATA_DIRS=/usr/local/share:/usr/share; export XDG_DATA_HOME=${HOME}/.local/share; distrobox-export --app $@"
