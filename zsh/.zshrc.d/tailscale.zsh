@@ -6,6 +6,9 @@ alias offline_filter='grep "offline"'
 alias direct_filter='grep "direct"'
 alias exitnode_filter='grep "offers exit node"'
 alias comment_filter='grep -Ev "^\s*($|#)"'
+alias tagged_filter='grep "tagged-devices"'
+alias assigned_filter='grep -v "tagged-devices"'
+alias tsnet_filter='grep ".ts.net"'
 
 if [[ $(dotini tailscale --get "tailscale.aliases") == true ]]; then
   # tailscale helpers
