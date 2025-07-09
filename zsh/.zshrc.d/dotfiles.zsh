@@ -148,6 +148,10 @@ _dotresource() {
 
 _dotdestow() {
   echo "Unloading ..."
+  if [ -d ${HOME}/.zshrc.d ] && [ "$1" != "-f" ] || [ "$1" != "--force" ]; then
+    rm -rf ${HOME}/.zshrc.d
+  fi
+
   cd ~/.dotfiles
 
   stowlist=$(find . -maxdepth 1 -type d ! -name '.*' ! -name '*.*' -exec basename {} \;)
@@ -160,7 +164,7 @@ _dotdestow() {
 
 _dotrestow() {
   # Only run if ~/.config/dotfiles/ is a symlink
-  if [ ! -L "${HOME}/.config/dotfiles" ]; then
+  if [ ! -L "${HOME}/.config/dotfiles" ] && [ "$1" != "-f" ] && [ "$1" != "--force" ]; then
     echo "Aborting: ~/.config/dotfiles does not exist"
     return 1
   fi
@@ -239,10 +243,10 @@ dotfiles() {
       _dotreset
       ;;
     "stow" | "restow")
-      _dotrestow
+      _dotrestow $1
       ;;
     "unstow" | "destow" | "unload")
-      _dotdestow
+      _dotdestow $1
       ;;
     "switch" | "upstream")
       _dotupstream
