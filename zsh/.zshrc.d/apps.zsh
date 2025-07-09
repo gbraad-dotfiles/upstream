@@ -255,7 +255,7 @@ apps() {
       else
         output=$(eval "$script")
         exitcode=$?
-        echo "$output"
+        [ -n "$output" ] && echo "$output"
         return $exitcode
       fi
     fi 
