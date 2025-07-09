@@ -31,11 +31,6 @@ jobs:
       - name: Enable linger and create user session (workaround)
         uses: gbraad-actions/blacksmith-user-session@main
 
-      - name: Workaround - fixes compaudit
-        run: |
-          sudo chmod go-w /usr/share/zsh/vendor-completions
-          sudo chmod go-w /usr/share/zsh
-
       - name: Get last 3 chars of hostname
         id: runner_id
         run: |
@@ -66,6 +61,14 @@ jobs:
         uses: gbraad-dotfiles/install-action@main
         with:
           upstream: true
+
+      - name: Workaround - fixes compaudit
+        run: |
+          sudo chmod go-w /usr/share/zsh/vendor-completions
+          sudo chmod go-w /usr/share/zsh
+          #sudo chmod go-w /home/linuxbrew/.linuxbrew/share/zsh/site-functions
+          #sudo chmod go-w /home/linuxbrew/.linuxbrew/share/zsh
+          #sudo chmod go-w /home/linuxbrew/.linuxbrew/share/zsh/site-functions/_brew
 
       - name: Run devenv command - initialize system container
         id: devenv

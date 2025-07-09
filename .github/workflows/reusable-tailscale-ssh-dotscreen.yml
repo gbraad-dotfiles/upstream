@@ -1,4 +1,4 @@
-name: reusable-tailscale-ssh-runner
+name: reusable-tailscale-ssh-dotscreen
 
 on:
   workflow_call:
@@ -51,32 +51,20 @@ jobs:
           tailscale drive share documents ${HOME}/Documents
           tailscale drive share downloads ${HOME}/Downloads
 
-      - name: Dotfiles (install from action)
-        uses: gbraad-dotfiles/install-action@main
-        with:
-          upstream: true
+      - name: Dotfiles 'dotscreen' requirements
+        run: |
+          # This should actually be handled by the 'dotscreen' command
+          sudo apt install -y zsh fzf
+          pip install --user powerline-status
 
       - name: Workaround - fixes compaudit
         run: |
           sudo chmod go-w /usr/share/zsh/vendor-completions
           sudo chmod go-w /usr/share/zsh
-          #sudo chmod go-w /home/linuxbrew/.linuxbrew/share/zsh/site-functions
-          #sudo chmod go-w /home/linuxbrew/.linuxbrew/share/zsh
-          #sudo chmod go-w /home/linuxbrew/.linuxbrew/share/zsh/site-functions/_brew
-
-      - name: Install required virtualization software
-        continue-on-error: true
-        uses: gbraad-actions/setup-virtualization@v1
-
-      - name: Install containers tools (optional)
-        continue-on-error: true
-        uses: gbraad-actions/setup-container-tools@v1
-
-      - name: Codium Server
-        uses: gbraad-actions/codium-server-action@v1
-
-      - name: Jupyter Notebook
-        uses: gbraad-actions/jupyter-action@v1
+          # for blackmsith and warpbuild
+          sudo chmod go-w /home/linuxbrew/.linuxbrew/share/zsh/site-functions
+          sudo chmod go-w /home/linuxbrew/.linuxbrew/share/zsh
+          sudo chmod go-w /home/linuxbrew/.linuxbrew/share/zsh/site-functions/_brew
 
       - name: Hang around
         run: |
