@@ -1,6 +1,10 @@
 #!/bin/zsh
 
 devbox() {
+  if ! apps distrobox check; then
+    apps distrobox install
+  fi
+
   if [ $# -lt 2 ]; then
     echo "Usage: $0 <prefix> <command> [args...]"
     return 1
