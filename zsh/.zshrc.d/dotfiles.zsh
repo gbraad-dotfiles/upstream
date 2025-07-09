@@ -210,6 +210,7 @@ dotfiles() {
   fi
 
   local COMMAND=$1
+  shift
 
   case "$COMMAND" in
     "up" | "update")
@@ -230,6 +231,12 @@ dotfiles() {
       ;;
     "switch" | "upstream")
       _dotupstream
+      ;;
+    "dot")
+      ~/.dotfiles/activate.sh $@
+      ;;
+    "screen")
+      dotfiles dot screen
       ;;
     *)
       echo "Unknown command: $0 $COMMAND"

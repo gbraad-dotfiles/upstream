@@ -17,8 +17,8 @@ if command -v dotfiles >/dev/null 2>&1 && typeset -f dotfiles >/dev/null 2>&1; t
  dotfiles source; __ARGS__
 else
  if [ ! -d "${HOME}/.dotfiles" ]; then
- git clone https://github.com/gbraad-dotfiles/upstream.git ~/.dotfiles --depth 2
-fi
+  git clone https://github.com/gbraad-dotfiles/upstream.git ~/.dotfiles --depth 2
+ fi
  "${HOME}/.dotfiles/activate.sh" __ARGS__
 fi
 '
