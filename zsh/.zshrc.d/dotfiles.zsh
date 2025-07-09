@@ -233,7 +233,7 @@ dotfiles() {
       _dotupstream
       ;;
     "dot")
-      ~/.dotfiles/activate.sh $@
+      ${HOME}/.dotfiles/activate.sh $@
       ;;
     "screen")
       dotfiles dot screen

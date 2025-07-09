@@ -1,5 +1,7 @@
 #!/bin/sh
-export ZDOTDIR="${HOME}/.dotfiles/zsh/"
+if [ ! -L "${HOME}/.config/dotfiles" ]; then
+  export ZDOTDIR="${HOME}/.dotfiles/zsh/"
+fi
 export COLORTERM=truecolor
 
 # If the first argument is -c, shift it off
