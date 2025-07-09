@@ -1,7 +1,8 @@
 #!/bin/zsh
 
 # general helpers
-alias offline_filter='grep -v "offline"'
+alias online_filter='grep -v "offline"'
+alias offline_filter='grep "offline"'
 alias direct_filter='grep "direct"'
 alias exitnode_filter='grep "offers exit node"'
 alias comment_filter='grep -Ev "^\s*($|#)"'
