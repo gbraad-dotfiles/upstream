@@ -146,6 +146,18 @@ _dotresource() {
   fi
 }
 
+_dotdestow() {
+  echo "Unloading ..."
+  cd ~/.dotfiles
+
+  stowlist=$(find . -maxdepth 1 -type d ! -name '.*' ! -name '*.*' -exec basename {} \;)
+  for destow in $stowlist; do
+    stow -D $(echo "$destow" | xargs)
+  done
+
+  cd - > /dev/null
+}
+
 _dotrestow() {
   # Only run if ~/.config/dotfiles/ is a symlink
   if [ ! -L "${HOME}/.config/dotfiles" ]; then
@@ -228,6 +240,9 @@ dotfiles() {
       ;;
     "stow" | "restow")
       _dotrestow
+      ;;
+    "unstow" | "destow" | "unload")
+      _dotdestow
       ;;
     "switch" | "upstream")
       _dotupstream
