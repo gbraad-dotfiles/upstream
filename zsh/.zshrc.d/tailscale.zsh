@@ -51,9 +51,6 @@ if [[ $(uname) == "Darwin" ]]; then
     alias tailscale='/Applications/Tailscale.app//Contents/MacOS/Tailscale'
 fi
 
-# install for other platforms
-alias install-tailscale="apps tailscale install"
-
 # containers
 alias tailpod='podman run -d   --name=tailscaled --env TS_AUTHKEY=$TAILSCALE_AUTHKEY -v /var/lib:/var/lib --network=host --cap-add=NET_ADMIN --cap-add=NET_RAW --device=/dev/net/tun tailscale/tailscale'
 alias tailwings='podman run -d --name=tailwings  --env TAILSCALE_AUTH_KEY=$TAILSCALE_AUTHKEY --cap-add=NET_ADMIN --cap-add=NET_RAW --device=/dev/net/tun ghcr.io/spotsnel/tailscale-tailwings:latest'
