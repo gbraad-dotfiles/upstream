@@ -381,7 +381,7 @@ Description=${apptitle}
 
 [Service]
 Type=simple
-ExecStart=${HOME}/.dotfiles/activate.sh apps ${appname} run
+ExecStart=${HOME}/.dotfiles/activate.sh apps ${appname} service run
 
 [Install]
 WantedBy=default.target
