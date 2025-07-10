@@ -55,7 +55,7 @@ jobs:
         run: |
           # This should actually be handled by the 'dotscreen' command
           sudo apt install -y zsh fzf
-          pip install --user powerline-status
+          pip install --user powerline-status --break-system-packages
 
       - name: Workaround - fixes compaudit
         run: |
