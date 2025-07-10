@@ -12,7 +12,8 @@ screen () {
     local screenname="screen"
 
     if [[ -n "${TMUX}" ]]; then
-      $tmux new-window "$*"
+      
+      $tmux new-window $*
     else
       $tmux has-session -t ${screenname} 2>/dev/null
       if [[ $? != 0 ]]; then
