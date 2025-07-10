@@ -349,7 +349,7 @@ apps-export-desktop() {
 Version=1.0
 Type=Application
 Name=${apptitle}
-Exec=zsh -c "dotfiles source; apps ${appname} run"
+Exec=${HOME}/.dotfiles/activate apps ${appname} run
 Icon=prompt-icon-128.png
 Keywords=apps
 Terminal=false
@@ -379,7 +379,7 @@ Description=${apptitle}
 
 [Service]
 Type=simple
-ExecStart=/bin/zsh -c "dotfiles source; apps ${appname} run"
+ExecStart=${HOME}/.dotfiles/activate.sh apps ${appname} run
 
 [Install]
 WantedBy=default.target
