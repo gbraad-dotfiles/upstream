@@ -1,4 +1,4 @@
-name: tailscale-ssh-dotscreen-amd64-blacksmith
+name: tailscale-ssh-dotscreen-arm64-blacksmith
 run-name: Tailscale SSH for dotscreen command
 
 on:
@@ -9,6 +9,6 @@ jobs:
     name: Tailscale SSH dotscreen - Blacksmith
     uses: ./.github/workflows/reusable-tailscale-ssh-dotscreen.yml
     with:
-      runs-on: "blacksmith-2vcpu-ubuntu-2404"
+      runs-on: "blacksmith-2vcpu-ubuntu-2404-arm"
       hostname: "dotscreen"
     secrets: inherit

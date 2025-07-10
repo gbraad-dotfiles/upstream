@@ -1,4 +1,4 @@
-name: tailscale-ssh-dotscreen-amd64-blacksmith
+name: tailscale-ssh-dotscreen-arm64-warpbuild
 run-name: Tailscale SSH for dotscreen command
 
 on:
@@ -6,9 +6,9 @@ on:
 
 jobs:
   dotfiles-test:
-    name: Tailscale SSH dotscreen - Blacksmith
+    name: Tailscale SSH dotscreen - WarpBuild
     uses: ./.github/workflows/reusable-tailscale-ssh-dotscreen.yml
     with:
-      runs-on: "blacksmith-2vcpu-ubuntu-2404"
+      runs-on: "warp-ubuntu-latest-arm64-2x"
       hostname: "dotscreen"
     secrets: inherit

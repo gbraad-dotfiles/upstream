@@ -1,4 +1,4 @@
-name: tailscale-ssh-dotscreen
+name: tailscale-ssh-dotscreen-amd64
 run-name: Tailscale SSH for dotscreen command
 
 on:

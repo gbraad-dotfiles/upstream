@@ -1,4 +1,4 @@
-name: tailscale-ssh-dotscreen-warpbuild
+name: tailscale-ssh-dotscreen-amd64-warpbuild
 run-name: Tailscale SSH for dotscreen command
 
 on:
