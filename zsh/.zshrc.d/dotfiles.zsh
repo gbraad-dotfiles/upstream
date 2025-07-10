@@ -254,6 +254,9 @@ dotfiles() {
     "dot")
       ${HOME}/.dotfiles/activate.sh $@
       ;;
+    "apps")
+      dotfiles dot apps
+      ;;
     "screen")
       dotfiles dot screen
       ;;
