@@ -349,14 +349,16 @@ apps-export-desktop() {
 Version=1.0
 Type=Application
 Name=${apptitle}
-Exec=zsh -c "dotfiles source; apps ${appname} run"
+Exec=${HOME}/.dotfiles/activate.sh apps ${appname} run
 Icon=prompt-icon-128.png
 Keywords=apps
 Terminal=false
 Categories=Utility;
 EOF
 
-  notify-send "Exported" "$apptitle"
+  if ! notify-send "Exported" "$apptitle" > /dev/null 2>&1; then
+    echo "Exported" "$apptitle"
+  fi
   update-desktop-database ~/.local/share/applications/
 }
 
@@ -379,13 +381,15 @@ Description=${apptitle}
 
 [Service]
 Type=simple
-ExecStart=/bin/zsh -c "dotfiles source; apps ${appname} run"
+ExecStart=${HOME}/.dotfiles/activate.sh apps ${appname} run
 
 [Install]
 WantedBy=default.target
 EOF
 
-  echo "Exported" ${service_name}
+  if ! notify-send "Exported" "$apptitle" > /dev/null 2>&1; then
+    echo "Exported" ${service_name}
+  fi
   systemctl --user daemon-reload
 }
 
