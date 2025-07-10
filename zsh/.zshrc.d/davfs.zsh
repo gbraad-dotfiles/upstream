@@ -1,8 +1,5 @@
 #!/bin/zsh
 
-CONFIG="${HOME}/.config/dotfiles/davfs"
-alias davfsini="git config -f ${CONFIG}"
-
 davfs() {
   if [ $# -lt 2 ]; then
     echo "Usage: $0 <prefix> <command> [args...]"
@@ -15,7 +12,7 @@ davfs() {
 
   case "$COMMAND" in
     "browse")
-      cadaver $(davfsini --get "hosts.${PREFIX}")
+      cadaver $(dotini davfs --get "hosts.${PREFIX}")
       ;;
     "mount")
       # mount -t davfs2

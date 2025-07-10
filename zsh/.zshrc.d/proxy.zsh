@@ -1,10 +1,7 @@
 #!/bin/zsh
 
-CONFIG="${HOME}/.config/dotfiles/proxy"
-alias proxyini="git config -f $CONFIG"
-
 proxyselect() {
-  echo $(proxyini --list | grep '^servers\.' | sed 's/^servers\.//g' | cut -d '=' -f 1 | sort | fzf)
+  echo $(dotini proxy --list | grep '^servers\.' | sed 's/^servers\.//g' | cut -d '=' -f 1 | sort | fzf)
 }
 
 proxy() {
@@ -22,7 +19,7 @@ proxy() {
     return
   fi
 
-  local SERVER=$(proxyini --get servers.${PREFIX})
+  local SERVER=$(dotini proxy --get servers.${PREFIX})
 
   export http_proxy=${SERVER}
   export https_proxy=${SERVER}
@@ -31,6 +28,6 @@ proxy() {
   set | grep -E "http_proxy|https_proxy"
 }
 
-if [[ $(proxyini --get "proxy.aliases") == true ]]; then
+if [[ $(dotini proxy --get "proxy.aliases") == true ]]; then
   alias p="proxy"
 fi

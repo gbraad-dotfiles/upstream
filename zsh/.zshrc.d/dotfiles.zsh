@@ -5,9 +5,9 @@ dotini() {
   local config_name="$1"
   shift
 
-  local config_file="${HOME}/.config/dotfiles/${config_name}"
+  local config_file="${HOME}/.config/dotfiles/${config_name}.ini"
   if [ ! -f "$config_file" ]; then
-    config_file="${HOME}/.dotfiles/config/.config/dotfiles/${config_name}"
+    config_file="${HOME}/.dotfiles/config/.config/dotfiles/${config_name}.ini"
   fi
   if [ ! -f "$config_file" ]; then
     echo "Config file not found: $config_file"

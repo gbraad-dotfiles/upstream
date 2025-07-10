@@ -1,8 +1,5 @@
 #!/bin/zsh
 
-CONFIG="${HOME}/.config/dotfiles/machine"
-alias machineini="git config -f $CONFIG"
-
 machine() {
   if [ $# -lt 2 ]; then
     echo "Usage: $0 <prefix> <command> [args...]"
@@ -15,18 +12,18 @@ machine() {
 
   local START_ARGS=(
     "--cpu=host"
-    "--vcpus=$(machineini --get machine.vcpus)"
-    "--memory=$(machineini --get machine.memory)"
+    "--vcpus=$(dotini machine --get machine.vcpus)"
+    "--memory=$(dotini machine --get machine.memory)"
     "--graphics=none"
     "--noreboot"
     "--os-variant=fedora-eln"
   )
-  local DISKFOLDER=$(machineini --get machine.diskfolder)
+  local DISKFOLDER=$(dotini machine --get machine.diskfolder)
   DISKFOLDER="${DISKFOLDER/#\~/$HOME}"
 
   case "$COMMAND" in
     "download")
-      download "$(machineini --get disks.${PREFIX})" "${DISKFOLDER}/${PREFIX}.qcow2"
+      download "$(dotini machine --get disks.${PREFIX})" "${DISKFOLDER}/${PREFIX}.qcow2"
       ;;
     "system" | "create")
       sudo virt-install "${START_ARGS[@]}" --name "machine-${PREFIX}" --import --disk "${DISKFOLDER}/${PREFIX}.qcow2"
@@ -44,11 +41,11 @@ machine() {
       sudo virsh console "machine-${PREFIX}"
       ;;
     "switch")
-      sudo bootc switch $(machineini --get images.${PREFIX})
+      sudo bootc switch $(dotini machine --get images.${PREFIX})
       ;;
     "copy-config" | "cc")
-      value="$(machineini --get disks.${PREFIX})"
-      $(machineini --add disks.$1 $value)
+      value="$(dotini machine --get disks.${PREFIX})"
+      $(dotini machine --add disks.$1 $value)
       ;;
     *)
       echo "Unknown command: $0 $PREFIX $COMMAND"
@@ -223,7 +220,6 @@ download() {
     fi
 }
 
-if [[ $(machineini --get "machine.aliases") == true ]]; then
+if [[ $(dotini machine --get "machine.aliases") == true ]]; then
   alias mcn="machine"
-  alias mcnini="machineini"
 fi

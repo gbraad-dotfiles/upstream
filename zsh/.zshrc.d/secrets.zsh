@@ -1,9 +1,6 @@
 #!/usr/bin/zsh
 
-CONFIG="${HOME}/.config/dotfiles/secrets"
-alias secretsini="git config -f ${CONFIG}"
-
-_secretspath=$(secretsini --get secrets.path || echo "${HOME}/.dotsecrets")
+_secretspath=$(dotini secrets --get secrets.path || echo "${HOME}/.dotsecrets")
 eval _secretspath=$(echo ${_secretspath})
 
 _secretsexists() {
@@ -121,7 +118,7 @@ read_password() {
 }
 
 _clonesecrets() {
-  local repo=$(secretsini --get secrets.repository)
+  local repo=$(dotini secrets--get secrets.repository)
   git clone ${repo} ${_secretspath} --depth 2
 }
 
@@ -327,7 +324,7 @@ secrets() {
   esac
 }
 
-if [[ $(secretsini --get "secrets.aliases") == true ]]; then
+if [[ $(dotini secrets --get "secrets.aliases") == true ]]; then
   alias totp="secrets totp"
 fi
 
