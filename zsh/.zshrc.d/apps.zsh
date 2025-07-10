@@ -94,9 +94,9 @@ _select_app_md() {
 
     app=$(printf "%s\n" "${lines[@]}" | \
       fzf --prompt="Select app: " \
-          --header=$'Enter: select\tCtrl+R: run\tCtrl+B: run bg\tCtrl+I: install\tCtrl+N: info\tF5: export .desktop' \
+          --header=$'Enter: select\tCtrl+R: run\tCtrl+B: run bg\tCtrl+I: install\tCtrl+N: info\tF5: export .desktop\tF6: export .service' \
           --bind "ctrl-r:accept" \
-          --expect=enter,ctrl-r,ctrl-i,ctrl-n,ctrl-b,f5 )
+          --expect=enter,ctrl-r,ctrl-i,ctrl-n,ctrl-b,f5,f6 )
 
     local -a app_lines appname apptitle
     app_lines=("${(@f)app}")
@@ -113,7 +113,8 @@ _select_app_md() {
       ctrl-b) echo "$appname run --background" ;;
       ctrl-i) echo "$appname install" ;;
       ctrl-n) echo "$appname info" ;;
-      f5)     apps-export "$appname" "$apptitle"; return ;;
+      f5)     apps-export-desktop "$appname" "$apptitle"; return ;;
+      f6)     apps-export-service "$appname" "$apptitle"; return ;;
       *)      echo "$appname" ;;
     esac
 }
@@ -331,11 +332,11 @@ if [[ $(dotini apps --get "apps.launcher") == true ]]; then
   bindkey "$shortcut" apps-launcher-command
 fi
 
-apps-export() {
+apps-export-desktop() {
   local appname="$1"
   local apptitle="$2"
   if [[ -z "$appname" || -z "$apptitle" ]]; then
-    echo "Usage: apps-export <appname> <title>"
+    echo "Usage: apps-export-desktop <appname> <title>"
     return 1
   fi
 
@@ -358,3 +359,33 @@ EOF
   notify-send "Exported" "$apptitle"
   update-desktop-database ~/.local/share/applications/
 }
+
+apps-export-service() {
+  local appname="$1"
+  local apptitle="$2"
+  if [[ -z "$appname" || -z "$apptitle" ]]; then
+    echo "Usage: apps-export-service <appname> <title>"
+    return 1
+  fi
+
+  local service_dir="${HOME}/.config/systemd/user"
+  local service_name="dotfiles-apps-${appname}.service"
+  local service_file="${service_dir}/${service_name}"
+
+  mkdir -p "$service_dir"
+  cat > "$service_file" <<EOF
+[Unit]
+Description=${apptitle}
+
+[Service]
+Type=simple
+ExecStart=/bin/zsh -c "dotfiles source; apps ${appname} run"
+
+[Install]
+WantedBy=default.target
+EOF
+
+  echo "Exported" ${service_name}
+  systemctl --user daemon-reload
+}
+
