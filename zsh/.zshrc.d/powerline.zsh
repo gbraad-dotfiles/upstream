@@ -9,6 +9,16 @@ if [[ ${#matches} -gt 0 ]]; then
     found=1
 fi
 
+# Try root (system pip) Python installs in /usr/local
+if (( !found )); then
+    matches=(/usr/local/lib/python*/site-packages/powerline/bindings/zsh/powerline.zsh(N))
+    if [[ ${#matches} -gt 0 ]]; then
+        export POWERLINE_CONFIG_COMMAND="/usr/local/bin/powerline-config"
+        source "$matches[1]"
+        found=1
+    fi
+fi
+
 # System-wide or custom installs
 if (( !found )) && command -v powerline-daemon &>/dev/null; then
     POWERLINE_ZSH_CONTINUATION=1
