@@ -349,7 +349,7 @@ apps-export-desktop() {
 Version=1.0
 Type=Application
 Name=${apptitle}
-Exec=zsh -c "dotfiles source; apps ${appname} run -bg"
+Exec=zsh -c "dotfiles source; apps ${appname} run"
 Icon=prompt-icon-128.png
 Keywords=apps
 Terminal=false
