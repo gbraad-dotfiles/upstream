@@ -118,7 +118,7 @@ read_password() {
 }
 
 _clonesecrets() {
-  local repo=$(dotini secrets--get secrets.repository)
+  local repo=$(dotini secrets --get secrets.repository)
   git clone ${repo} ${_secretspath} --depth 2
 }
 
