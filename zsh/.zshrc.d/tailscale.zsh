@@ -17,12 +17,9 @@ if [[ $(dotini tailscale --get "tailscale.aliases") == true ]]; then
   alias tss='apps tailscale status'
   alias tsh='tailscale ssh'
   alias tsip='tailscale ip -4'
-  alias tsfon='apps tailscale status online'
-  alias tsfdir='apps tailscale status direct'
-  alias tsfexit='apps tailscale status exitnode'
-  alias tskey='secrets var tailscale_authkey'
-  alias tsup='sudo tailscale up --auth-key $TAILSCALE_AUTHKEY'
-  alias tsconnect='tskey; tsup'
+  alias tpexit='apps tailscale exitnode select'
+  alias tpmull='apps tailscale exitmull select'
+  alias tsconnect='apps tailscale connect'
 fi
 
 if [[ $(dotini tailscale --get "tailproxy.aliases") == true ]]; then
@@ -32,15 +29,10 @@ if [[ $(dotini tailscale --get "tailproxy.aliases") == true ]]; then
   alias tps='apps tailproxy status'
   alias tph='tailproxy ssh'
   alias tpip='tailproxy ip -4'
-  alias tpfon='apps tailproxy status online'
-  alias tpfdir='apps tailproxy status direct'
-  alias tpfexit='apps tailproxy status exitnode'
   alias tpexit='apps tailproxy exitnode select'
   alias tpmull='apps tailproxy exitmull select'
-  alias tptp='tailproxy; proxy tailproxy-resolve'
-  alias tpkey='secrets var tailscale_authkey'
-  alias tpup='tailproxy up --auth-key $TAILSCALE_AUTHKEY'
-  alias tpconnect='tpkey; tpup'
+  alias tptp='apps tailproxy up; proxy tailproxy-resolve'
+  alias tpconnect='apps tailproxy connect'
 
   # ssh/scp over tailproxy
   PROXYHOST="localhost:3215"
