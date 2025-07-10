@@ -54,10 +54,22 @@ _extract_apps_section_script() {
             }
         }
     }
-    in_section && /^```/ { if (++fence==1) next; else {in_section=0; exit} }
+    in_section && /^```/ { 
+        if (++fence==1) {
+	# Extract code block label if present
+            match($0, /^```[a-zA-Z0-9]*[ ]*([a-zA-Z0-9_-]+)?/, arr)
+            if (length(arr) > 1) {
+                print "#__APPS_SH_MODE__=" arr[1]
+            }
+            next
+        } else {
+            in_section=0; 
+            exit
+        }
+    }
     in_section && fence==1 { print }
     ' "$2"
-}
+}	
 
 _extract_apps_section_markdown() {
     # $1: section name, $2: file
@@ -209,6 +221,8 @@ apps() {
     local used_block=""
     local osid=""
 
+    # get script and possible mode label
+    local mode_label=""
     if [[ -n "$force_pkg" ]]; then
         pkg="$force_pkg"
         script="$(_extract_apps_section_script "${pkg}-${action}" "$desc_file")"
@@ -235,6 +249,16 @@ apps() {
         [[ -z "$script" ]] && { echo "No block for ${osid}-${action}, ${pkg}-${action} or ${action} in $desc_file"; return 4; }
     fi
 
+    # Extract mode label (if any) and strip it from the script
+    local firstline="${script%%$'\n'*}"
+    local rest="${script#*$'\n'}"
+    local mode_label=""
+
+    if [[ "$firstline" =~ "^#__APPS_SH_MODE__=([a-zA-Z0-9_-]+)" ]]; then
+        mode_label="${match[1]}"
+        script="$rest"
+    fi
+
     # shared section for variables
     for shared_section in shared vars; do
       shared_script="$(_extract_apps_section_script "${shared_section}" "$desc_file")"
@@ -243,16 +267,29 @@ apps() {
       fi
     done
 
-    #[[ -n "$used_block" ]] && echo "Executing ${action} for ${app} using section: ${used_block}" >&2
+    # Determine execution mode: CLI flag overrides, otherwise use mode_label
+    local run_background=0
+    local run_interactive=0
     if (( background )); then
+        run_background=1
+    elif (( interactive )); then
+        run_interactive=1
+    elif [[ "$mode_label" == "background" ]]; then
+        run_background=1
+    elif [[ "$mode_label" == "interactive" ]]; then
+        run_interactive=1
+    fi
+
+    #[[ -n "$used_block" ]] && echo "Executing ${action} for ${app} using section: ${used_block}" >&2
+    if (( run_background )); then
       eval "$script" &
       bg_pid=$!
       #echo "Started in background (PID $bg_pid)"
       return 0
     else
-      if (( interactive )); then
+      if (( run_interactive )); then
         eval "$script"
-      else
+      else # (( run_evaluate ))
         output=$(eval "$script")
         exitcode=$?
         [ -n "$output" ] && echo "$output"
