@@ -1,0 +1,57 @@
+name: Test on container image
+
+on:
+  workflow_dispatch:
+    inputs:
+      dot_user:
+        description: 'User for dot-action'
+        required: true
+        default: 'gbraad'
+      image:
+        description: 'Image to run'
+        required: true
+        default: 'ghcr.io/gbraad-dotfiles/fedora:latest'
+
+jobs:
+  test-dot:
+    runs-on: ubuntu-latest
+    container:
+      image: ${{ github.event.inputs.image }}
+      options: --privileged
+
+    steps:
+      - name: Run dotfiles command - dotfiles update
+        uses: gbraad-dotfiles/dotfiles-action@main
+        with:
+          as_user: ${{ github.event.inputs.dot_user }}
+          action: update
+
+      # This is redundant as `dotfiles update` already ran
+      # It will however pull the latest application definitions
+      - name: Run dot command - dotup
+        uses: gbraad-dotfiles/dot-action@main
+        with:
+          as_user: ${{ github.event.inputs.dot_user }}
+          run: |
+            dotup
+
+      - name: Run dot command - apps codium install
+        uses: gbraad-dotfiles/dot-action@main
+        with:
+          as_user: ${{ github.event.inputs.dot_user }}
+          run: |
+            apps codium install
+
+      - name: Run dot command - apps distrobox install
+        uses: gbraad-dotfiles/dot-action@main
+        with:
+          as_user: ${{ github.event.inputs.dot_user }}
+          run: |
+            apps distrobox install
+
+      - name: Run apps command - install code
+        uses: gbraad-dotfiles/apps-action@main
+        with:
+          as_user: ${{ github.event.inputs.dot_user }}
+          appname: code
+          action: install
