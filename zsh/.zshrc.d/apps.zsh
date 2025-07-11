@@ -113,8 +113,9 @@ _select_app_md() {
       ctrl-b) echo "$appname run --background" ;;
       ctrl-i) echo "$appname install" ;;
       ctrl-n) echo "$appname info" ;;
-      f5)     apps-export-desktop "$appname" "$apptitle"; return ;;
-      f6)     apps-export-service "$appname" "$apptitle"; return ;;
+      # return 130 to match Ctrl-C behaviour
+      f5)     apps-export-desktop "$appname" "$apptitle"; return 130 ;;
+      f6)     apps-export-service "$appname" "$apptitle"; return 130 ;;
       *)      echo "$appname" ;;
     esac
 }
@@ -133,7 +134,8 @@ _apps_fuzzy_pick() {
 
     if [[ -z "$input" ]]; then
         input=$(_select_app_md)
-        [[ -z "$input" ]] && return 1
+        local input_status=$?
+        [[ -z "$input" || $input_status -ne 0 ]] && return 130
     fi
 
     if [[ "$input" == *" "* ]]; then
@@ -187,7 +189,8 @@ apps() {
         fi
         # fallback to fuzzy picker if no default
         pick=($(_apps_fuzzy_pick "$1"))
-        [[ ${#pick} -eq 0 ]] && return 1
+        local pick_status=$?
+        [[ ${#pick} -eq 0 || $pick_status -ne 0 ]] && return 1
         app="${pick[1]}"
         action="${pick[2]}"
         apps "$app" "$action" "${pick[3]}"
