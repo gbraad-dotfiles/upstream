@@ -203,7 +203,10 @@ _dotreset() {
   git stash
   git fetch origin
   git reset --hard origin/main
-   
+ 
+  _dotrestow 
+  _dotresource
+ 
   cd - > /dev/null
 }
 
