@@ -128,3 +128,35 @@ generate_devbox_name() {
 if [[ $(dotini devbox --get "devbox.aliases") == true ]]; then
   box() { devbox "$@" }
 fi
+
+#compdef devbox
+_devbox() {
+  local -a prefixes commands
+  local images_output
+
+  # Dynamically extract prefixes from dotini config
+  images_output=(${(f)"$(dotini devbox --list | grep '^images\.')"})
+  prefixes=(${images_output//images./})
+  prefixes=(${prefixes//=*/})
+
+  # List of supported commands from your devbox.zsh
+  commands=(
+    create start stop kill rm remove enter export
+    sysctl systemctl systemd ps status screen apps dot dotfiles
+    root su user sh shell exec
+  )
+
+  if (( CURRENT == 2 )); then
+    _describe 'prefix/image' prefixes
+    return
+  fi
+
+  if (( CURRENT == 3 )); then
+    _describe 'command' commands
+    return
+  fi
+
+  _normal
+}
+
+compdef _devbox devbox

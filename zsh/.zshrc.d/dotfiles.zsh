@@ -312,3 +312,22 @@ dotup() {
    fi
 
 }
+
+#compdef dotfiles
+_dotfiles() {
+  local -a commands
+  commands=(
+    up update in install source resource reset
+    stow restow unstow destow unload switch upstream
+    dot apps secrets screen
+  )
+
+  if (( CURRENT == 2 )); then
+    _describe 'command' commands
+    return
+  fi
+
+  return 0
+}
+
+compdef _dotfiles dotfiles

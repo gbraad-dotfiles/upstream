@@ -223,3 +223,34 @@ download() {
 if [[ $(dotini machine --get "machine.aliases") == true ]]; then
   alias mcn="machine"
 fi
+
+
+#compdef machine
+_machine() {
+  local -a prefixes commands
+  local disks_output
+
+  # Dynamically extract prefixes from dotini config
+  disks_output=(${(f)"$(dotini machine --list | grep '^disks\.')"})
+  prefixes=(${disks_output//disks./})
+  prefixes=(${prefixes//=*/})
+
+  commands=(
+    download system create start stop kill rm remove
+    console shell serial switch copy-config cc
+  )
+
+  if (( CURRENT == 2 )); then
+    _describe 'prefix' prefixes
+    return
+  fi
+
+  if (( CURRENT == 3 )); then
+    _describe 'command' commands
+    return
+  fi
+
+  return 0
+}
+
+compdef _machine machine

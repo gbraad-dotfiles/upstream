@@ -217,3 +217,36 @@ if [[ $(dotini devenv --get "devenv.aliases") == true ]]; then
         ;;
   esac
 fi
+
+#compdef devenv
+_devenv() {
+  local -a prefixes commands
+  local images_output
+
+  # Dynamically extract prefixes
+  images_output=(${(f)"$(dotini devenv --list | grep '^images\.')"})
+  prefixes=(${images_output//images./})
+  prefixes=(${prefixes//=*/})
+
+  # List of supported commands from your devenv.zsh
+  commands=(
+    env run rootenv userenv userrun create sys system
+    noinit dumb nosys init start stop kill rm remove exec execute
+    root su user sh shell sysctl systemctl systemd ps status screen
+    apps dot dotfiles
+  )
+
+  if (( CURRENT == 2 )); then
+    _describe 'prefix/image' prefixes
+    return
+  fi
+
+  if (( CURRENT == 3 )); then
+    _describe 'command' commands
+    return
+  fi
+
+  _normal
+}
+
+compdef _devenv devenv
