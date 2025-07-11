@@ -255,10 +255,10 @@ dotfiles() {
       ${HOME}/.dotfiles/activate.sh $@
       ;;
     "apps")
-      dotfiles dot apps $@
+      dotfiles dot apps #$@
       ;;
     "secrets")
-      dotfiles dot secrets $@
+      dotfiles dot secrets #$@
       ;;
     "screen")
       dotfiles dot screen

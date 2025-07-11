@@ -4,5 +4,5 @@ alias tma='tmux attach-session -t'
 alias tmkill='tmux kill-session -t'
 
 if [ ! -L "${HOME}/.tmux.conf" ]; then
-  tmux() { command tmux -2 -f ${HOME}/.dotfiles/tmux/.tmuxdot.conf $@ }
+  tmux() { command tmux -2 -f ${HOME}/.dotfiles/tmux/.tmux.conf $@ }
 fi

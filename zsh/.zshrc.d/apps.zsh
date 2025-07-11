@@ -349,7 +349,7 @@ apps-export-desktop() {
 Version=1.0
 Type=Application
 Name=${apptitle}
-Exec=${HOME}/.dotfiles/activate.sh apps ${appname} run
+Exec=${HOME}/.dotfiles/bash/.local/bin/dot apps ${appname} run
 Icon=prompt-icon-128.png
 Keywords=apps
 Terminal=false
@@ -381,7 +381,7 @@ Description=${apptitle}
 
 [Service]
 Type=simple
-ExecStart=${HOME}/.dotfiles/activate.sh apps ${appname} service run
+ExecStart=${HOME}/.dotfiles/bash/.local/bin/dot apps ${appname} service run
 
 [Install]
 WantedBy=default.target
