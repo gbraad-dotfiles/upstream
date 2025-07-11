@@ -330,4 +330,6 @@ _dotfiles() {
   return 0
 }
 
-compdef _dotfiles dotfiles
+if whence compdef >/dev/null; then
+  compdef _dotfiles dotfiles
+fi
