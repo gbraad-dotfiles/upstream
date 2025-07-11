@@ -416,8 +416,7 @@ _apps() {
   local expl
 
   if (( CURRENT == 2 )); then
-    appnames=(${^appspath}/*.md(N:t:r))
-    appnames=("${(@)appnames:#README}")
+    appnames=(${(u)${(f)"$(find $appspath -type f -name '*.md' -printf '%P\n' 2>/dev/null | sed -E 's/\.md$//' | grep -v '^README$')"}})
     _describe 'application' appnames
     return
   fi
