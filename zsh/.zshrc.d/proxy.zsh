@@ -12,7 +12,7 @@ proxy() {
     PREFIX=$(proxyselect)
   fi
 
-  if [ -z "$PREFIX" ]; then
+  if [ -z "$PREFIX" ] || [ "$PREFIX" = "-" ]; then
     echo "Clearing proxy setting"
     unset http_proxy
     unset https_proxy
