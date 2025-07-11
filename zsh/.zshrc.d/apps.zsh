@@ -155,6 +155,11 @@ _apps_fuzzy_pick() {
     echo "$app" "${section%% *}"
 }
 
+_find_default_section() {
+    # $1: file
+    awk '/^## default[ ]+/ {print $3; exit}' "$1"
+}
+
 apps() {
     if ! _appsdefexists; then
         _appsdefclone
@@ -172,7 +177,15 @@ apps() {
 
     # Fuzzy app and section picker if no arguments
     if [[ -z "$1" || ( -n "$1" && -z "$2" ) ]]; then
-        local pick app action
+        local action default_action pick
+        if [[ -n "$1" ]]; then
+            default_action=$(_find_default_section "$desc_file")
+            if [[ -n "$default_action" ]]; then
+                apps "$1" "$default_action"
+                return
+            fi
+        fi
+        # fallback to fuzzy picker if no default
         pick=($(_apps_fuzzy_pick "$1"))
         [[ ${#pick} -eq 0 ]] && return 1
         app="${pick[1]}"
