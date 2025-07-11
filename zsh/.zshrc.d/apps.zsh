@@ -431,31 +431,3 @@ EOF
   fi
   systemctl --user daemon-reload
 }
-
-# compdef apps 
-_apps() {
-  local -a appnames actions
-  local appspath="${_appsdefpath:-$HOME/.dotapps}"
-  local expl
-
-  if (( CURRENT == 2 )); then
-    appnames=(${(u)${(f)"$(find $appspath -type f -name '*.md' -printf '%P\n' 2>/dev/null | sed -E 's/\.md$//' | grep -v '^README$')"}})
-    _describe 'application' appnames
-    return
-  fi
-
-  if (( CURRENT == 3 )); then
-    local appfile="${appspath}/${words[2]}.md"
-    if [[ -f "$appfile" ]]; then
-            actions=("${(@u)${(@s/;/)${(f)$(awk '/^## / {sub(/^## /,""); print}' "$appfile")}}}")
-      # Now split further on whitespace, remove empty, deduplicate
-      actions=("${(@u)${(z)${(j: :)actions}}}")
-      actions=("${(@)actions:#}")
-      _describe 'action' actions
-    fi
-    return
-  fi
-}
-
-compdef _apps apps
-
