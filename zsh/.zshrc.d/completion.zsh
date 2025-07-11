@@ -1,20 +1,3 @@
-#compdef dotfiles
-_dotfiles() {
-  local -a commands
-  commands=(
-    up update in install source resource reset
-    stow restow unstow destow unload switch upstream
-    dot apps secrets screen
-  )
-
-  if (( CURRENT == 2 )); then
-    _describe 'command' commands
-    return
-  fi
-
-  return 0
-}
-
 # compdef apps 
 _apps() {
   local -a appnames actions
@@ -188,12 +171,45 @@ _proxy() {
   return 0
 }
 
+#compdef dotfiles
+_dotfiles() {
+  local -a commands
+  commands=(
+    update install resource reset restow
+    destow unload switch upstream dot screen
+    apps secrets devbox devenv machine proxy
+  )
+
+  if (( CURRENT == 2 )); then
+    _describe 'command' commands
+    return
+  fi
+
+  local subcommand="${words[2]}"
+  _dotfiles_delegate() {
+    (( CURRENT-- ))
+    words=("${words[@]:1}")
+    "$1"
+  }
+
+  case $subcommand in
+    apps)    _dotfiles_delegate _apps; return ;;
+    devenv)  _dotfiles_delegate _devenv; return ;;
+    devbox)  _dotfiles_delegate _devbox; return ;;
+    machine) _dotfiles_delegate _machine; return ;;
+    proxy)   _dotfiles_delegate _proxy; return ;;
+    secrets) _dotfiles_delegate _secrets; return ;;
+  esac
+
+  return 0
+}
+
 if whence compdef >/dev/null; then
-  compdef _dotfiles dotfiles
   compdef _apps apps
   compdef _devbox devbox
   compdef _devenv devenv
   compdef _machine machine
   compdef _secrets secrets
   compdef _proxy proxy
+  compdef _dotfiles dotfiles
 fi

@@ -257,14 +257,27 @@ dotfiles() {
     "dot")
       ${HOME}/.dotfiles/activate.sh $@
       ;;
-    "apps")
-      dotfiles dot apps #$@
-      ;;
-    "secrets")
-      dotfiles dot secrets #$@
-      ;;
     "screen")
       dotfiles dot screen
+      ;;
+    # subcommands
+    "apps")
+      dotfiles dot apps $@
+      ;;
+    "secrets")
+      dotfiles dot secrets $@
+      ;;
+    "devenv")
+      dotfiles dot devenv $@
+      ;;
+    "devbox")
+      dotfiles dot devbox $@
+      ;;
+    "proxy")
+      dotfiles dot proxy $@
+      ;;
+    "machine")
+      dotfiles dot machine $@
       ;;
     *)
       echo "Unknown command: $0 $COMMAND"
