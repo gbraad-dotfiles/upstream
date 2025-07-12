@@ -120,10 +120,30 @@ _select_app_md() {
     esac
 }
 
+_apps_action_list() {
+  local desc_file="$1"
+  awk '
+    /^## / {
+      sub(/^## /,"");
+      for (i=1; i<=NF; i++) {
+        word = $i
+        dash = index(word, "-")
+        if (dash == 0) {
+          print word
+        } else {
+          action = substr(word, dash+1)
+          context = substr(word, 1, dash-1)
+          print action " " context
+        }
+      }
+    }
+  ' "$desc_file" | sort -u
+}
+
 _select_app_section() {
     local file="$1"
     local section
-    section=$(awk '/^## / {sub(/^## /,""); print}' "$file" | fzf --prompt="Select action: ")
+    section=$(_apps_action_list "$file" | fzf --prompt="Select action: ")
     echo "$section"
 }
 
@@ -154,7 +174,7 @@ _apps_fuzzy_pick() {
         [[ -z "$section" ]] && return 1
     fi
 
-    echo "$app" "${section%% *}"
+    echo "$app" "${section}"
 }
 
 _find_default_section() {
