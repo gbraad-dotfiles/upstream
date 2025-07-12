@@ -213,7 +213,9 @@ apps() {
         [[ ${#pick} -eq 0 || $pick_status -ne 0 ]] && return 1
         app="${pick[1]}"
         action="${pick[2]}"
+        
         apps "$app" "$action" "${pick[3]}"
+
         return
     fi
 
@@ -347,7 +349,10 @@ function apps-launcher-widget() {
 }
 
 function apps-launcher-command() {
-  LBUFFER="apps"
+  local pick
+  pick=($(_apps_fuzzy_pick))
+  [[ -z "$pick" ]] && return 1
+  LBUFFER="apps ${pick[1]} ${pick[2]} ${pick[3]}"
   zle accept-line
 }
 
