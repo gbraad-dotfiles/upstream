@@ -1,8 +1,7 @@
 # compdef apps 
 _apps() {
-  local -a appnames actions
+  local -a appnames actions sections all_options
   local appspath="${_appsdefpath:-$HOME/.dotapps}"
-  local expl
 
   if (( CURRENT == 2 )); then
     appnames=(${(u)${(f)"$(find $appspath -type f -name '*.md' -printf '%P\n' 2>/dev/null | sed -E 's/\.md$//' | grep -v '^README$')"}})
@@ -10,16 +9,48 @@ _apps() {
     return
   fi
 
+  local appfile="${appspath}/${words[2]}.md"
+  [[ ! -f "$appfile" ]] && return
+
+  # Parse headings (ignore archival ###)
+  local -a md_headings
+  md_headings=("${(@f)$(grep -E '^## ' "$appfile" | sed 's/^## //')}")
+
+  local heading word action section
+  local -A section_actions
+  local -A seen_section seen_action
+
+  for heading in "${md_headings[@]}"; do
+    for word in ${(z)heading}; do
+      if [[ "$word" == *-* ]]; then
+        section="${word##*-}"
+        action="${word[1,-${#section}-2]}"
+        section_actions[$section]+="$action "
+        seen_section[$section]=1
+      else
+        seen_action[$word]=1
+      fi
+    done
+  done
+
+  # List of top-level actions and all section names
+  actions=(${(k)seen_action})
+  sections=(${(k)seen_section})
+
   if (( CURRENT == 3 )); then
-    local appfile="${appspath}/${words[2]}.md"
-    if [[ -f "$appfile" ]]; then
-            actions=("${(@u)${(@s/;/)${(f)$(awk '/^## / {sub(/^## /,""); print}' "$appfile")}}}")
-      # Now split further on whitespace, remove empty, deduplicate
-      actions=("${(@u)${(z)${(j: :)actions}}}")
-      actions=("${(@)actions:#}")
-      _describe 'action' actions
-    fi
+    all_options=(${actions[@]} ${sections[@]})
+    _describe 'action or section' all_options
     return
+  fi
+
+  if (( CURRENT == 4 )); then
+    local sec="${words[3]}"
+    if [[ -n ${section_actions[$sec]} ]]; then
+      local sect_acts
+      sect_acts=(${(u)${(z)section_actions[$sec]}})
+      _describe 'section action' sect_acts
+      return
+    fi
   fi
 }
 
