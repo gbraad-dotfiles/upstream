@@ -42,12 +42,11 @@ get_os_id() {
 }
 
 _extract_apps_section_script() {
-    # $1: action (e.g., run, user-run, dnf-run), $2: file
     awk -v action="$1" '
     /^## / {
         split($0, arr, " ")
         in_section = 0
-        for (i = 2; i <= length(arr); i++) {
+        for (i = 2; i <= NF; i++) {
             if (arr[i] == action) {
                 in_section = 1
                 next
@@ -56,10 +55,13 @@ _extract_apps_section_script() {
     }
     in_section && /^```/ { 
         if (++fence==1) {
-	# Extract code block label if present
-            match($0, /^```[a-zA-Z0-9]*[ ]*([a-zA-Z0-9_-]+)?/, arr)
-            if (length(arr) > 1) {
-                print "#__APPS_SH_MODE__=" arr[1]
+            # Portable extraction of the label
+            split($0, parts, /[ ]+/)
+            if (length(parts) > 1) {
+                label = parts[2]
+                if (label != "") {
+                    print "#__APPS_SH_MODE__=" label
+                }
             }
             next
         } else {
