@@ -15,7 +15,8 @@ LABEL org.opencontainers.image.source = "https://github.com/gbraad-dotfiles/"
 RUN apt-get update \
     && apt-get install -y \
         systemd \
-	init \
+        systemd-container \
+	    init \
         sudo \
         git \
         curl \
