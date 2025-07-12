@@ -246,10 +246,10 @@ dotfiles() {
       _dotreset
       ;;
     "stow" | "restow")
-      _dotrestow $1
+      _dotrestow ${1:-}   # allow -f|--force
       ;;
     "unstow" | "destow" | "unload")
-      _dotdestow $1
+      _dotdestow ${1:-}   # allow -f|--force
       ;;
     "switch" | "upstream")
       _dotupstream
