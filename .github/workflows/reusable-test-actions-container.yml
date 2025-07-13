@@ -87,6 +87,12 @@ jobs:
           prefix: ${{ inputs.prefix_name }}
           command: dot dotup
 
+      - name: Run devenv command - enable linger
+        uses: gbraad-dotfiles/devenv-action@main
+        with:
+          prefix: ${{ inputs.prefix_name }}
+          command: exec sudo loginctl enable-linger gbraad
+
       - name: Run devenv command - install codium-server service
         uses: gbraad-dotfiles/devenv-action@main
         with:
@@ -98,6 +104,16 @@ jobs:
         with:
           prefix: ${{ inputs.prefix_name }}
           command: apps codium-server service start
+
+      - name: Run devenv command - status codium-server service
+        uses: gbraad-dotfiles/devenv-action@main
+        with:
+          prefix: ${{ inputs.prefix_name }}
+          command: apps codium-server service status
+
+      - name: Wait a little
+        run: |
+          sleep 10
 
       - name: Run devenv command - status codium-server service
         uses: gbraad-dotfiles/devenv-action@main
