@@ -57,6 +57,22 @@ jobs:
           prefix: ${{ inputs.prefix_name }}
           command: system
 
+      # apps tailscale up does not take the authkey as an argument (yet)
+      - name: Tailscale setup (devenv)
+        run: |
+          sleep 1
+          until podman exec ${{ inputs.prefix_name }}sys tailscale up \
+            --auth-key ${TAILSCALE_AUTHKEY} \
+            --hostname ${{ inputs.prefix_name }}-${{ inputs.arch }}-${{ steps.runner_id.outputs.last3 }} \
+            --ssh --accept-dns=false \
+            --operator=gbraad \
+            --advertise-exit-node
+          do
+              sleep 0.1
+          done
+        env:
+          TAILSCALE_AUTHKEY: ${{ secrets.TAILSCALE_AUTHKEY_DEVENV }}
+
       - name: Run devenv command - dotfiles update
         uses: gbraad-dotfiles/devenv-action@main
         with:
