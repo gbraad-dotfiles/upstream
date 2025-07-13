@@ -3,88 +3,92 @@ name: Test on container image
 on:
   workflow_dispatch:
     inputs:
-      dot_user:
-        description: 'User for dot-action'
+      prefix_name:
+        description: "Name of the container to run with devenv (e.g., dotfedora, dotubi9)"
         required: true
-        default: 'gbraad'
-      image:
-        description: 'Image to run'
+        type: string
+        default: "dotfedora"
+      runs-on:
+        description: "Target runner"
         required: true
-        default: 'ghcr.io/gbraad-dotfiles/fedora:latest'
+        type: string
+        default: "ubuntu-latest"
+      arch:
+        description: "Target architecture (e.g., arm64, amd64)"
+        required: true
+        type: string
+        default: "amd64"
 
 jobs:
   test-dot:
-    runs-on: ubuntu-latest
-    container:
-      image: ${{ github.event.inputs.image }}
-      options: --privileged
+    runs-on: ${{ inputs.runs-on }}${{ inputs.arch == 'arm64' && '-arm' || '' }}
 
     steps:
-      - name: Run dotfiles command - dotfiles update
-        uses: gbraad-dotfiles/dotfiles-action@main
+      - name: Enable linger and create user session (workaround)
+        uses: gbraad-actions/blacksmith-user-session@main
+
+      - name: Allow unprivileged userns (workaround)
+        uses: gbraad-actions/warpbuild-unprivileged-userns@main
+
+      - name: Get last 3 chars of hostname
+        id: runner_id
+        run: |
+          echo "last3=${HOSTNAME: -3}" >> $GITHUB_OUTPUT
+
+      - name: Remove unwanted stuff
+        uses: gbraad-devenv/remove-unwanted@v1
+
+      - name: Tailscale setup (host)
+        uses: gbraad-actions/tailscale-action@v1
         with:
-          as_user: ${{ github.event.inputs.dot_user }}
-          action: update
+          authkey: ${{ secrets.TAILSCALE_AUTHKEY }}
+          args: --ssh --accept-dns=false --operator=runner --advertise-exit-node
+          hostname: "dotfiles-${{ inputs.arch }}-${{ steps.runner_id.outputs.last3 }}"
+
+      - name: Dotfiles (install from action)
+        uses: gbraad-dotfiles/install-action@main
+        with:
+          upstream: true
+
+      - name: Run devenv command - initialize system container
+        id: devenv
+        uses: gbraad-dotfiles/devenv-action@main
+        with:
+          prefix: ${{ inputs.prefix_name }}
+          command: system
+
+      - name: Run devenv command - dotfiles update
+        uses: gbraad-dotfiles/devenv-action@main
+        with:
+          prefix: ${{ inputs.prefix_name }}
+          command: dotfiles update
 
       # This is redundant as `dotfiles update` already ran
       # It will however pull the latest application definitions
-      - name: Run dot command - dotup
-        uses: gbraad-dotfiles/dot-action@main
+      - name: Run devenv command - dotup
+        uses: gbraad-dotfiles/devenv-action@main
         with:
-          as_user: ${{ github.event.inputs.dot_user }}
-          run: |
-            dotup
+          prefix: ${{ inputs.prefix_name }}
+          command: dot dotup
 
-      - name: Run dot command - apps codium install
-        uses: gbraad-dotfiles/dot-action@main
+      - name: Run devenv command - install codium-server service
+        uses: gbraad-dotfiles/devenv-action@main
         with:
-          as_user: ${{ github.event.inputs.dot_user }}
-          run: |
-            apps codium install
+          prefix: ${{ inputs.prefix_name }}
+          command: apps codium-server service install
 
-      - name: Run dot command - apps distrobox install
-        uses: gbraad-dotfiles/dot-action@main
+      - name: Run devenv command - start codium-server service
+        uses: gbraad-dotfiles/devenv-action@main
         with:
-          as_user: ${{ github.event.inputs.dot_user }}
-          run: |
-            apps distrobox install
+          prefix: ${{ inputs.prefix_name }}
+          command: apps codium-server service start
 
-      - name: Run apps command - install codium
-        uses: gbraad-dotfiles/apps-action@main
+      - name: Run devenv command - status codium-server service
+        uses: gbraad-dotfiles/devenv-action@main
         with:
-          as_user: ${{ github.event.inputs.dot_user }}
-          appname: codium
-          action: install
+          prefix: ${{ inputs.prefix_name }}
+          command: apps codium-server service status
 
-      - name: Run apps command - install codium-server service
-        uses: gbraad-dotfiles/apps-action@main
-        with:
-          as_user: ${{ github.event.inputs.dot_user }}
-          appname: codium-server
-          action: service
-          packager: install
-
-      - name: Run apps command - start codium-server
-        uses: gbraad-dotfiles/apps-action@main
-        with:
-          as_user: ${{ github.event.inputs.dot_user }}
-          appname: codium-server
-          action: service
-          packager: start
-
-      - name: Run apps command - status codium-server
-        uses: gbraad-dotfiles/apps-action@main
-        with:
-          as_user: ${{ github.event.inputs.dot_user }}
-          appname: codium-server
-          action: service
-          packager: status
-
-      - name: Run apps command - install obsidian (user)
-        uses: gbraad-dotfiles/apps-action@main
-        with:
-          as_user: ${{ github.event.inputs.dot_user }}
-          appname: obsidian
-          action: install
-          packager: user
-
+      - name: Hang around
+        run: |
+          sleep infinity
