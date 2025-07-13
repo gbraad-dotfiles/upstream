@@ -87,11 +87,11 @@ jobs:
           prefix: ${{ inputs.prefix_name }}
           command: dot dotup
 
-      - name: Run devenv command - enable linger
-        uses: gbraad-dotfiles/devenv-action@main
-        with:
-          prefix: ${{ inputs.prefix_name }}
-          command: exec sudo loginctl enable-linger gbraad
+      #- name: Run devenv command - enable linger
+      #  uses: gbraad-dotfiles/devenv-action@main
+      #  with:
+      #    prefix: ${{ inputs.prefix_name }}
+      #    command: exec sudo loginctl enable-linger gbraad
 
       - name: Run devenv command - install codium-server service
         uses: gbraad-dotfiles/devenv-action@main
