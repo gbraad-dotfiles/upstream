@@ -49,9 +49,42 @@ jobs:
           run: |
             apps distrobox install
 
-      - name: Run apps command - install code
+      - name: Run apps command - install codium
+        uses: gbraad-dotfiles/apps-action@main
+        with:
+          as_user: ${{ github.event.inputs.dot_user }}
+          appname: codium
+          action: install
+
+      - name: Run apps command - install codium-server service
         uses: gbraad-dotfiles/apps-action@main
         with:
           as_user: ${{ github.event.inputs.dot_user }}
           appname: code
+          action: service
+          packager: install
+
+      - name: Run apps command - start codium-server
+        uses: gbraad-dotfiles/apps-action@main
+        with:
+          as_user: ${{ github.event.inputs.dot_user }}
+          appname: code
+          action: service
+          packager: start
+
+      - name: Run apps command - status codium-server
+        uses: gbraad-dotfiles/apps-action@main
+        with:
+          as_user: ${{ github.event.inputs.dot_user }}
+          appname: code
+          action: service
+          packager: status
+
+      - name: Run apps command - install obsidian (user)
+        uses: gbraad-dotfiles/apps-action@main
+        with:
+          as_user: ${{ github.event.inputs.dot_user }}
+          appname: obsidian
           action: install
+          packager: user
+
