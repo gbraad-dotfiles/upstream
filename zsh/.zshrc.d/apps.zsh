@@ -341,6 +341,14 @@ apps() {
 
 if [[ $(dotini apps --get "apps.aliases") == true ]]; then
     alias a="apps"
+
+    for mdfile in "${_appsdefpath}"/*.md; do
+        appname="${mdfile:t:r}"
+
+        if grep -E -q '^##.*\balias\b' "$mdfile"; then
+            alias ${appname}="apps ${appname} alias"
+        fi
+    done
 fi
 
 function apps-launcher-widget() {
