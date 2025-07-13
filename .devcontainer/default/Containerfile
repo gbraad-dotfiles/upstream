@@ -29,5 +29,9 @@ RUN userdel -r "vscode" 2>/dev/null || true \
 # Moved everything else to devcontainer features
 USER root
 
+# enable linger for the user (loginctl won't work without systemd running)
+RUN mkdir -p /var/lib/systemd/linger \
+    && touch /var/lib/systemd/linger/${USER}
+
 # Enable systemd
 ENTRYPOINT [ "/sbin/init" ]

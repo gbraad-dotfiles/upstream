@@ -62,5 +62,9 @@ RUN curl -fsSL https://github.com/cloudflare/cloudflared/releases/latest/downloa
     && rm -f /tmp/cloudflared.deb \
     && rm -rf /var/lib/apt/lists/*
 
+# enable linger for the user (loginctl won't work without systemd running)
+RUN mkdir -p /var/lib/systemd/linger \
+    && touch /var/lib/systemd/linger/${USER}
+
 # Enable systemd
 ENTRYPOINT [ "/sbin/init" ]
