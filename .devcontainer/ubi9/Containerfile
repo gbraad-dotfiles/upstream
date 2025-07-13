@@ -81,7 +81,8 @@ RUN dnf install -y \
 
 # enable linger for the user (loginctl won't work without systemd running)
 RUN mkdir -p /var/lib/systemd/linger \
-    && touch /var/lib/systemd/linger/${USER}
+    && touch /var/lib/systemd/linger/${USER} \
+    && systemctl unmask systemd-logind
 
 # Enable systemd
 ENTRYPOINT [ "/sbin/init" ]
