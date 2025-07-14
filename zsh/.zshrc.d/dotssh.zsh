@@ -1,6 +1,11 @@
 #!/bin/zsh
 
+# old name
 dotssh() {
+  rdot $@
+}
+
+rdot() {
   if [ $# -lt 2 ]; then
     echo "Usage: $0 <user@host> <command>"
     return 1
@@ -26,12 +31,17 @@ fi
   ssh -X -t -o StrictHostKeyChecking=no ${ADDRESS} ${COMMAND_TO_SEND}
 }
 
+# old name
 dotscreen() {
+  rscreen $@
+}
+
+rscreen() {
   if [ $# -lt 1 ]; then
     echo "Usage: $0 <user@host>"
     return 1
   fi 
 
-  dotssh $1 screen
+  rdot $1 screen
 }
 
