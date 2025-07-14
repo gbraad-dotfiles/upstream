@@ -12,8 +12,11 @@ screen () {
     local screenname="screen"
 
     if [[ -n "${TMUX}" ]]; then
-      
-      $tmux new-window "$(printf '%q ' "$@")"
+      if [ $# -gt 0 ]; then
+        tmux new-window "$(printf '%q ' "$@")"
+      else
+        tmux new-window
+      fi 
     else
       $tmux has-session -t ${screenname} 2>/dev/null
       if [[ $? != 0 ]]; then
