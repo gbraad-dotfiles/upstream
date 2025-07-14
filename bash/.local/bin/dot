@@ -12,5 +12,5 @@ fi
 if [ "$#" -eq 0 ]; then
   exec zsh --login
 else
-  exec zsh -c 'dotfiles source; "$@"' _ "$@"
+  exec zsh -c "dotfiles source; $*" _
 fi

@@ -13,7 +13,7 @@ screen () {
 
     if [[ -n "${TMUX}" ]]; then
       
-      $tmux new-window $*
+      $tmux new-window "$(printf '%q ' "$@")"
     else
       $tmux has-session -t ${screenname} 2>/dev/null
       if [[ $? != 0 ]]; then
