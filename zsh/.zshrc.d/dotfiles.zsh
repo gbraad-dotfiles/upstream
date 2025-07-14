@@ -257,6 +257,9 @@ dotfiles() {
     "dot")
       ${HOME}/.dotfiles/activate.sh $@
       ;;
+    "paths")
+      source ~/.dotfiles/zsh/.zshrc.d/paths.zsh
+      ;;
     "screen")
       dotfiles dot screen
       ;;
