@@ -339,9 +339,7 @@ apps() {
     fi 
 }
 
-if [[ $(dotini apps --get "apps.aliases") == true ]]; then
-    alias a="apps"
-
+_apps_generate_aliases() {
     for mdfile in "${_appsdefpath}"/*.md; do
         appname="${mdfile:t:r}"
 
@@ -349,6 +347,12 @@ if [[ $(dotini apps --get "apps.aliases") == true ]]; then
             alias ${appname}="apps ${appname} alias"
         fi
     done
+}
+
+if [[ $(dotini apps --get "apps.aliases") == true ]]; then
+    alias a="apps"
+
+    _apps_generate_aliases
 fi
 
 function apps-launcher-widget() {
