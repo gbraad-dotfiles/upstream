@@ -339,20 +339,10 @@ apps() {
     fi 
 }
 
-_apps_generate_aliases() {
-    for mdfile in "${_appsdefpath}"/*.md; do
-        appname="${mdfile:t:r}"
-
-        if grep -E -q '^##.*\balias\b' "$mdfile"; then
-            alias ${appname}="apps ${appname} alias"
-        fi
-    done
-}
-
 if [[ $(dotini apps --get "apps.aliases") == true ]]; then
     alias a="apps"
 
-    _apps_generate_aliases
+    apps list aliases
 fi
 
 function apps-launcher-widget() {
