@@ -39,3 +39,7 @@ screen () {
     fi
   fi
 }
+
+if [[ $(dotini screen --get "screen.aliases") == true ]]; then
+    alias s="screen"
+fi
