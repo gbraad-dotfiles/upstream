@@ -55,9 +55,11 @@ def dotini(line):
         return None
 
     ini_name = parts[0]
+    if not ini_name.lower().endswith('.ini'):
+        ini_name += '.ini'
     mode = parts[1] if len(parts) > 1 else "return"
 
-    ini_path = Path.home() / '.config' / 'dotfiles' / ini_name
+    ini_path = Path.home() / '.config' / 'dotfiles' / ini_name 
     if not ini_path.is_file():
         print(f"File '{ini_path}' not found.")
         return None
