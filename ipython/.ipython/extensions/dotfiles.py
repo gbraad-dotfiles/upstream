@@ -22,9 +22,10 @@ for tool in ["dotfiles", "apps", "devenv", "devbox", "machine"]:
 
 @register_line_cell_magic
 def dotscript(line, cell=None):
-    command = f"zsh -i -c 'if ! typeset -f dotfiles >/dev/null; then source ~/.dotfiles/source.sh; fi; {line}'"
+    command = f"zsh -i -c 'source ~/.dotfiles/source.sh; {line}"
     if cell is not None:
-        command += '\n' + cell
+        command += f"; {cell.strip()}"
+    command += "'"
     get_ipython().system(command)
 
 
