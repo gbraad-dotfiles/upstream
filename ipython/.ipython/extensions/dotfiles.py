@@ -11,20 +11,32 @@ def in_jupyter():
 def load_ipython_extension(ipython):
     print("dotfiles extension loaded!")
 
-    @register_line_cell_magic
-    def dotfiles(line, cell=None):
-        command = line
-        if cell:
-            command += '\n' + cell
-        get_ipython().system(f"zsh -i -c 'if ! typeset -f dotfiles >/dev/null; then source ~/.dotfiles/source.sh; fi; {command}'")
+def make_tool_magic(tool):
+    @register_line_magic(tool)
+    def magic(line, cell=None):
+        command = f"zsh -i -c 'if ! typeset -f {tool} >/dev/null; then source ~/.dotfiles/source.sh; fi; {tool} {line}'"
+        get_ipython().system(command)
+
+for tool in ["dotfiles", "apps", "devenv", "devbox", "machine"]:
+    make_tool_magic(tool)
+
+@register_line_cell_magic
+def dotscript(line, cell=None):
+    command = f"zsh -i -c 'if ! typeset -f dotfiles >/dev/null; then source ~/.dotfiles/source.sh; fi; {line}'"
+    if cell is not None:
+        command += '\n' + cell
+    get_ipython().system(command)
 
 
 import subprocess
 import re
 
-@register_line_magic
-def dot(line):
-    command = f". ~/.dotfiles/source.sh; {line}"
+@register_line_cell_magic
+def dot(line, cell=None):
+    command = f". ~/.dotfiles/activate.sh {line}"
+    if cell is not None:
+        command += cell
+
     result = subprocess.run(
         ['zsh', '-c', command],
         stdout=subprocess.PIPE,
