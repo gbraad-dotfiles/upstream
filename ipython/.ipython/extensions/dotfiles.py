@@ -53,13 +53,14 @@ def dot(line, cell=None):
 
 import configparser
 from pathlib import Path
+from io import StringIO
 
 @register_line_magic
 def dotini(line):
     """
     Usage: %dotini filename [mode]
     - filename: the ini file to load from ~/.config/dotfiles/
-    - mode (optional): 'display', 'return', or 'both' (default: 'return')
+    - mode (optional): 'file', 'display', 'return', or 'both' (default: 'return')
     """
     parts = line.strip().split()
     if not parts:
@@ -78,6 +79,17 @@ def dotini(line):
 
     config = configparser.ConfigParser()
     config.read(str(ini_path))
+
+    if mode == "file":
+        lines = []
+        for section in config.sections():
+            lines.append(f'[{section}]')
+            for key, value in config.items(section):
+                lines.append(f'\t{key} = {value}')
+            lines.append('')  # Blank line between sections
+
+        ini_string = '\n'.join(lines)
+        return ini_string
 
     # Collect data
     data = []
