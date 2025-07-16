@@ -21,6 +21,8 @@ RUN dnf install -y \
         util-linux-user \
     && dnf install -y \
         epel-release \
+    && dnf install -y \
+        ansible \
     && dnf clean all \
     && rm -rf /var/cache/yum
 

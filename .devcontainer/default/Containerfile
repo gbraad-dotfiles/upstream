@@ -12,14 +12,16 @@ ARG USERID=1000
 
 LABEL org.opencontainers.image.source = "https://github.com/gbraad-dotfiles/"
 
-RUN apt-get update \
-    && apt-get install -y \
+RUN apt update \
+    && apt install -y \
         systemd \
         systemd-container \
 	    init \
         sudo \
         git \
         curl \
+    && apt install -y \
+        ansible \
     && rm -rf /var/lib/apt/lists/*
 
 RUN userdel -r "vscode" 2>/dev/null || true \

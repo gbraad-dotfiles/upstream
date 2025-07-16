@@ -11,13 +11,15 @@ ARG ARCH="amd64"
 
 LABEL org.opencontainers.image.source = "https://github.com/gbraad-dotfiles/debian"
 
-RUN apt-get update \
-    && apt-get install -y \
+RUN apt update \
+    && apt install -y \
         systemd \
-	init \
+	    init \
         sudo \
         git \
         curl \
+    && apt install -y \
+        ansible \
     && rm -rf /var/lib/apt/lists/*
 
 RUN useradd -l -u 1000 -G sudo -md ${USERHOME} -p ${USER} ${USER} \
@@ -47,8 +49,8 @@ RUN chsh -s /usr/bin/zsh ${USER} \
 # install tailscale (or use https://github.com/spotsnel/tailscale-systemd/)
 RUN curl -fsSL https://pkgs.tailscale.com/stable/debian/bookworm.noarmor.gpg -o /usr/share/keyrings/tailscale-archive-keyring.gpg \
     && curl -fsSL https://pkgs.tailscale.com/stable/debian/bookworm.tailscale-keyring.list | sudo tee /etc/apt/sources.list.d/tailscale.list \
-    && apt-get update \
-    && apt-get install -y \
+    && apt update \
+    && apt install -y \
         tailscale \
     && rm -rf /var/lib/apt/lists/* \
     && mkdir -p /var/run/tailscale /var/cache/tailscale /var/lib/tailscale
@@ -57,7 +59,7 @@ RUN curl -fsSL https://pkgs.tailscale.com/stable/debian/bookworm.noarmor.gpg -o 
 
 # install cloudflared (or use https://github.com/spotsnel/cloudflared-systemd/)
 RUN curl -fsSL https://github.com/cloudflare/cloudflared/releases/latest/download/cloudflared-linux-${ARCH}.deb -o /tmp/cloudflared.deb \
-    && apt-get install -y \
+    && apt install -y \
         /tmp/cloudflared.deb \
     && rm -f /tmp/cloudflared.deb \
     && rm -rf /var/lib/apt/lists/*

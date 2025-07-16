@@ -16,6 +16,8 @@ RUN dnf install -y \
         git \
     && dnf install -y \
         https://dl.fedoraproject.org/pub/epel/epel-release-latest-10.noarch.rpm
+    && dnf install -y \
+        ansible \
     && dnf clean all \
     && rm -rf /var/cache/yum
 
