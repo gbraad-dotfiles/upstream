@@ -7,7 +7,7 @@ devbox() {
 
   local SUFFIX="box"
   if [ $# -lt 2 ]; then
-    podman ps --filter "name=${SUFFIX}$" --format "{{.Names}} running since {{.RunningFor}}"
+    podman ps -a --filter "name=${SUFFIX}$" --format "{{.Names}} - {{.Status}}"
     return 1
   fi
 
