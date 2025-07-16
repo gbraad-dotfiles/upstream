@@ -342,7 +342,9 @@ apps() {
 if [[ $(dotini apps --get "apps.aliases") == true ]]; then
     alias a="apps"
 
-    apps list aliases
+    if [ -d "${_appsdefpath}" ]; then
+       apps list aliases
+    fi
 fi
 
 function apps-launcher-widget() {
