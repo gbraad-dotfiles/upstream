@@ -25,8 +25,8 @@ RUN dnf install -y \
     && ARCH=$( [ "$ARCH" = "amd64" ] && echo "x86_64" || ( [ "$ARCH" = "arm64" ] && echo "aarch64" ) ) \
     && dnf install -y \
         https://mirror.stream.centos.org/9-stream/BaseOS/${ARCH}/os/Packages/tmux-3.2a-5.el9.${ARCH}.rpm \
-    && dnf install -y \
-        ansible \
+    #&& dnf install -y \
+    #    ansible \        #  no ansible-core package available
     && dnf clean all \
     && rm -rf /var/cache/yum
 

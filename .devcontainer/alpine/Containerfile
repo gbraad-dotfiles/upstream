@@ -23,6 +23,8 @@ RUN apk add --update --no-cache \
         tmux \
         vim \
         shadow \
+    #apk add --no-cache \
+    #    ansible	# not available
     && sed -i 's/^\(tty\d\:\:\)/#\1/g' /etc/inittab \
     && rm -f /etc/init.d/hwdrivers \
         /etc/init.d/hwclock \
