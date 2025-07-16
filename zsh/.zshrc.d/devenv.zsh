@@ -41,6 +41,9 @@ devenv() {
   )
   
   case "$COMMAND" in
+    "exists")
+      return $(podman ps -a --format "{{.Names}}" | grep -q ${SYSNAME})
+      ;;
     "env" | "run" | "rootenv")
       podman run --rm -it --hostname ${HOSTNAME}-${ENVNAME} --entrypoint='' \
         "${START_ARGS[@]}" "${START_PATHS[@]}" \

@@ -20,6 +20,9 @@ devbox() {
   local IMAGE_USER=$(dotini devbox --get devbox.user)
 
   case "$COMMAND" in
+     "exists")
+      return $(podman ps -a --format "{{.Names}}" | grep -q ${BOXNAME})
+      ;;
     "create")
       distrobox create --yes --init -i $(generate_devbox_name $PREFIX) ${BOXNAME}
       echo "$0 $PREFIX enter"
