@@ -68,7 +68,7 @@ _devbox() {
   commands=(
     create start stop kill rm remove enter export
     sysctl systemctl systemd ps status screen apps dot dotfiles
-    root su user sh shell exec
+    root su user sh shell exec playbook
   )
 
   if (( CURRENT == 2 )); then
@@ -78,6 +78,11 @@ _devbox() {
 
   if (( CURRENT == 3 )); then
     _describe 'command' commands
+    return
+  fi
+
+  if (( CURRENT == 4 )) && [[ "$words[3]" == "playbook" ]]; then
+    _files
     return
   fi
 
@@ -99,7 +104,7 @@ _devenv() {
     env run rootenv userenv userrun create sys system
     noinit dumb nosys init start stop kill rm remove exec execute
     root su user sh shell sysctl systemctl systemd ps status screen
-    apps dot dotfiles
+    apps dot dotfiles playbook
   )
 
   if (( CURRENT == 2 )); then
@@ -109,6 +114,11 @@ _devenv() {
 
   if (( CURRENT == 3 )); then
     _describe 'command' commands
+    return
+  fi
+
+  if (( CURRENT == 4 )) && [[ "$words[3]" == "playbook" ]]; then
+    _files
     return
   fi
 

@@ -151,6 +151,9 @@ devenv() {
     "dotfiles")
       devenv ${PREFIX} user dotfiles $@
       ;;
+    "playbook")
+      podman_playbook ${SYSNAME} $@ # <filename> <...> 
+      ;;
     *)
       echo "Unknown command: $0 $PREFIX $COMMAND"
       ;;

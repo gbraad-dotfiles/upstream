@@ -106,6 +106,9 @@ devbox() {
       fi
       podman exec -it ${BOXNAME} $@
       ;;
+    "playbook")
+      podman_playbook ${BOXNAME} $@ # <filename> <...> 
+      ;;
     *)
       echo "Unknown command: $0 $PREFIX $COMMAND"
       ;;
