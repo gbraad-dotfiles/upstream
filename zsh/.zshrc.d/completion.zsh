@@ -12,7 +12,6 @@ _apps() {
   local appfile="${appspath}/${words[2]}.md"
   [[ ! -f "$appfile" ]] && return
 
-  # Parse headings (ignore archival ###)
   local -a md_headings
   md_headings=("${(@f)$(grep -E '^## ' "$appfile" | sed 's/^## //')}")
 
@@ -33,7 +32,6 @@ _apps() {
     done
   done
 
-  # List of top-level actions and all section names
   actions=(${(k)seen_action})
   sections=(${(k)seen_section})
 
@@ -59,16 +57,14 @@ _devbox() {
   local -a prefixes commands
   local images_output
 
-  # Dynamically extract prefixes from dotini config
   images_output=(${(f)"$(dotini devbox --list | grep '^images\.')"})
   prefixes=(${images_output//images./})
   prefixes=(${prefixes//=*/})
 
-  # List of supported commands from your devbox.zsh
   commands=(
     create start stop kill rm remove enter export
     sysctl systemctl systemd ps status screen apps dot dotfiles
-    root su user sh shell exec playbook
+    root su user sh shell exec playbook usercmd
   )
 
   if (( CURRENT == 2 )); then
@@ -94,17 +90,15 @@ _devenv() {
   local -a prefixes commands
   local images_output
 
-  # Dynamically extract prefixes
   images_output=(${(f)"$(dotini devenv --list | grep '^images\.')"})
   prefixes=(${images_output//images./})
   prefixes=(${prefixes//=*/})
 
-  # List of supported commands from your devenv.zsh
   commands=(
     env run rootenv userenv userrun create sys system
     noinit dumb nosys init start stop kill rm remove exec execute
     root su user sh shell sysctl systemctl systemd ps status screen
-    apps dot dotfiles playbook
+    apps dot dotfiles playbook usercmd
   )
 
   if (( CURRENT == 2 )); then
@@ -130,7 +124,6 @@ _secrets() {
   local -a commands secretfiles
   local _secretspath
 
-  # Get secretspath as in the script
   _secretspath=$(dotini secrets --get secrets.path 2>/dev/null)
   [[ -z $_secretspath ]] && _secretspath="${HOME}/.dotsecrets"
   eval _secretspath="$_secretspath"
@@ -173,7 +166,6 @@ _machine() {
   local -a prefixes commands
   local disks_output
 
-  # Dynamically extract prefixes from dotini config
   disks_output=(${(f)"$(dotini machine --list | grep '^disks\.')"})
   prefixes=(${disks_output//disks./})
   prefixes=(${prefixes//=*/})
@@ -200,7 +192,6 @@ _machine() {
 
 _proxy() {
   local -a prefixes
-  # Extract all proxy prefixes (the part after "servers.")
   prefixes=(${(f)"$(dotini proxy --list | grep '^servers\.' | sed 's/^servers\.//;s/=.*//')"})
 
   if (( CURRENT == 2 )); then
@@ -208,7 +199,6 @@ _proxy() {
     return
   fi
 
-  # No further completion after the server prefix
   return 0
 }
 

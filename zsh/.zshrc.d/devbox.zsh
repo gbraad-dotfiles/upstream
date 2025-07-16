@@ -95,6 +95,9 @@ devbox() {
       # enter has no --user option
       devbox ${PREFIX} exec sudo -i -u ${IMAGE_USER} $*
       ;;
+    "usercmd")
+      devbox ${PREFIX} exec su ${IMAGE_USER} -l -c $*
+      ;;
     "exec")
       if (! podman ps -a --format "{{.Names}}" | grep -q ${BOXNAME}); then
         devbox ${PREFIX} create

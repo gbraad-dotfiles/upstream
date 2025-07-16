@@ -117,6 +117,9 @@ devenv() {
     "user" | "sh" | "shell")
       devenv ${PREFIX} exec sudo -i -u ${IMAGE_USER} $*
       ;;
+    "usercmd")
+      devenv ${PREFIX} exec su ${IMAGE_USER} -l -c $*
+      ;;
     "sysctl" | "systemctl" | "systemd")
       if (podman ps --filter "name=${SYSNAME}" --filter "status=stopped" | grep -q ${SYSNAME}); then
         echo "${SYSNAME} not running"
