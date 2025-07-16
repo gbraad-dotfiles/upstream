@@ -5,12 +5,12 @@ devbox() {
     apps distrobox install
   fi
 
+  local SUFFIX="box"
   if [ $# -lt 2 ]; then
-    echo "Usage: $0 <prefix> <command> [args...]"
+    podman ps --filter "name=${SUFFIX}$" --format "{{.Names}} running since {{.RunningFor}}"
     return 1
   fi
 
-  local SUFFIX="box"
   local PREFIX=$1
   local COMMAND=$2
   local BOXNAME=${PREFIX}${SUFFIX}
