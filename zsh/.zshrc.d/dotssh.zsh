@@ -31,6 +31,15 @@ fi
   ssh -X -t -o StrictHostKeyChecking=no ${ADDRESS} ${COMMAND_TO_SEND}
 }
 
+rshell() {
+  if [ $# -lt 1 ]; then
+    echo "Usage: $0 <user@host>"
+    return 1
+  fi 
+
+  rdot $1 zsh
+}
+
 # old name
 dotscreen() {
   rscreen $@
@@ -44,4 +53,5 @@ rscreen() {
 
   rdot $1 screen
 }
+
 
