@@ -1,10 +1,5 @@
 #!/bin/zsh
 
-# old name
-dotssh() {
-  rdot $@
-}
-
 rdot() {
   if [ $# -lt 2 ]; then
     echo "Usage: $0 <user@host> <command>"
@@ -38,11 +33,6 @@ rshell() {
   fi 
 
   rdot $1 zsh
-}
-
-# old name
-dotscreen() {
-  rscreen $@
 }
 
 rscreen() {
