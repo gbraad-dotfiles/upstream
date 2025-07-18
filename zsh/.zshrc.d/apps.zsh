@@ -224,13 +224,29 @@ apps() {
     local background=0
     local interactive=0
     local args=()
+    local arg_vars=()
 
-    # Loop through all arguments
-    for arg in "$@"; do
+    # Loop through all arguments and extract --arg NAME=VALUE
+    local skip_next=0 nextarg kv
+    for ((i=1; i<=$#; i++)); do
+      if [[ ${skip_next} -eq 1 ]]; then
+        skip_next=0
+        continue
+      fi
+      arg="${@[i]}"
       if [[ "$arg" == "-bg" || "$arg" == "--background" ]]; then
         background=1
       elif [[ "$arg" == "-i" || "$arg" == "--interactive" ]]; then
         interactive=1
+      elif [[ "$arg" == "--arg" ]]; then
+        # support both '--arg NAME=VAL' and '--arg=NAME=VAL'
+        nextarg="${@[i+1]}"
+        if [[ "$nextarg" =~ "=" ]]; then
+          arg_vars+=("$nextarg")
+          skip_next=1
+        fi
+      elif [[ "$arg" == --arg=* ]]; then
+        arg_vars+=("${arg#--arg=}")
       else
         args+=("$arg")
       fi
@@ -301,12 +317,23 @@ apps() {
     fi
 
     # shared section for variables
+    local shared_script
     for shared_section in shared vars; do
       shared_script="$(_extract_apps_section_script "${shared_section}" "$desc_file")"
       if [[ -n "$shared_script" ]]; then
         eval "$shared_script"
       fi
     done
+
+    # set arguments to override
+    local name value
+    if [[ ${#arg_vars[@]} -gt 0 ]]; then
+      for kv in "${arg_vars[@]}"; do
+        name="${kv%%=*}"
+        value="${kv#*=}"
+        export "$name"="$value"
+      done
+    fi
 
     # Determine execution mode: CLI flag overrides, otherwise use mode_label
     local run_background=0
