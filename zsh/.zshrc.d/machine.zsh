@@ -132,7 +132,7 @@ download_from_registry() {
         echo "Falling back to podman pull if available..."
         if command -v podman &> /dev/null; then
             podman pull "$image_reference"
-            container_id=$(podman create "$image_reference")
+            container_id=$(podman create "$image_reference" sh)
             podman export "$container_id" | tar -xf - -C "$temp_dir/rootfs"
             podman rm "$container_id" >/dev/null
         else
