@@ -69,8 +69,6 @@ jobs:
         continue-on-error: true
         uses: gbraad-actions/setup-container-tools@v1
 
-
-
       - name: Compile macadam
         uses: gbraad-actions/zsh-action@main
         with:
@@ -93,6 +91,7 @@ jobs:
           
       - name: Write machine key to file
         run: |
+          mkdir -p ~/.ssh
           echo "${{ secrets.SSH_MACHINE_PRIVATE }}" > ~/.ssh/id_machine
           chmod 600 ~/.ssh/id_machine
 
