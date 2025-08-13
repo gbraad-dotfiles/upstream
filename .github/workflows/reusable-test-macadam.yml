@@ -69,6 +69,11 @@ jobs:
             apps projects/macadam cd
             sudo cp bin/macadam-linux-amd64 ~/.local/bin/macadam
           as_user: runner
+          
+      - name: Write machine key to file
+        run: |
+          echo "${{ secrets.SSH_MACHINE_PRIVATE }}" > ~/.ssh/id_machine
+          chmod 600 ~/.ssh/id_machine
 
       - name: Run machine images with macadam
         uses: gbraad-actions/zsh-action@main
@@ -76,7 +81,7 @@ jobs:
           run: |
             mkdir -p ~/DiskImages
             machine ${{ inputs.prefix_name }} download
-            macadam init ~/DiskImages/dotfedora.qcow2 --username gbraad --ssh-identity-path ~/.ssh/id_ed25519
+            macadam init ~/DiskImages/dotfedora.qcow2 --username gbraad --ssh-identity-path ~/.ssh/id_machine
             macadam start
           as_user: runner
 
