@@ -45,6 +45,17 @@ jobs:
           args: --ssh --accept-dns=false --operator=runner --advertise-exit-node
           hostname: "machine-${{ inputs.arch }}-${{ steps.runner_id.outputs.last3 }}"
 
+      - name: Create and share userdirs
+        run: |
+          cd ${{ github.workspace }}
+          mkdir -p Projects Documents Downloads
+          ln -s ${{ github.workspace }}/Projects  ${HOME}/Projects
+          ln -s ${{ github.workspace }}/Documents ${HOME}/Documents
+          ln -s ${{ github.workspace }}/Downloads ${HOME}/Downloads
+          tailscale drive share projects ${HOME}/Projects
+          tailscale drive share documents ${HOME}/Documents
+          tailscale drive share downloads ${HOME}/Downloads
+          
       - name: Dotfiles (install from action)
         uses: gbraad-dotfiles/install-action@main
         with:
