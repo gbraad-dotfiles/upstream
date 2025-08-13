@@ -94,7 +94,8 @@ jobs:
           mkdir -p ~/.ssh
           echo "${{ secrets.SSH_MACHINE_PRIVATE }}" > ~/.ssh/id_machine
           chmod 600 ~/.ssh/id_machine
-
+          echo "${{ secrets.SSH_MACHINE_PUBLIC }}" > ~/.ssh/id_machine.pub
+          
       - name: Run machine images with macadam
         uses: gbraad-actions/zsh-action@main
         with:
