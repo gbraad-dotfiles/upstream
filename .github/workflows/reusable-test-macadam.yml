@@ -1,0 +1,86 @@
+name: Test bootc images using macadam/machine
+
+on:
+  workflow_dispatch:
+    inputs:
+      prefix_name:
+        description: "Name of the image to run with machine and macadam (e.g., dotfedora)"
+        required: true
+        type: string
+        default: "dotfedora"
+      runs-on:
+        description: "Target runner"
+        required: true
+        type: string
+        default: "ubuntu-latest"
+      arch:
+        description: "Target architecture (e.g., arm64, amd64)"
+        required: true
+        type: string
+        default: "amd64"
+
+jobs:
+  test-dot:
+    runs-on: ${{ inputs.runs-on }}${{ inputs.arch == 'arm64' && '-arm' || '' }}
+
+    steps:
+      - name: Enable linger and create user session (workaround)
+        uses: gbraad-actions/blacksmith-user-session@main
+
+      - name: Allow unprivileged userns (workaround)
+        uses: gbraad-actions/warpbuild-unprivileged-userns@main
+
+      - name: Get last 3 chars of hostname
+        id: runner_id
+        run: |
+          echo "last3=${HOSTNAME: -3}" >> $GITHUB_OUTPUT
+
+      - name: Remove unwanted stuff
+        uses: gbraad-devenv/remove-unwanted@v1
+
+      - name: Tailscale setup (host)
+        uses: gbraad-actions/tailscale-action@v1
+        with:
+          authkey: ${{ secrets.TAILSCALE_AUTHKEY }}
+          args: --ssh --accept-dns=false --operator=runner --advertise-exit-node
+          hostname: "machine-${{ inputs.arch }}-${{ steps.runner_id.outputs.last3 }}"
+
+      - name: Dotfiles (install from action)
+        uses: gbraad-dotfiles/install-action@main
+        with:
+          upstream: true
+
+      - name: Install required virtualization software
+        continue-on-error: true
+        uses: gbraad-actions/setup-virtualization@v1
+
+      - name: Install containers tools (optional)
+        continue-on-error: true
+        uses: gbraad-actions/setup-container-tools@v1
+
+      - name: Compile macadam
+        uses: gbraad-actions/zsh-action@main
+        with:
+          run: |
+            apps projects/gvproxy compile
+            apps projects/gvproxy cd
+            sudo cp bin/gvproxy-linux-amd64 /usr/libexec/podman/gvproxy
+            apps projects/macadam compile
+            apps projects/macadam cd
+            sudo cp bin/macadam-linux-amd64 ~/.local/bin/macadam
+          as_user: runner
+
+      - name: Run machine images with macadam
+        uses: gbraad-actions/zsh-action@main
+        with:
+          run: |
+            mkdir -p ~/DiskImages
+            machine ${{ inputs.prefix_name }} download
+            macadam init ~/DiskImages/dotfedora.qcow2 --username gbraad --ssh-identity-path ~/.ssh/id_ed25519
+            macadam start
+          as_user: runner
+
+      - name: Hang around
+        if: ${{ always() }}
+        run: |
+          sleep 18000
