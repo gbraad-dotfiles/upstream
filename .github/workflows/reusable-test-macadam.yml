@@ -154,6 +154,6 @@ jobs:
             macadam ssh go version
 
       - name: Hang around
-        if: ${{ failure() }}
+        if: ${{ always() }}
         run: |
           sleep 18000
