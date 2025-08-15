@@ -25,7 +25,7 @@ on:
         default: "amd64"
 
 jobs:
-  test-dot:
+  test-macadam:
     runs-on: ${{ inputs.runs-on }}${{ inputs.arch == 'arm64' && '-arm' || '' }}
 
     steps:
@@ -114,6 +114,7 @@ jobs:
               --username ${{ inputs.image_username }} \
               --ssh-identity-path ~/.ssh/id_machine
             macadam start
+            macadam ssh cat /etc/os-release
           as_user: runner
 
       - name: Hang around
