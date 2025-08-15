@@ -136,7 +136,8 @@ jobs:
         with:
           as_user: runner
           run: |
-            macadam ssh machine golang switch
+            macadam ssh dotfiles machine golang switch
+            # macadam ssh does not source the profile
 
       - name: Restart VM using macadam
         uses: gbraad-actions/zsh-action@main
