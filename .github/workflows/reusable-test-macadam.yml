@@ -77,6 +77,7 @@ jobs:
       - name: Compile macadam
         uses: gbraad-actions/zsh-action@main
         with:
+          as_user: runner
           run: |
             # prepare
             apps projects/gvproxy source checkout
@@ -84,15 +85,14 @@ jobs:
             devenv gofedora noinit
 
             # gvproxy
-            apps projects/gvproxy compile
+            apps projects/gvproxy make
             apps projects/gvproxy cd
-            sudo cp bin/gvproxy-linux-amd64 /usr/libexec/podman/gvproxy
+            sudo cp bin/gvproxy /usr/libexec/podman/gvproxy
             
             # macadam
-            apps projects/macadam compile
+            apps projects/macadam make
             apps projects/macadam cd
             sudo cp bin/macadam-linux-amd64 ~/.local/bin/macadam
-          as_user: runner
           
       - name: Write machine key to file
         run: |
@@ -101,21 +101,28 @@ jobs:
           chmod 600 ~/.ssh/id_machine
           printf "%s\n" "${{ secrets.SSH_MACHINE_PUBLIC }}"  > ~/.ssh/id_machine.pub
           
-      - name: Run machine images with macadam
+      - name: Prepare images for use with macadam
         uses: gbraad-actions/zsh-action@main
         with:
+          as_user: runner
           run: |
             # prepare
             mkdir -p ~/DiskImages
             machine ${{ inputs.prefix_name }} download
+      
+      - name: Run image with macadam
+        uses: gbraad-actions/macadam-action@v1
+        with:
+          disk_image: ~/DiskImages/${{ inputs.prefix_name }}.qcow2
+          image_username: ${{ inputs.image_username }}
+          identity_path: ~/.ssh/id_machine
             
-            # macadam
-            macadam init ~/DiskImages/${{ inputs.prefix_name }}.qcow2 \
-              --username ${{ inputs.image_username }} \
-              --ssh-identity-path ~/.ssh/id_machine
-            macadam start
-            macadam ssh cat /etc/os-release
+      - name: Run test command with macadam
+        uses: gbraad-actions/zsh-action@main
+        with:
           as_user: runner
+          run: |
+            macadam ssh cat /etc/os-release
 
       - name: Hang around
         if: ${{ always() }}
