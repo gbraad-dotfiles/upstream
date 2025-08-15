@@ -8,6 +8,11 @@ on:
         required: true
         type: string
         default: "dotfedora"
+      image_username:
+        description: "Username for log in to the image"
+        required: true
+        type: string
+        default: "gbraad"
       runs-on:
         description: "Target runner"
         required: true
@@ -92,9 +97,9 @@ jobs:
       - name: Write machine key to file
         run: |
           mkdir -p ~/.ssh
-          echo "${{ secrets.SSH_MACHINE_PRIVATE }}" > ~/.ssh/id_machine
+          printf "%s" "${{ secrets.SSH_MACHINE_PRIVATE }}" > ~/.ssh/id_machine
           chmod 600 ~/.ssh/id_machine
-          echo "${{ secrets.SSH_MACHINE_PUBLIC }}" > ~/.ssh/id_machine.pub
+          printf "%s" "${{ secrets.SSH_MACHINE_PUBLIC }}"  > ~/.ssh/id_machine.pub
           
       - name: Run machine images with macadam
         uses: gbraad-actions/zsh-action@main
@@ -105,7 +110,9 @@ jobs:
             machine ${{ inputs.prefix_name }} download
             
             # macadam
-            macadam init ~/DiskImages/dotfedora.qcow2 --username gbraad --ssh-identity-path ~/.ssh/id_machine
+            macadam init ~/DiskImages/${{ inputs.prefix_name }}.qcow2 \
+              --username ${{ inputs.image_username }} \
+              --ssh-identity-path ~/.ssh/id_machine
             macadam start
           as_user: runner
 
