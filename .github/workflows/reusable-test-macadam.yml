@@ -110,13 +110,20 @@ jobs:
             mkdir -p ~/DiskImages
             machine ${{ inputs.prefix_name }} download
       
-      - name: Run image with macadam
-        uses: gbraad-actions/macadam-action@v1
+      - name: Init image with macadam
+        uses: gbraad-actions/macadam-action@main
         with:
           disk_image: ~/DiskImages/${{ inputs.prefix_name }}.qcow2
           image_username: ${{ inputs.image_username }}
           identity_path: ~/.ssh/id_machine
             
+      - name: Start VM with macadam
+        uses: gbraad-actions/zsh-action@main
+        with:
+          as_user: runner
+          run: |
+            macadam start
+ 
       - name: Run test command with macadam
         uses: gbraad-actions/zsh-action@main
         with:
