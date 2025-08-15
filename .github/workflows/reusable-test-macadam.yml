@@ -131,7 +131,29 @@ jobs:
           run: |
             macadam ssh cat /etc/os-release
 
+      - name: Bootc switch VM to golang image
+        uses: gbraad-actions/zsh-action@main
+        with:
+          as_user: runner
+          run: |
+            macadam ssh machine golang switch
+
+      - name: Restart VM using macadam
+        uses: gbraad-actions/zsh-action@main
+        with:
+          as_user: runner
+          run: |
+            macadam stop
+            macadam start
+
+      - name: Run golang with macadam
+        uses: gbraad-actions/zsh-action@main
+        with:
+          as_user: runner
+          run: |
+            macadam ssh go version
+
       - name: Hang around
-        if: ${{ always() }}
+        if: ${{ failure() }}
         run: |
           sleep 18000
