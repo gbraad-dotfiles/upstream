@@ -86,13 +86,11 @@ jobs:
 
             # gvproxy
             apps projects/gvproxy make
-            apps projects/gvproxy cd
-            sudo cp bin/gvproxy /usr/libexec/podman/gvproxy
+            apps projects/gvproxy cp
             
             # macadam
             apps projects/macadam make
-            apps projects/macadam cd
-            sudo cp bin/macadam-linux-amd64 ~/.local/bin/macadam
+            apps projects/macadam cp
           
       - name: Write machine key to file
         run: |
