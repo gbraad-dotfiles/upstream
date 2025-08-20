@@ -1,16 +1,16 @@
 name: Test bootc images using macadam/machine
 
 on:
-  workflow_dispatch:
+  workflow_call:
     inputs:
       prefix_name:
         description: "Name of the image to run with machine and macadam (e.g., dotfedora)"
-        required: true
+        required: false
         type: string
         default: "dotfedora"
       image_username:
         description: "Username for log in to the image"
-        required: true
+        required: false
         type: string
         default: "gbraad"
       runs-on:
@@ -20,7 +20,7 @@ on:
         default: "ubuntu-latest"
       arch:
         description: "Target architecture (e.g., arm64, amd64)"
-        required: true
+        required: false
         type: string
         default: "amd64"
 
@@ -114,14 +114,14 @@ jobs:
           disk_image: ~/DiskImages/${{ inputs.prefix_name }}.qcow2
           image_username: ${{ inputs.image_username }}
           identity_path: ~/.ssh/id_machine
-            
+
       - name: Start VM with macadam
         uses: gbraad-actions/zsh-action@main
         with:
           as_user: runner
           run: |
             macadam start
- 
+
       - name: Run test command with macadam
         uses: gbraad-actions/zsh-action@main
         with:
@@ -134,6 +134,7 @@ jobs:
         with:
           as_user: runner
           run: |
+            macadam ssh sudo bootc status
             macadam ssh dotfiles machine golang switch
             # macadam ssh does not source the profile
 
@@ -150,6 +151,7 @@ jobs:
         with:
           as_user: runner
           run: |
+            macadam ssh sudo bootc status
             macadam ssh go version
 
       - name: Hang around

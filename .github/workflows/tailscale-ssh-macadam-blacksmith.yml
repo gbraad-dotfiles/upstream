@@ -1,4 +1,4 @@
-name: tailscale-ssh-machinefile-blacksmith
+name: tailscale-ssh-macadam-blacksmith
 run-name: Tailscale SSH with macadam action
 
 on:
