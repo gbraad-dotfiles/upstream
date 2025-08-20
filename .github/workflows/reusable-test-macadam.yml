@@ -120,7 +120,7 @@ jobs:
         with:
           as_user: runner
           run: |
-            sleep 3
+            sleep 10
             macadam start
 
       - name: Run test command with macadam
