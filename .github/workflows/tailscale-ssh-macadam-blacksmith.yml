@@ -1,0 +1,13 @@
+name: tailscale-ssh-machinefile-blacksmith
+run-name: Tailscale SSH with macadam action
+
+on:
+  workflow_dispatch:
+
+jobs:
+  macadam-test:
+    name: Tailscale SSH Macadam - Blacksmith
+    uses: ./.github/workflows/reusable-test-macadam.yml
+    with:
+      runs-on: "blacksmith-2vcpu-ubuntu-2404"
+    secrets: inherit
