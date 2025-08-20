@@ -30,13 +30,24 @@ devenv() {
 
   # issue as some containers do not have this yet
   #"--workdir=$(dotini devenv --get devenv.workdir)"
+
+  local SELINUX_ENABLED=0
+  if command -v getenforce &>/dev/null && [[ "$(getenforce)" == "Enforcing" ]]; then
+    SELINUX_ENABLED=1
+  fi
+
+  local MOUNT_OPTIONS=""
+  if [[ "$SELINUX_ENABLED" -eq 1 ]]; then
+    MOUNT_OPTIONS=":z"
+  fi
+
   local START_PATHS=(
-    "-v" "${HOME}/Projects:/home/${IMAGE_USER}/Projects"
-    "-v" "${HOME}/Documents:/home/${IMAGE_USER}/Documents"
-    "-v" "${HOME}/Downloads:/home/${IMAGE_USER}/Downloads"
-    "-v" "${HOME}/Projects:/var/home/${IMAGE_USER}/Projects"
-    "-v" "${HOME}/Documents:/var/home/${IMAGE_USER}/Documents"
-    "-v" "${HOME}/Downloads:/var/home/${IMAGE_USER}/Downloads"
+    "-v" "${HOME}/Projects:/home/${IMAGE_USER}/Projects${MOUNT_OPTIONS}"
+    "-v" "${HOME}/Documents:/home/${IMAGE_USER}/Documents${MOUNT_OPTIONS}"
+    "-v" "${HOME}/Downloads:/home/${IMAGE_USER}/Downloads${MOUNT_OPTIONS}"
+    "-v" "${HOME}/Projects:/var/home/${IMAGE_USER}/Projects${MOUNT_OPTIONS}"
+    "-v" "${HOME}/Documents:/var/home/${IMAGE_USER}/Documents${MOUNT_OPTIONS}"
+    "-v" "${HOME}/Downloads:/var/home/${IMAGE_USER}/Downloads${MOUNT_OPTIONS}"
     "-v" "/tmp/.X11-unix:/tmp/.X11-unix"
   )
   
