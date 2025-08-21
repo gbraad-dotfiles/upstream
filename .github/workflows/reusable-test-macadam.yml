@@ -155,6 +155,19 @@ jobs:
             macadam ssh sudo bootc status
             macadam ssh go version
 
+      - name: Compile macadam inside the VM
+        uses: gbraad-actions/zsh-action@main
+        with:
+          as_user: runner
+          run: |
+            # checkout source
+            macadam ssh dotfiles apps projects/gvproxy source checkout
+            macadam ssh dotfiles apps projects/macadam source checkout
+            
+            # this is a temporary solution as ssh does not pass arguments correctly
+            macadam ssh dotfiles apps projects/gvproxy make local
+            macadam ssh dotfiles apps projects/macadam make local
+
       - name: Hang around
         if: ${{ failure() }}
         run: |
