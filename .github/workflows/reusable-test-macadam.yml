@@ -109,12 +109,11 @@ jobs:
             machine ${{ inputs.prefix_name }} download
       
       - name: Init image with macadam
-        uses: gbraad-actions/macadam-action@main
+        uses: gbraad-actions/zsh-action@main
         with:
-          machine_name: machine-${{ inputs.prefix_name }}
-          disk_image: ~/DiskImages/${{ inputs.prefix_name }}.qcow2
-          image_username: ${{ inputs.image_username }}
-          identity_path: ~/.ssh/id_machine
+          as_user: runner
+          run: |
+            machine ${{ inputs.prefix_name }} create
 
       - name: Start VM with macadam
         uses: gbraad-actions/zsh-action@main
@@ -122,23 +121,23 @@ jobs:
           as_user: runner
           run: |
             macadam list
-            macadam start machine-${{ inputs.prefix_name }} 
+            machine ${{ inputs.prefix_name }} start
 
       - name: Run test command with macadam
         uses: gbraad-actions/zsh-action@main
         with:
           as_user: runner
           run: |
-            macadam ssh machine-${{ inputs.prefix_name }} cat /etc/os-release
+            machine ${{ inputs.prefix_name }} exec cat /etc/os-release
 
       - name: Bootc switch VM to golang image
         uses: gbraad-actions/zsh-action@main
         with:
           as_user: runner
           run: |
-            macadam ssh machine-${{ inputs.prefix_name }} sudo bootc status
+            machine ${{ inputs.prefix_name }} exec sudo bootc status
             # Note: macadam ssh does not source the profile
-            macadam ssh machine-${{ inputs.prefix_name }} dotfiles machine golang switch
+            machine ${{ inputs.prefix_name }} exec dotfiles machine golang switch
 
       - name: Restart VM using macadam
         uses: gbraad-actions/zsh-action@main
@@ -146,8 +145,8 @@ jobs:
           as_user: runner
           run: |
             macadam list
-            macadam stop machine-${{ inputs.prefix_name }}
-            macadam start machine-${{ inputs.prefix_name }}
+            machine ${{ inputs.prefix_name }} stop
+            machine ${{ inputs.prefix_name }} start
             macadam list
 
       - name: Run golang with macadam
@@ -155,8 +154,8 @@ jobs:
         with:
           as_user: runner
           run: |
-            macadam ssh machine-${{ inputs.prefix_name }} sudo bootc status
-            macadam ssh machine-${{ inputs.prefix_name }} go version
+            machine ${{ inputs.prefix_name }} exec sudo bootc status
+            machine ${{ inputs.prefix_name }} exec go version
 
       - name: Compile macadam inside the VM
         uses: gbraad-actions/zsh-action@main
@@ -164,12 +163,12 @@ jobs:
           as_user: runner
           run: |
             # checkout source
-            macadam ssh machine-${{ inputs.prefix_name }} dotfiles apps projects/gvproxy source checkout
-            macadam ssh machine-${{ inputs.prefix_name }} dotfiles apps projects/macadam source checkout
+            machine ${{ inputs.prefix_name }} exec dotfiles apps projects/gvproxy source checkout
+            machine ${{ inputs.prefix_name }} exec dotfiles apps projects/macadam source checkout
             
             # this is a temporary solution as ssh does not pass arguments correctly
-            macadam ssh machine-${{ inputs.prefix_name }} dotfiles apps projects/gvproxy make local
-            macadam ssh machine-${{ inputs.prefix_name }} dotfiles apps projects/macadam make local
+            machine ${{ inputs.prefix_name }} exec dotfiles apps projects/gvproxy make local
+            machine ${{ inputs.prefix_name }} exec dotfiles apps projects/macadam make local
 
       - name: Hang around
         if: ${{ failure() }}

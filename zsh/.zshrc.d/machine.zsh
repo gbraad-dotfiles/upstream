@@ -10,42 +10,50 @@ machine() {
   local COMMAND=$2
   shift 2
 
-  local START_ARGS=(
-    "--cpu=host"
-    "--vcpus=$(dotini machine --get machine.vcpus)"
-    "--memory=$(dotini machine --get machine.memory)"
-    "--graphics=none"
-    "--noreboot"
-    "--os-variant=fedora-eln"
-  )
   local DISKFOLDER=$(dotini machine --get machine.diskfolder)
   DISKFOLDER="${DISKFOLDER/#\~/$HOME}"
+  local IDENTITYPATH=$(dotini machine --get machine.identitypath)
+  IDENTITYPATH="${IDENTITYPATH/#\~/$HOME}"
+
+  local START_ARGS=(
+    "--cpus=$(dotini machine --get machine.vcpus)"
+    "--memory=$(dotini machine --get machine.memory)"
+    "--username=$(dotini machine --get machine.user)"
+    "--ssh-identity-path=${IDENTITYPATH}"
+  )
 
   case "$COMMAND" in
     "download")
       download "$(dotini machine --get disks.${PREFIX})" "${DISKFOLDER}/${PREFIX}.qcow2"
       ;;
-    "system" | "create")
-      sudo virt-install "${START_ARGS[@]}" --name "machine-${PREFIX}" --import --disk "${DISKFOLDER}/${PREFIX}.qcow2"
+    "system" | "create" | "init")
+      macadam init --name "machine-${PREFIX}" "${START_ARGS[@]}" "${DISKFOLDER}/${PREFIX}.qcow2"
       ;;
     "start")
-      sudo virsh start "machine-${PREFIX}"
+      macadam start "machine-${PREFIX}"
       ;;
     "stop")
-      sudo virsh destroy "machine-${PREFIX}"
+      macadam stop "machine-${PREFIX}"
       ;;
     "kill" | "rm" | "remove")
-      sudo virsh undefine "machine-${PREFIX}"
+      macadam rm "machine-${PREFIX}"
       ;;
-    "console" | "shell" | "serial")
-      sudo virsh console "machine-${PREFIX}"
+    "console" | "shell" | "ssh")
+      macadam ssh "machine-${PREFIX}"
+      ;;
+    "exec" | "user")
+      macadam ssh "machine-${PREFIX}" "$@"
       ;;
     "switch")
       sudo bootc switch $(dotini machine --get images.${PREFIX})
       ;;
     "copy-config" | "cc")
-      value="$(dotini machine --get disks.${PREFIX})"
-      $(dotini machine --add disks.$1 $value)
+      local IMAGE=""
+      IMAGE="$(dotini machine --get disks.${PREFIX})"
+      $(dotini machine --add disks.$1 "${IMAGE}")
+      ;;
+    "from-config" | "fc")
+      macadam init --name "machine-$1" "${START_ARGS[@]}" "${DISKFOLDER}/${PREFIX}.qcow2"
       ;;
     *)
       echo "Unknown command: $0 $PREFIX $COMMAND"
