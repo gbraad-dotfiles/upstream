@@ -15,6 +15,11 @@ machine() {
   local IDENTITYPATH=$(dotini machine --get machine.identitypath)
   IDENTITYPATH="${IDENTITYPATH/#\~/$HOME}"
 
+  # ensuere folder exists
+  if [ ! -d "${DISKFOLDER}" ]; then
+    mkdir -p "${DISKFOLDER}"
+  fi
+
   local START_ARGS=(
     "--cpus=$(dotini machine --get machine.vcpus)"
     "--memory=$(dotini machine --get machine.memory)"
