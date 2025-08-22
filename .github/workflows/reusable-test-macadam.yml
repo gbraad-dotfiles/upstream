@@ -92,13 +92,9 @@ jobs:
             apps projects/macadam make
             apps projects/macadam cp
           
-      - name: Write machine key to file
-        run: |
-          mkdir -p ~/.ssh
-          printf "%s\n" "${{ secrets.SSH_MACHINE_PRIVATE }}" > ~/.ssh/id_machine
-          chmod 600 ~/.ssh/id_machine
-          printf "%s\n" "${{ secrets.SSH_MACHINE_PUBLIC }}"  > ~/.ssh/id_machine.pub
-          
+      - name: Write machinekey
+        uses: gbraad-dotfiles/machinekey-action@main
+
       - name: Prepare images for use with macadam
         uses: gbraad-actions/zsh-action@main
         with:
