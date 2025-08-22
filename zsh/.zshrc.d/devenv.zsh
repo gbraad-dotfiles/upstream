@@ -205,50 +205,7 @@ generate_image_name() {
   echo ${IMAGE}
 }
 
-# legacy aliases
-
-generate_aliases() {
-  local PREFIX=$1
-  alias ${PREFIX}env="devenv ${PREFIX} env"
-  alias ${PREFIX}sys="devenv ${PREFIX} sys"
-  alias ${PREFIX}root="devenv ${PREFIX} root"
-  alias ${PREFIX}user="devenv ${PREFIX} user"
-  alias ${PREFIX}tmux="devenv ${PREFIX} tmux"
-  alias ${PREFIX}build="devenv ${PREFIX} tmux attach-session -t build || dev ${PREFIX} tmux new-session -s build"
-}
-
 if [[ $(dotini devenv --get "devenv.aliases") == true ]]; then
   dev() { devenv "$@" }
-
-  generate_aliases "fed"
-  generate_aliases "deb"
-  generate_aliases "alp"
-  generate_aliases "cen"
-  generate_aliases "go"
-  generate_aliases "ubi"
-  generate_aliases "ubu"
-  generate_aliases "alm"
-  generate_aliases "sus"
-  generate_aliases "tum"
-
-  # Base on host distro
-  if [ ! -e /etc/os-release ]; then
-	return
-  fi
-
-  source /etc/os-release
-  case "$ID" in
-    "fedora" | "bazzite")
-        alias devsys="fedsys"
-        alias devroot="fedroot"
-        alias devuser="feduser"
-        alias devtmux="fedtmux"
-        ;;
-    "debian" | "ubuntu")
-        alias devsys="debsys"
-        alias devroot="debroot"
-        alias devuser="debuser"
-        alias devtmux="debtmux"
-        ;;
-  esac
 fi
+
