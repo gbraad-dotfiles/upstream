@@ -68,7 +68,7 @@ machine() {
     "switch")
       local CMD="sudo bootc switch $(dotini machine --get images.$1)"
       if [ "$PREFIX" = "local" ]; then
-        $CMD
+        eval $CMD
       else
         machine ${PREFIX} exec $CMD
       fi      
