@@ -1,12 +1,13 @@
 #!/bin/zsh
 
-machine() {
-  if [ $# -lt 2 ]; then
+machine() { 
+ if [ $# -lt 2 ]; then
     echo "Usage: $0 <prefix> <command> [args...]"
     return 1
   fi
 
   local PREFIX=$1
+  local SYSNAME="machine-${PREFIX}"
   local COMMAND=$2
   shift 2
 
@@ -28,26 +29,29 @@ machine() {
   )
 
   case "$COMMAND" in
+    "exists")
+      return $(macadam list | grep -q -E "${SYSNAME} ")
+      ;;
     "download")
       download "$(dotini machine --get disks.${PREFIX})" "${DISKFOLDER}/${PREFIX}.qcow2"
       ;;
     "system" | "create" | "init")
-      macadam init --name "machine-${PREFIX}" "${START_ARGS[@]}" "${DISKFOLDER}/${PREFIX}.qcow2"
+      macadam init --name "${SYSNAME}" "${START_ARGS[@]}" "${DISKFOLDER}/${PREFIX}.qcow2"
       ;;
     "start")
-      macadam start "machine-${PREFIX}"
+      macadam start "${SYSNAME}"
       ;;
     "stop")
-      macadam stop "machine-${PREFIX}"
+      macadam stop "${SYSNAME}"
       ;;
     "kill" | "rm" | "remove")
-      macadam rm "machine-${PREFIX}"
+      macadam rm "${SYSNAME}"
       ;;
     "console" | "shell" | "ssh")
-      macadam ssh "machine-${PREFIX}"
+      macadam ssh "${SYSNAME}"
       ;;
     "exec" | "user")
-      macadam ssh "machine-${PREFIX}" "$@"
+      macadam ssh "${SYSNAME}" "$@"
       ;;
     "switch")
       sudo bootc switch $(dotini machine --get images.${PREFIX})
@@ -58,7 +62,7 @@ machine() {
       $(dotini machine --add disks.$1 "${IMAGE}")
       ;;
     "from")
-      macadam init --name "machine-${PREFIX}" "${START_ARGS[@]}" "${DISKFOLDER}/$1.qcow2"
+      macadam init --name "${SYSNAME}" "${START_ARGS[@]}" "${DISKFOLDER}/$1.qcow2"
       ;;
     *)
       echo "Unknown command: $0 $PREFIX $COMMAND"
