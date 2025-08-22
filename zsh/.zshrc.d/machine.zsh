@@ -15,6 +15,7 @@ machine() {
   DISKFOLDER="${DISKFOLDER/#\~/$HOME}"
   local IDENTITYPATH=$(dotini machine --get machine.identitypath)
   IDENTITYPATH="${IDENTITYPATH/#\~/$HOME}"
+  local START_SHELL=$(dotini devenv --get devenv.shell)
   local IMAGE_USER=$(dotini machine --get machine.user)
 
   # ensuere folder exists
@@ -55,7 +56,10 @@ machine() {
     "console" | "shell" | "ssh")
       macadam ssh "${SYSNAME}"
       ;;
-    "root" | "su" | "sudo")
+    "root" | "su")
+      machine ${PREFIX} sudo ${START_SHELL} 
+      ;;
+    "sudo")
       machine ${PREFIX} exec sudo $@
       ;;
     "exec" | "user")
