@@ -91,8 +91,11 @@ devbox() {
     "dotfiles")
       devbox ${PREFIX} user dotfiles $*
       ;;
-    "root" | "su" | "sudo")
+    "root" | "su")
       devbox ${PREFIX} exec ${START_SHELL}
+      ;;
+    "sudo")
+      devbox ${PREFIX} exec sudo $@
       ;;
     "user" | "sh" | "shell")
       # enter has no --user option

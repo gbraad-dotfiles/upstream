@@ -125,8 +125,11 @@ devenv() {
       fi
       podman exec -it ${SYSNAME} $@
       ;;
-    "root" | "su" | "sudo")
+    "root" | "su")
       devenv ${PREFIX} exec ${START_SHELL}
+      ;;
+    "sudo")
+      devenv ${PREFIX} exec sudo $@
       ;;
     "user" | "sh" | "shell")
       devenv ${PREFIX} exec sudo -i -u ${IMAGE_USER} $*
