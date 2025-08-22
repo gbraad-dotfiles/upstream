@@ -15,6 +15,7 @@ machine() {
   DISKFOLDER="${DISKFOLDER/#\~/$HOME}"
   local IDENTITYPATH=$(dotini machine --get machine.identitypath)
   IDENTITYPATH="${IDENTITYPATH/#\~/$HOME}"
+  local IMAGEUSER=$(dotini machine --get machine.user)
 
   # ensuere folder exists
   if [ ! -d "${DISKFOLDER}" ]; then
@@ -24,7 +25,7 @@ machine() {
   local START_ARGS=(
     "--cpus=$(dotini machine --get machine.vcpus)"
     "--memory=$(dotini machine --get machine.memory)"
-    "--username=$(dotini machine --get machine.user)"
+    "--username=${IMAGEUSER}"
     "--ssh-identity-path=${IDENTITYPATH}"
   )
 
@@ -75,6 +76,12 @@ machine() {
       ;;
     "from")
       macadam init --name "${SYSNAME}" "${START_ARGS[@]}" "${DISKFOLDER}/$1.qcow2"
+      ;;
+    "tsconnect")
+      local HOSTNAME=$(hostname)
+      local LAST3=${HOSTNAME: -3}
+      secrets var tailscale_authkey
+      machine ${PREFIX} sudo tailscale up --auth-key "${TAILSCALE_AUTHKEY}" --hostname ${SYSNAME}-${LAST3} --operator ${IMAGEUSER}
       ;;
     *)
       echo "Unknown command: $0 $PREFIX $COMMAND"
