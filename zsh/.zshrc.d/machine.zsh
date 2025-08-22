@@ -252,3 +252,34 @@ download() {
 if [[ $(dotini machine --get "machine.aliases") == true ]]; then
   alias mcn="machine"
 fi
+
+machine-export-service() {
+  local vmname="$1"
+  if [[ -z "$vmname" ]]; then
+    echo "Usage: machine-export-service <vmname>"
+    return 1
+  fi
+
+  local service_dir="${HOME}/.config/systemd/user"
+  local service_name="dotfiles-machine-${vmname}.service"
+  local service_file="${service_dir}/${service_name}"
+
+  mkdir -p "$service_dir"
+  cat > "$service_file" <<EOF
+[Unit]
+Description=Machine ${vmname}
+
+[Service]
+Type=simple
+ExecStart=${HOME}/.dotfiles/bash/.local/bin/dot machine ${vmname} start
+ExecStop=${HOME}/.dotfiles/bash/.local/bin/dot machine ${vmname} stop
+
+[Install]
+WantedBy=default.target
+EOF
+
+  if ! notify-send "Exported" "${service_name}" > /dev/null 2>&1; then
+    echo "Exported" ${service_name}
+  fi
+  systemctl --user daemon-reload
+}
