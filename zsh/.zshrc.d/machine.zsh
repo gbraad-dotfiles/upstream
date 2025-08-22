@@ -38,6 +38,10 @@ machine() {
     "system" | "create" | "init")
       macadam init --name "${SYSNAME}" "${START_ARGS[@]}" "${DISKFOLDER}/${PREFIX}.qcow2"
       ;;
+    "restart" | "reboot")
+      machine ${PREFIX} stop
+      machine ${PREFIX} start
+      ;;
     "start")
       macadam start "${SYSNAME}"
       ;;
@@ -50,11 +54,19 @@ machine() {
     "console" | "shell" | "ssh")
       macadam ssh "${SYSNAME}"
       ;;
+    "root" | "su" | "sudo")
+      machine ${PREFIX} exec sudo $@
+      ;;
     "exec" | "user")
       macadam ssh "${SYSNAME}" "$@"
       ;;
     "switch")
-      sudo bootc switch $(dotini machine --get images.${PREFIX})
+      local CMD="sudo bootc switch $(dotini machine --get images.$1)"
+      if [ "$PREFIX" = "local" ]; then
+        $CMD
+      else
+        machine ${PREFIX} exec $CMD
+      fi      
       ;;
     "copy-config" | "cc")
       local IMAGE=""

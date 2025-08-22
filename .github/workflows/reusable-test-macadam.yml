@@ -136,7 +136,7 @@ jobs:
           run: |
             machine ${{ inputs.prefix_name }} exec sudo bootc status
             # Note: macadam ssh does not source the profile
-            machine ${{ inputs.prefix_name }} exec dotfiles machine golang switch
+            machine ${{ inputs.prefix_name }} switch golang
 
       - name: Restart VM using macadam
         uses: gbraad-actions/zsh-action@main
