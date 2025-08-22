@@ -52,8 +52,8 @@ machine() {
       IMAGE="$(dotini machine --get disks.${PREFIX})"
       $(dotini machine --add disks.$1 "${IMAGE}")
       ;;
-    "from-config" | "fc")
-      macadam init --name "machine-$1" "${START_ARGS[@]}" "${DISKFOLDER}/${PREFIX}.qcow2"
+    "from")
+      macadam init --name "machine-${PREFIX}" "${START_ARGS[@]}" "${DISKFOLDER}/$1.qcow2"
       ;;
     *)
       echo "Unknown command: $0 $PREFIX $COMMAND"
