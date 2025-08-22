@@ -56,6 +56,12 @@ jobs:
         with:
           upstream: true
 
+      - name: Write machinekey
+        uses: gbraad-dotfiles/machinekey-action@main
+        with:
+          ssh_private_key: ${{ secrets.SSH_MACHINE_PRIVATE }}
+          ssh_public_key: ${{ secrets.SSH_MACHINE_PUBLIC }}
+
       - name: Workaround - fixes compaudit
         run: |
           sudo chmod go-w /usr/share/zsh/vendor-completions
