@@ -171,6 +171,18 @@ devenv() {
     "playbook")
       podman_playbook ${SYSNAME} $@ # <filename> <...> 
       ;;
+    "from")
+      # use $1 as prefix value for the image
+      podman run -d --name=${SYSNAME} --hostname ${HOSTNAME}-${SYSNAME} \
+        --systemd=always "${START_ARGS[@]}" "${START_PATHS[@]}" \
+        $(generate_image_name $1)
+      ;;
+    "tsconnect")
+      local HOSTNAME=$(hostname)
+      local LAST3=${HOSTNAME: -3}
+      secrets var tailscale_authkey
+      devenv ${PREFIX} sudo tailscale up --auth-key "${TAILSCALE_AUTHKEY}" --hostname ${SYSNAME}-${LAST3} --operator ${IMAGE_USER} --ssh
+      ;;
     *)
       echo "Unknown command: $0 $PREFIX $COMMAND"
       ;;

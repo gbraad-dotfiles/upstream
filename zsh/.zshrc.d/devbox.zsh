@@ -91,7 +91,7 @@ devbox() {
     "dotfiles")
       devbox ${PREFIX} user dotfiles $*
       ;;
-    "root" | "su")
+    "root" | "su" | "sudo")
       devbox ${PREFIX} exec ${START_SHELL}
       ;;
     "user" | "sh" | "shell")
@@ -114,6 +114,17 @@ devbox() {
       ;;
     "playbook")
       podman_playbook ${BOXNAME} $@ # <filename> <...> 
+      ;;
+    "from")
+      # use $1 as prefix value for the image
+      distrobox create --yes --init -i $(generate_devbox_name $1) ${BOXNAME}
+      echo "$0 $PREFIX enter"
+      ;;
+    "tsconnect")
+      local HOSTNAME=$(hostname)
+      local LAST3=${HOSTNAME: -3}
+      secrets var tailscale_authkey
+      devenv ${PREFIX} sudo tailscale up --auth-key "${TAILSCALE_AUTHKEY}" --hostname ${SYSNAME}-${LAST3} --operator ${IMAGE_USER} --ssh
       ;;
     *)
       echo "Unknown command: $0 $PREFIX $COMMAND"
