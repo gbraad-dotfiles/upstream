@@ -72,7 +72,7 @@ jobs:
 
       - name: Install required virtualization software
         continue-on-error: true
-        uses: gbraad-actions/setup-virtualization@v1
+        uses: gbraad-actions/setup-virtualization@v2
 
       - name: Install containers tools (optional)
         continue-on-error: true
