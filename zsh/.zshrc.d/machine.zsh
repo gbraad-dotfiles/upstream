@@ -101,6 +101,16 @@ machine() {
       secrets var tailscale_authkey
       machine ${PREFIX} sudo tailscale up --auth-key "${TAILSCALE_AUTHKEY}" --hostname ${SYSNAME}-${LAST3} --operator ${IMAGE_USER} --ssh
       ;;
+    "export")
+      machine-export-service ${PREFIX}
+      ;;
+    "service")
+      macadam start ${SYSNAME} -q
+      while pgrep -f "qemu-system.*${SYSNAME}" >/dev/null; do
+        echo "running"
+        sleep 5
+      done
+      ;;
     *)
       echo "Unknown command: $0 $PREFIX $COMMAND"
       ;;
@@ -296,7 +306,7 @@ Description=Machine ${vmname}
 
 [Service]
 Type=simple
-ExecStart=${HOME}/.dotfiles/bash/.local/bin/dot machine ${vmname} start
+ExecStart=${HOME}/.dotfiles/bash/.local/bin/dot machine ${vmname} service
 ExecStop=${HOME}/.dotfiles/bash/.local/bin/dot machine ${vmname} stop
 
 [Install]
