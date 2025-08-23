@@ -15,8 +15,14 @@ machine() {
   DISKFOLDER="${DISKFOLDER/#\~/$HOME}"
   local IDENTITYPATH=$(dotini machine --get machine.identitypath)
   IDENTITYPATH="${IDENTITYPATH/#\~/$HOME}"
+  local HELPERPATH=$(dotini machine --get machine.helperpath)
+  HELPERPATH="${HELPERPATH/#\~/$HOME}"
   local START_SHELL=$(dotini devenv --get devenv.shell)
   local IMAGE_USER=$(dotini machine --get machine.user)
+  
+  if [[ -n "${HELPERPATH}" && -e "${HELPERPATH}" ]]; then
+    export CONTAINERS_HELPER_BINARY_DIR=${HELPERPATH}
+  fi
 
   # ensuere folder exists
   if [ ! -d "${DISKFOLDER}" ]; then
