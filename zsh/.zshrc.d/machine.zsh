@@ -2,8 +2,12 @@
 
 machine() { 
  if [ $# -lt 2 ]; then
-    echo "Usage: $0 <prefix> <command> [args...]"
-    return 1
+    macadam list | awk 'NR>1 {
+      name = gensub(/^machine-/, "", "g", $1);
+      status = ($7 == "running") ? "Running" : "Stopped";
+      print name " - " status
+    }'
+    return 0
   fi
 
   local PREFIX=$1
