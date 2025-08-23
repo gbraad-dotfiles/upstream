@@ -5,8 +5,8 @@ machine() {
     macadam list | awk 'NR>1 {
       name = gensub(/^machine-/, "", "g", $1);
       status = ($7 == "running") ? "Running" : "Stopped";
-      print name " - " status
-    }'
+      printf "%s\t%s\n", name, status
+    }' | column -t
     return 0
   fi
 
