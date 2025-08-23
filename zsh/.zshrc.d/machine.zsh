@@ -79,7 +79,7 @@ machine() {
       $(dotini machine --add disks.$1 "${IMAGE}")
       ;;
     "playbook")
-      echo "not yet implemented"
+      remote_playbook macadam ${SYSNAME} $@ # <filename> <...> 
       ;;
     "from")
       # use $1 as prefix value for the image
