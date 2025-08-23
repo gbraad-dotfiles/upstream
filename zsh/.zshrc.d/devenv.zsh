@@ -183,16 +183,21 @@ devenv() {
       devenv ${PREFIX} sudo tailscale up --auth-key "${TAILSCALE_AUTHKEY}" --hostname ${SYSNAME}-${LAST3} --operator ${IMAGE_USER} --ssh
       ;;
     "export")
-      (mkdir -p ${HOME}/.config/systemd/user && cd ${HOME}/.config/systemd/user && podman generate systemd --name --files ${SYSNAME})
-      systemctl --user daemon-reload
-      echo "\nStart with:\nsystemctl --user start container-${SYSNAME}"
+      local from=$1
+      local image=""
+      if [[ -n "$from" ]]; then
+        image=$(generate_image_name $from)
+      else
+        image=$(generate_image_name $PREFIX)
+      fi
+      devenv-export-service $PREFIX $image
+      echo "Start with:\nsystemctl --user start dotfiles-devenv-${PREFIX}"
       ;;
     *)
       echo "Unknown command: $0 $PREFIX $COMMAND"
       ;;
   esac
 }
-
 
 generate_image_name() {
   local PREFIX=$1
@@ -210,3 +215,35 @@ if [[ $(dotini devenv --get "devenv.aliases") == true ]]; then
   dev() { devenv "$@" }
 fi
 
+devenv-export-service() {
+  local name="$1"
+  local image="$2"
+  local sysname=${name}sys
+
+  if [[ -z "$image" ]]; then
+    echo "Usage: devenv-export-service <name> <image>"
+    return 1
+  fi
+
+  local service_dir="${HOME}/.config/containers/systemd"
+  local service_name="dotfiles-devenv-${name}.container"
+  local service_file="${service_dir}/${service_name}"
+
+  mkdir -p "$service_dir"
+  cat > "$service_file" <<EOF
+[Unit]
+Description=${name}
+
+[Container]
+Image=${image}
+ContainerName=${sysname}
+
+[Install]
+WantedBy=default.target
+EOF
+
+  if ! notify-send "Exported" "${service_name}" > /dev/null 2>&1; then
+    echo "Exported" ${service_name}
+  fi
+  systemctl --user daemon-reload
+}
