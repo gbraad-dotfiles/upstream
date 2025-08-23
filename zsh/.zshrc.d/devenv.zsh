@@ -76,10 +76,6 @@ devenv() {
         --systemd=always "${START_ARGS[@]}" "${START_PATHS[@]}" \
         $(generate_image_name $PREFIX)
       # TODO: systemd only when able to check for running state
-      #&& (mkdir -p ${HOME}/.config/systemd/user && cd ${HOME}/.config/systemd/user \
-      #&& podman generate systemd --name --files ${PREFIX}sys) \
-      #&& systemctl --user daemon-reload \
-      #&& systemctl --user start container-${PREFIX}sys
       ;;
     "noinit" | "dumb")
       # For environments that can not start systemd
@@ -185,6 +181,11 @@ devenv() {
       local LAST3=${HOSTNAME: -3}
       secrets var tailscale_authkey
       devenv ${PREFIX} sudo tailscale up --auth-key "${TAILSCALE_AUTHKEY}" --hostname ${SYSNAME}-${LAST3} --operator ${IMAGE_USER} --ssh
+      ;;
+    "export")
+      (mkdir -p ${HOME}/.config/systemd/user && cd ${HOME}/.config/systemd/user && podman generate systemd --name --files ${SYSNAME})
+      systemctl --user daemon-reload
+      echo "\nStart with:\nsystemctl --user start container-${SYSNAME}"
       ;;
     *)
       echo "Unknown command: $0 $PREFIX $COMMAND"
