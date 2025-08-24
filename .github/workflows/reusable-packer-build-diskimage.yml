@@ -1,0 +1,61 @@
+name: Build OS Image
+
+on:
+  workflow_call:
+    inputs:
+      target:
+        required: true
+        type: string
+
+jobs:
+  packer-machinefile:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out repository code
+        uses: actions/checkout@v4
+
+      - name: Dotfiles (install from action)
+        uses: gbraad-dotfiles/install-action@main
+        with:
+          upstream: true
+
+      - name: Install required virtualization software
+        continue-on-error: true
+        uses: gbraad-actions/setup-virtualization@v2
+
+      - name: Install containers tools (optional)
+        continue-on-error: true
+        uses: gbraad-actions/setup-container-tools@v1
+
+      - name: Install packer
+        uses: gbraad-actions/install-packer@v1
+
+      - name: Install machinefile and qemu plugin
+        uses: gbraad-actions/zsh-action@main
+        with:
+          as_user: runner
+          run: |
+            packer plugin install github.com/hashicorp/qemu
+            apps machinefile install
+
+      # as_user starts a new process/session; ensures this runs accelerated
+      - name: Run packer build process
+        uses: gbraad-actions/zsh-action@main
+        with:
+          as_user: runner
+          run: |
+            packer build ${{ inputs.target }}.pkr.hcl
+
+      - name: Create and push disk image
+        run: |
+          TAG=$(date +'%y%m%d')
+
+          podman build -t ghcr.io/gbraad-dotfiles/${{ inputs.target }}-disk:latest -f ${{ inputs.target }}/Containerfile-disk .
+          podman tag ghcr.io/gbraad-dotfiles/${{ inputs.target }}-disk:latest ghcr.io/gbraad-dotfiles/${{ inputs.target }}-disk:${TAG}
+
+          podman login ghcr.io -u ${{ github.actor }} -p ${{ secrets.GITHUB_TOKEN }}
+
+          podman push ghcr.io/gbraad-dotfiles/${{ inputs.target }}-disk:latest
+          podman push ghcr.io/gbraad-dotfiles/${{ inputs.target }}-disk:${TAG}
+

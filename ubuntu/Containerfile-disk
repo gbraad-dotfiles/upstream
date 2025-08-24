@@ -1,0 +1,2 @@
+FROM scratch
+ADD ./output-ubuntu/packer-ubuntu /disk.qcow2

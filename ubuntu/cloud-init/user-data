@@ -1,0 +1,13 @@
+#cloud-config
+chpasswd:
+  list: |
+    root:password
+  expire: false
+
+ssh_pwauth: true
+
+runcmd:
+  - echo "PermitRootLogin yes" > /etc/ssh/sshd_config.d/00-packer.conf
+  - echo "PasswordAuthentication yes" >> /etc/ssh/sshd_config.d/00-packer.conf
+  - systemctl restart sshd
+
