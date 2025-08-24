@@ -31,11 +31,14 @@ jobs:
         uses: gbraad-actions/setup-container-tools@v1
 
       - name: Install packer
+        uses: gbraad-actions/install-packer@v1
+
+      - name: Install machinefile and qemu plugin
         uses: gbraad-actions/zsh-action@main
         with:
           as_user: runner
           run: |
-            apps packer install
+            packer plugin install github.com/hashicorp/qemu
             apps machinefile install
 
       # as_user starts a new process/session; ensures this runs accelerated
