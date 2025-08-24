@@ -1,3 +1,3 @@
 #/bin/sh
 
-packer build debian.json
+packer build debian.pkr.hcl
