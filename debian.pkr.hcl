@@ -9,8 +9,9 @@ packer {
 
 source "qemu" "debian" {
   accelerator       = "kvm"
-  iso_url           = "https://cdimage.debian.org/debian-cd/current/amd64/iso-cd/debian-13.0.0-amd64-netinst.iso"
-  iso_checksum      = "sha256:e363cae0f1f22ed73363d0bde50b4ca582cb2816185cf6eac28e93d9bb9e1504"
+  disk_image        = true
+  iso_url           = "https://cloud.debian.org/images/cloud/bookworm/20250814-2204/debian-12-generic-amd64-20250814-2204.qcow2"
+  iso_checksum      = "sha256:1830fe2391308aa13008d196f2125570ad3fb03c5ca3585848b2f8361e877d7d"
   output_directory  = "output-debian"
   format            = "qcow2"
   memory            = 2048
@@ -18,13 +19,15 @@ source "qemu" "debian" {
   ssh_username      = "root"
   ssh_password      = "password"
   ssh_wait_timeout  = "30m"
+  shutdown_command  = "sudo shutdown -P now"
+  net_device        = "virtio-net"
   headless          = true
-  http_directory    = "debian/http"
-  boot_command = [
-    "<esc><wait>",
-    "install auto=true priority=critical preseed/url=http://{{ .HTTPIP }}:{{ .HTTPPort }}/preseed.cfg console=ttyS0,115200n8 <enter>"
-  ]
+
+  cd_files = ["./debian/cloud-init/user-data", "./debian/cloud-init/meta-data"]
+  cd_label = "CIDATA"
+
   qemuargs = [
+    ["-boot", "c"],
     ["-serial", "file:serial.log"]
   ]
 }
