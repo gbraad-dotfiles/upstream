@@ -59,7 +59,8 @@ build {
     inline = [
       "apt-get update",
       "apt-get install -y ifupdown",
-      "rm -f /etc/netplan/50-cloud-init.yaml"
+      "rm -f /etc/netplan/50-cloud-init.yaml",
+      "systemctl disable systemd-networkd"
     ]
   }
 
