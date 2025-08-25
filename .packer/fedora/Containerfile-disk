@@ -1,0 +1,2 @@
+FROM scratch
+ADD ./output-fedora/packer-fedora /disk.qcow2

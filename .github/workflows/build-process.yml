@@ -8,6 +8,11 @@ on:
 
 
 jobs:
+  build-fedora:
+    uses: ./.github/workflows/reusable-packer-build-diskimage.yml
+    with:
+      target: fedora
+
   build-debian:
     uses: ./.github/workflows/reusable-packer-build-diskimage.yml
     with:
@@ -17,3 +22,4 @@ jobs:
     uses: ./.github/workflows/reusable-packer-build-diskimage.yml
     with:
       target: ubuntu
+

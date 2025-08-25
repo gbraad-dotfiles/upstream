@@ -1,0 +1,76 @@
+ARG BASE_IMAGE="fedora"
+ARG BASE_VERSION="41"
+
+FROM ${BASE_IMAGE}:${BASE_VERSION}
+
+ARG USER="gbraad"
+ARG USER_GROUP="users"
+ARG USER_PASSWD
+ARG HOMEBASE="/home"
+ARG USERHOME="${HOMEBASE}/${USER}"
+ARG ROOTHOME="/root"
+ARG ARCH="x86_64"
+
+RUN dnf install -y \
+        systemd \
+        sudo \
+        git \
+        dnf-plugins-core \
+    && dnf install -y \
+        'dnf5-command(config-manager)' \
+    && dnf install -y \
+        ansible \
+    && dnf clean all \
+    && rm -rf /var/cache/yum
+
+# fix for PAM/SSH
+RUN chmod 0640 /etc/shadow
+
+# fix for missing users on bootc: https://github.com/gbraad-dotfiles/upstream/issues/69
+RUN grep -qF "users:x:100:" /etc/group || echo "users:x:100:" | sudo tee -a /etc/group
+
+RUN useradd -l -u 1000 -G wheel -md ${USERHOME} -s /bin/bash -p ${USER} ${USER} \
+    && sed -i.bkp -e 's/%wheel\s\+ALL=(ALL\(:ALL\)\?)\s\+ALL/%wheel ALL=NOPASSWD:ALL/g' /etc/sudoers \
+    && if [ -n "${USER_PASSWD}" ] ; then \
+        echo "${USER}:${USER_PASSWD}" | sudo chpasswd && echo "Password set to: ${USER_PASSWD}"; \
+    fi \
+    && usermod -a -G ${USER_GROUP} ${USER}
+
+USER ${USER}
+
+RUN git clone https://github.com/gbraad-dotfiles/upstream.git ${USERHOME}/.dotfiles --depth 2 \
+    && cd ${USERHOME}/.dotfiles \
+    && sh ./install.sh
+
+# public keys for SSH login
+RUN mkdir -p ${USERHOME}/.ssh/ \
+    && curl https://github.com/${USER}.keys | tee -a ${USERHOME}/.ssh/authorized_keys \
+    && curl https://dotfiles.gbraad.nl/public.keys | tee -a ${USERHOME}/.ssh/authorized_keys
+
+USER root
+
+RUN git clone https://github.com/gbraad-dotfiles/upstream.git ${ROOTHOME}/.dotfiles --depth 2\
+    && mkdir -p ${ROOTHOME}/.config \
+    && cd ${ROOTHOME}/.dotfiles \
+    && source ./dotfiles.sh \
+    && stow config \
+    && dotfiles restow
+
+RUN chsh -s /usr/bin/zsh ${USER} \
+    && chsh -s /usr/bin/zsh
+
+# install tailscale (or use https://github.com/spotsnel/tailscale-systemd/)
+RUN dnf config-manager addrepo --from-repofile=https://pkgs.tailscale.com/stable/fedora/tailscale.repo \
+    && dnf install -y \
+        tailscale \
+    && dnf clean all \
+    && rm -rf /var/cache/yum \
+    && mkdir -p /var/run/tailscale /var/cache/tailscale /var/lib/tailscale \
+    && systemctl enable tailscaled
+
+# enable linger for the user (loginctl won't work without systemd running)
+RUN mkdir -p /var/lib/systemd/linger \
+    && touch /var/lib/systemd/linger/${USER}
+
+# Enable systemd
+ENTRYPOINT [ "/sbin/init" ]
