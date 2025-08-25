@@ -51,7 +51,7 @@ jobs:
         run: |
           TAG=$(date +'%y%m%d')
 
-          podman build -t ghcr.io/gbraad-dotfiles/${{ inputs.target }}-disk:latest -f ${{ inputs.target }}/Containerfile-disk .
+          podman build -t ghcr.io/gbraad-dotfiles/${{ inputs.target }}-disk:latest -f .packer/${{ inputs.target }}/Containerfile-disk .
           podman tag ghcr.io/gbraad-dotfiles/${{ inputs.target }}-disk:latest ghcr.io/gbraad-dotfiles/${{ inputs.target }}-disk:${TAG}
 
           podman login ghcr.io -u ${{ github.actor }} -p ${{ secrets.GITHUB_TOKEN }}
