@@ -50,4 +50,17 @@ build {
       "update-grub"
     ]
   }
+
+  provisioner "file" {
+    content     = <<-EOT
+      source /etc/network/interfaces.d/*
+
+      auto lo
+      iface lo inet loopback
+
+      allow-hotplug ens3
+      iface ens3 inet dhcp
+      EOT
+    destination = "/etc/network/interfaces"
+  }
 }
