@@ -19,12 +19,14 @@ source "qemu" "debian" {
   ssh_username      = "root"
   ssh_password      = "password"
   ssh_wait_timeout  = "30m"
-  shutdown_command  = "sudo shutdown -P now"
   net_device        = "virtio-net"
   headless          = true
 
   cd_files = [".packer/debian/cloud-init/user-data", ".packer/debian/cloud-init/meta-data"]
   cd_label = "CIDATA"
+
+  shutdown_command  = "shutdown -P now"
+  shutdown_timeout  = "1m"
 
   qemuargs = [
     ["-boot", "c"]
