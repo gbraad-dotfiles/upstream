@@ -44,10 +44,21 @@ build {
       "SSH_PORT=${build.Port}"]
   }
 
+  # disable cloud-init
   provisioner "shell" {
     inline = [
       "echo 'GRUB_CMDLINE_LINUX=\"cloud-init=disabled\"' | tee -a /etc/default/grub",
-      "update-grub"
+      "update-grub",
+      "touch /etc/cloud/cloud-init.disabled"
+    ]
+  }
+
+  # enable DHCP
+  provisioner "shell" {
+    inline = [
+      "apt-get update",
+      "apt-get install -y ifupdown",
+      "rm -f /etc/netplan/50-cloud-init.yaml"
     ]
   }
 
