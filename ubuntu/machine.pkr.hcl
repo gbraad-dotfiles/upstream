@@ -27,8 +27,7 @@ source "qemu" "ubuntu" {
   cd_label = "CIDATA"
 
   qemuargs = [
-    ["-boot", "c"],
-    ["-serial", "file:serial.log"]
+    ["-boot", "c"]
   ]
 }
 

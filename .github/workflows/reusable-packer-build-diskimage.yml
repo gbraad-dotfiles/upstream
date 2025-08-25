@@ -31,21 +31,21 @@ jobs:
       - name: Install packer
         uses: gbraad-actions/install-packer@v1
 
-      - name: Install machinefile and qemu plugin
+      - name: Install machinefile
         uses: gbraad-actions/zsh-action@main
         with:
           as_user: runner
           run: |
-            packer plugin install github.com/hashicorp/qemu
             apps machinefile install
 
       # as_user starts a new process/session; ensures this runs accelerated
-      - name: Run packer build process
+      - name: Run packer init and build process
         uses: gbraad-actions/zsh-action@main
         with:
           as_user: runner
           run: |
-            packer build ${{ inputs.target }}.pkr.hcl
+            packer init  ${{ inputs.target }}/machine.pkr.hcl
+            packer build ${{ inputs.target }}/machine.pkr.hcl
 
       - name: Create and push disk image
         run: |
