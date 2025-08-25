@@ -63,7 +63,7 @@ machine() {
     "kill" | "rm" | "remove")
       macadam rm -f "${SYSNAME}"
       ;;
-    "console" | "shell" | "ssh")
+    "console" | "ssh")
       macadam ssh "${SYSNAME}"
       ;;
     "root" | "su")
@@ -74,6 +74,9 @@ machine() {
       ;;
     "exec" | "user")
       macadam ssh "${SYSNAME}" "$@"
+      ;;
+    "shell")
+      mshell ${SYSNAME}
       ;;
     "switch")
       local CMD="sudo bootc switch $(dotini machine --get images.$1)"
