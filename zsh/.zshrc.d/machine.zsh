@@ -75,6 +75,9 @@ machine() {
     "exec" | "user")
       macadam ssh "${SYSNAME}" "$@"
       ;;
+    "dot")
+      mdot ${SYSNAME} "dotfiles source; export DISPLAY=:0; $*"
+      ;;
     "shell")
       mshell ${SYSNAME}
       ;;
