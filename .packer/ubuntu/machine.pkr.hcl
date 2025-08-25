@@ -23,7 +23,7 @@ source "qemu" "ubuntu" {
   net_device        = "virtio-net"
   headless          = true
 
-  cd_files = ["./ubuntu/cloud-init/user-data", "./ubuntu/cloud-init/meta-data"]
+  cd_files = [".packer/ubuntu/cloud-init/user-data", ".packer/ubuntu/cloud-init/meta-data"]
   cd_label = "CIDATA"
 
   qemuargs = [
@@ -36,7 +36,7 @@ build {
   sources = ["source.qemu.ubuntu"]
 
   provisioner "shell-local" {
-    script = "machinefile.sh"
+    script = ".packer/machinefile.sh"
     environment_vars = [
       "TARGET=ubuntu",
       "SSH_HOST=${build.Host}",

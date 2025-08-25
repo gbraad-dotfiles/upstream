@@ -44,8 +44,8 @@ jobs:
         with:
           as_user: runner
           run: |
-            packer init  ${{ inputs.target }}/machine.pkr.hcl
-            packer build ${{ inputs.target }}/machine.pkr.hcl
+            packer init  .packer/${{ inputs.target }}/machine.pkr.hcl
+            packer build .packer/${{ inputs.target }}/machine.pkr.hcl
 
       - name: Create and push disk image
         run: |

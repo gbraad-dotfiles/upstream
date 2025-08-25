@@ -23,7 +23,7 @@ source "qemu" "debian" {
   net_device        = "virtio-net"
   headless          = true
 
-  cd_files = ["./debian/cloud-init/user-data", "./debian/cloud-init/meta-data"]
+  cd_files = [".packer/debian/cloud-init/user-data", ".packer/debian/cloud-init/meta-data"]
   cd_label = "CIDATA"
 
   qemuargs = [
@@ -36,7 +36,7 @@ build {
   sources = ["source.qemu.debian"]
 
   provisioner "shell-local" {
-    script = "machinefile.sh"
+    script = ".packer/machinefile.sh"
     environment_vars = [
       "TARGET=debian",
       "SSH_HOST=${build.Host}",
