@@ -61,7 +61,7 @@ machine() {
       macadam stop "${SYSNAME}"
       ;;
     "kill" | "rm" | "remove")
-      macadam rm "${SYSNAME}"
+      macadam rm -f "${SYSNAME}"
       ;;
     "console" | "shell" | "ssh")
       macadam ssh "${SYSNAME}"
