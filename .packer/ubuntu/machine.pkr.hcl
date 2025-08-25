@@ -75,4 +75,11 @@ build {
       EOT
     destination = "/etc/network/interfaces"
   }
+
+  # disable root and password login
+  provisioner "shell" {
+    inline = [
+      "rm -f /etc/ssh/sshd_config.d/00-packer.conf"
+    ]
+  }
 }
