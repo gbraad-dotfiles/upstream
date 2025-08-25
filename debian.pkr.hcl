@@ -43,4 +43,12 @@ build {
       "SSH_HOST=${build.Host}",
       "SSH_PORT=${build.Port}"]
   }
+
+  provisioner "shell" {
+    inline = [
+      "echo 'GRUB_CMDLINE_LINUX=\"cloud-init=disabled\"' | tee -a /etc/default/grub",
+      "update-grub"
+    ]
+  }
+
 }
