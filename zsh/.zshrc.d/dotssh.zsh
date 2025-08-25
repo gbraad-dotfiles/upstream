@@ -60,8 +60,9 @@ rscreen() {
   rdot $1 screen
 }
 
-mshell() {
+mdot() {
     local sysname="$1"
+    shift 1
     local config_path="$HOME/.config/containers/macadam/machine/qemu/${sysname}.json"
 
     if [[ ! -f "$config_path" ]]; then
@@ -79,5 +80,25 @@ mshell() {
         return 1
     fi
 
-    rdot ${user}@localhost:${port} zsh
+    rdot ${user}@localhost:${port} $@
 }
+
+mshell() {
+  if [ $# -lt 1 ]; then
+    echo "Usage: $0 <sysname>"
+    return 1
+  fi 
+
+  mdot $1 zsh
+}
+
+mscreen() {
+  if [ $# -lt 1 ]; then
+    echo "Usage: $0 <sysname>"
+    return 1
+  fi 
+
+  mdot $1 screen
+}
+
+

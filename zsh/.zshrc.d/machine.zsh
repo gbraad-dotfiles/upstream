@@ -78,6 +78,9 @@ machine() {
     "shell")
       mshell ${SYSNAME}
       ;;
+    "screen")
+      mscreen ${SYSNAME}
+      ;;
     "switch")
       local CMD="sudo bootc switch $(dotini machine --get images.$1)"
       if [ "$PREFIX" = "local" ]; then
