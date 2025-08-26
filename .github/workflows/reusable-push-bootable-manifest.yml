@@ -26,14 +26,14 @@ jobs:
       - name: Download bootable OCI artifacts for arm64
         uses: actions/download-artifact@v4
         with:
-          name: oci-bootc-arm64
-          path: oci-bootc-arm64
+          name: ${{ inputs.container_name }}-oci-bootc-arm64
+          path: ${{ inputs.container_name }}-oci-bootc-arm64
 
       - name: Download bootable OCI artifacts for amd64
         uses: actions/download-artifact@v4
         with:
-          name: oci-bootc-amd64
-          path: oci-bootc-amd64
+          name: ${{ inputs.container_name }}-oci-bootc-amd64
+          path: ${{ inputs.container_name }}-oci-bootc-amd64
 
       - name: Login to container registry
         run: |
@@ -46,11 +46,11 @@ jobs:
 
           # Add OCI artifacts for arm64
           echo "Adding OCI artifact for architecture: arm64"
-          podman manifest add ${{ inputs.container_name }}-bootc-manifest oci:$(pwd)/oci-bootc-arm64
+          podman manifest add ${{ inputs.container_name }}-bootc-manifest oci:$(pwd)/${{ inputs.container_name }}-oci-bootc-arm64
 
           # Add OCI artifacts for amd64
           echo "Adding OCI artifact for architecture: amd64"
-          podman manifest add ${{ inputs.container_name }}-bootc-manifest oci:$(pwd)/oci-bootc-amd64
+          podman manifest add ${{ inputs.container_name }}-bootc-manifest oci:$(pwd)/${{ inputs.container_name }}-oci-bootc-amd64
 
           # Push the manifest with multiple tags
           echo "Pushing manifest with tags: latest, version-specific, and date-based"

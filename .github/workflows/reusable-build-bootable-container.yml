@@ -47,6 +47,6 @@ jobs:
 
       - uses: actions/upload-artifact@v4
         with:
-          name: oci-bootc-${{ inputs.arch }}
-          path: oci-bootc-${{ inputs.arch }}/
+          name: ${{ inputs.container_name }}-oci-bootc-${{ inputs.arch }}
+          path: ${{ inputs.container_name }}-oci-bootc-${{ inputs.arch }}/
           retention-days: 7

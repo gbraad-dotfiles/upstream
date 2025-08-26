@@ -26,24 +26,24 @@ jobs:
       - name: Download OCI artifacts for arm64
         uses: actions/download-artifact@v4
         with:
-          name: oci-arm64
-          path: oci-arm64
+          name: ${{ inputs.container_name }}-oci-arm64
+          path: ${{ inputs.container_name }}-oci-arm64
       - name: Download OCI artifacts for arm64
         uses: actions/download-artifact@v4
         with:
-          name: rootfs-arm64
-          path: rootfs
+          name: ${{ inputs.container_name }}-rootfs-arm64
+          path: ${{ inputs.container_name }}-rootfs
 
       - name: Download rootfs artifacts for amd64
         uses: actions/download-artifact@v4
         with:
-          name: oci-amd64
-          path: oci-amd64
+          name: ${{ inputs.container_name }}-oci-amd64
+          path: ${{ inputs.container_name }}-oci-amd64
       - name: Download rootfs artifacts for amd64
         uses: actions/download-artifact@v4
         with:
-          name: rootfs-amd64
-          path: rootfs
+          name: ${{ inputs.container_name }}-rootfs-amd64
+          path: ${{ inputs.container_name }}-rootfs
 
       - name: Login to container registry
         run: |
@@ -56,11 +56,11 @@ jobs:
 
           # Add OCI artifacts for arm64
           echo "Adding OCI artifact for architecture: arm64"
-          podman manifest add ${{ inputs.container_name }}-manifest oci:$(pwd)/oci-arm64
+          podman manifest add ${{ inputs.container_name }}-manifest oci:$(pwd)/${{ inputs.container_name }}-oci-arm64
 
           # Add OCI artifacts for amd64
           echo "Adding OCI artifact for architecture: amd64"
-          podman manifest add ${{ inputs.container_name }}-manifest oci:$(pwd)/oci-amd64
+          podman manifest add ${{ inputs.container_name }}-manifest oci:$(pwd)/${{ inputs.container_name }}-oci-amd64
 
           # Push the manifest with multiple tags
           echo "Pushing manifest with tags: latest, version-specific, and date-based"
@@ -72,4 +72,4 @@ jobs:
         uses: softprops/action-gh-release@v1
         with:
           tag_name: ${{ inputs.release_tag }}
-          files: rootfs/*.tar.gz
+          files: ${{ inputs.container_name }}-rootfs/*.tar.gz
