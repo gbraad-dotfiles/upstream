@@ -20,9 +20,6 @@ jobs:
               workflow_id: 'build-container-almalinux.yml',
               ref: context.ref,
             });
-      - name: Wait a little
-        run: |
-          sleep 10
 
 
   trigger-build-container-centos:
@@ -38,9 +35,6 @@ jobs:
               workflow_id: 'build-container-centos.yml',
               ref: context.ref,
             });
-      - name: Wait a little
-        run: |
-          sleep 10
 
 
   trigger-build-container-debian:
@@ -55,10 +49,7 @@ jobs:
               repo: context.repo.repo,
               workflow_id: 'build-container-debian.yml',
               ref: context.ref,
-            });
-      - name: Wait a little
-        run: |
-          sleep 10        
+            });  
 
           
   trigger-build-container-fedora:
@@ -73,10 +64,7 @@ jobs:
               repo: context.repo.repo,
               workflow_id: 'build-container-fedora.yml',
               ref: context.ref,
-            });
-      - name: Wait a little
-        run: |
-          sleep 10        
+            });      
 
 
   trigger-build-container-ubi9:
@@ -91,10 +79,7 @@ jobs:
               repo: context.repo.repo,
               workflow_id: 'build-container-ubi9.yml',
               ref: context.ref,
-            });
-      - name: Wait a little
-        run: |
-          sleep 10        
+            });     
 
 
   trigger-build-container-alpine:
@@ -109,10 +94,7 @@ jobs:
               repo: context.repo.repo,
               workflow_id: 'build-container-alpine.yml',
               ref: context.ref,
-            });
-      - name: Wait a little
-        run: |
-          sleep 10        
+            });     
 
 
   trigger-build-container-ubuntu:
@@ -127,7 +109,4 @@ jobs:
               repo: context.repo.repo,
               workflow_id: 'build-container-ubuntu.yml',
               ref: context.ref,
-            });
-      - name: Wait a little
-        run: |
-          sleep 10        
+            });   
