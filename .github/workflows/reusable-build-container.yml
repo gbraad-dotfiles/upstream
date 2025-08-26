@@ -40,12 +40,12 @@ jobs:
       - name: Save container as OCI
         run: |
           podman save ghcr.io/${{ github.repository_owner }}/${{ inputs.container_name }}:${{ inputs.arch }} \
-            --format=oci-dir -o oci-${{ inputs.arch }}
+            --format=oci-dir -o ${{ inputs.container_name }}-oci-${{ inputs.arch }}
 
       - uses: actions/upload-artifact@v4
         with:
-          name: oci-${{ inputs.arch }}
-          path: oci-${{ inputs.arch }}/
+          name: ${{ inputs.container_name }}-oci-${{ inputs.arch }}
+          path: ${{ inputs.container_name }}-oci-${{ inputs.arch }}/
           retention-days: 7
 
       - name: Run podman export
@@ -57,6 +57,6 @@ jobs:
 
       - uses: actions/upload-artifact@v4
         with:
-          name: rootfs-${{ inputs.arch }}
+          name: ${{ inputs.container_name }}-rootfs-${{ inputs.arch }}
           path: ${{ inputs.container_name }}-${{ inputs.arch }}.tar.gz
           retention-days: 7
