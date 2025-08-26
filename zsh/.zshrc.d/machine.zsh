@@ -126,6 +126,11 @@ machine() {
   esac
 }
 
+if [[ $(dotini machine --get "machine.aliases") == true ]]; then
+  alias m="machine"
+  alias mcn="machine"
+fi
+
 download_from_registry() {
     image_reference=$1
     output_file=$2
@@ -292,10 +297,6 @@ download() {
         echo "Download completed: $final_output_file."
     fi
 }
-
-if [[ $(dotini machine --get "machine.aliases") == true ]]; then
-  alias mcn="machine"
-fi
 
 machine-export-service() {
   local vmname="$1"
