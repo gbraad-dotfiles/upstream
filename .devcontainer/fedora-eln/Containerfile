@@ -66,16 +66,6 @@ RUN dnf config-manager addrepo --from-repofile=https://pkgs.tailscale.com/stable
     && mkdir -p /var/run/tailscale /var/cache/tailscale /var/lib/tailscale \
     && systemctl enable tailscaled
 
-# install cloudflared (or use https://github.com/spotsnel/cloudflared-systemd/)
-RUN dnf install -y \
-        systemd \
-    && curl -fsSL https://github.com/cloudflare/cloudflared/releases/latest/download/cloudflared-linux-${ARCH}.rpm -o /tmp/cloudflared.rpm \
-    && dnf install -y \
-        /tmp/cloudflared.rpm \
-    && dnf clean all \
-    && rm -rf /var/cache/yum \
-    && rm -f /tmp/cloudflared.rpm
-
 # enable linger for the user (loginctl won't work without systemd running)
 RUN mkdir -p /var/lib/systemd/linger \
     && touch /var/lib/systemd/linger/${USER}
