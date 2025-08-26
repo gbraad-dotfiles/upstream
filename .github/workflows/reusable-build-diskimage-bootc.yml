@@ -41,6 +41,10 @@ jobs:
           config_repo: https://github.com/gbraad-dotfiles/shared-config.git
           config_file: containers/${{ inputs.container_name }}.ini
           use_output: true
+      - name: Set release tag
+        id: release
+        run: |
+          echo "tag=$(date +'%y%m%d')" >> $GITHUB_OUTPUT
 
   build:
     needs: shared-config
