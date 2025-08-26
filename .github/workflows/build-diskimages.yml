@@ -1,5 +1,6 @@
-name: build diskimage containers
-run-name: Building diskimage containers
+name: build bootc containers and diskimage
+run-name: Building bootc containers and diskimages
+
 on:
   push:
     branches:
@@ -8,219 +9,42 @@ on:
     - cron: "0 0 */2 * *"
   workflow_dispatch:
 
+
 jobs:
-  build-fedora:
+  build-diskimage-fedora-packer:
     uses: ./.github/workflows/reusable-build-diskimage-packer.yml
     with:
       target: fedora
 
-  build-debian:
+  build-diskimage-debian-packer:
     uses: ./.github/workflows/reusable-build-diskimage-packer.yml
     with:
       target: debian
 
-  build-ubuntu:
+  build-diskimage-ubuntu-packer:
     uses: ./.github/workflows/reusable-build-diskimage-packer.yml
     with:
       target: ubuntu
 
 
-  trigger-build-container-almalinux-bootc:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Start AlmaLinux (bootc) container build
-        uses: actions/github-script@v7
-        with:
-          script: |
-            await github.rest.actions.createWorkflowDispatch({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              workflow_id: 'build-container-almalinux-bootc.yml',
-              ref: context.ref,
-            });
-      - name: Wait a little
-        run: |
-          sleep 10        
+  build-container-almalinux-bootc:
+    uses: ./.github/workflows/build-container-almalinux-bootc.yml
 
-
-  trigger-build-container-centos-bootc:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Start CentOS (bootc) container build
-        uses: actions/github-script@v7
-        with:
-          script: |
-            await github.rest.actions.createWorkflowDispatch({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              workflow_id: 'build-container-centos-bootc.yml',
-              ref: context.ref,
-            });
-      - name: Wait a little
-        run: |
-          sleep 10        
-
+  build-container-centos-bootc:
+    uses: ./.github/workflows/build-container-centos-bootc.yml
             
-  trigger-build-container-fedora-bootc:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Start Fedora (bootc) container build
-        uses: actions/github-script@v7
-        with:
-          script: |
-            await github.rest.actions.createWorkflowDispatch({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              workflow_id: 'build-container-fedora-bootc.yml',
-              ref: context.ref,
-            });
-      - name: Wait a little
-        run: |
-          sleep 10        
+  build-container-fedora-bootc:
+    uses: ./.github/workflows/build-container-fedora-bootc.yml
 
 
-  trigger-build-diskimage-almalinux:
-    needs: wait-for-build-container-almalinux-bootc
-    runs-on: ubuntu-latest
-    steps:
-      - name: Start AlmaLinux bootc diskimage build
-        uses: actions/github-script@v7
-        with:
-          script: |
-            await github.rest.actions.createWorkflowDispatch({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              workflow_id: 'build-diskimage-almalinux-bootc.yml',
-              ref: context.ref,
-            });
+  build-diskimage-almalinux-bootc:
+    needs: build-container-almalinux-bootc
+    uses: ./.github/workflows/build-diskimage-almalinux-bootc.yml
 
-            
-  trigger-build-diskimage-centos:
-    needs: wait-for-build-container-centos-bootc
-    runs-on: ubuntu-latest
-    steps:
-      - name: Start CentOS bootc diskimage build
-        uses: actions/github-script@v7
-        with:
-          script: |
-            await github.rest.actions.createWorkflowDispatch({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              workflow_id: 'build-diskimage-centos-bootc.yml',
-              ref: context.ref,
-            });
+  build-diskimage-centos:
+    needs: build-container-centos-bootc
+    uses: ./.github/workflows/build-diskimage-centos-bootc.yml
 
-
-  trigger-build-diskimage-fedora:
-    needs: wait-for-build-container-fedora-bootc
-    runs-on: ubuntu-latest
-    steps:
-      - name: Start Fedora bootc diskimage build
-        uses: actions/github-script@v7
-        with:
-          script: |
-            await github.rest.actions.createWorkflowDispatch({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              workflow_id: 'build-diskimage-fedora-bootc.yml',
-              ref: context.ref,
-            });
-
-
-  wait-for-build-container-almalinux-bootc:
-    runs-on: ubuntu-latest
-    needs: trigger-build-container-almalinux-bootc
-    steps:
-      - name: Wait for build-container-fedora-amd64 to complete
-        uses: lewagon/wait-on-check-action@v1.3.4
-        with:
-          ref: ${{ github.ref }}
-          repo-token: ${{ secrets.GITHUB_TOKEN }} 
-          check-name: 'Build and push - AlmaLinux bootc / Build AMD64 / Build Bootable Container'
-          wait-interval: 10
-      - name: Wait for build-container-fedora-arm64 to complete
-        uses: lewagon/wait-on-check-action@v1.3.4
-        with:
-          ref: ${{ github.ref }}
-          repo-token: ${{ secrets.GITHUB_TOKEN }} 
-          check-name: 'Build and push - AlmaLinux bootc / Build ARM64 / Build Bootable Container'
-          wait-interval: 10
-
-
-  wait-for-build-container-centos-bootc:
-    runs-on: ubuntu-latest
-    needs: trigger-build-container-centos-bootc
-    steps:
-      - name: Wait for build-container-fedora-amd64 to complete
-        uses: lewagon/wait-on-check-action@v1.3.4
-        with:
-          ref: ${{ github.ref }}
-          repo-token: ${{ secrets.GITHUB_TOKEN }} 
-          check-name: 'Build and push - CentOS bootc / Build AMD64 / Build Bootable Container'
-          wait-interval: 10
-      - name: Wait for build-container-fedora-arm64 to complete
-        uses: lewagon/wait-on-check-action@v1.3.4
-        with:
-          ref: ${{ github.ref }}
-          repo-token: ${{ secrets.GITHUB_TOKEN }} 
-          check-name: 'Build and push - CentOS bootc / Build ARM64 / Build Bootable Container'
-          wait-interval: 10
-
-
-  wait-for-build-container-fedora-bootc:
-    runs-on: ubuntu-latest
-    needs: trigger-build-container-fedora-bootc
-    steps:
-      - name: Wait for build-container-fedora-amd64 to complete
-        uses: lewagon/wait-on-check-action@v1.3.4
-        with:
-          ref: ${{ github.ref }}
-          repo-token: ${{ secrets.GITHUB_TOKEN }} 
-          check-name: 'Build and push - Fedora bootc / Build AMD64 / Build Bootable Container'
-          wait-interval: 10
-      - name: Wait for build-container-fedora-arm64 to complete
-        uses: lewagon/wait-on-check-action@v1.3.4
-        with:
-          ref: ${{ github.ref }}
-          repo-token: ${{ secrets.GITHUB_TOKEN }} 
-          check-name: 'Build and push - Fedora bootc / Build ARM64 / Build Bootable Container'
-          wait-interval: 10
-
-
-  wait-for-build-diskimage-almalinux:
-    runs-on: ubuntu-latest
-    needs: trigger-build-diskimage-almalinux
-    steps:
-      - name: Wait for build-diskimage-almalinux to complete
-        uses: lewagon/wait-on-check-action@v1.3.4
-        with:
-          ref: ${{ github.ref }}
-          repo-token: ${{ secrets.GITHUB_TOKEN }}
-          check-name: 'build-diskimage-almalinux (ubuntu-latest)'
-          wait-interval: 10
-
-
-  wait-for-build-diskimage-centos:
-    runs-on: ubuntu-latest
-    needs: trigger-build-diskimage-centos
-    steps:
-      - name: Wait for build-diskimage-centos to complete
-        uses: lewagon/wait-on-check-action@v1.3.4
-        with:
-          ref: ${{ github.ref }}
-          repo-token: ${{ secrets.GITHUB_TOKEN }}
-          check-name: 'build-diskimage-centos (ubuntu-latest)'
-          wait-interval: 10
-
-
-  wait-for-build-diskimage-fedora:
-    runs-on: ubuntu-latest
-    needs: trigger-build-diskimage-fedora
-    steps:
-      - name: Wait for build-diskimage-fedora to complete
-        uses: lewagon/wait-on-check-action@v1.3.4
-        with:
-          ref: ${{ github.ref }}
-          repo-token: ${{ secrets.GITHUB_TOKEN }} 
-          check-name: 'build-diskimage-fedora (ubuntu-latest)'
-          wait-interval: 10
+  build-diskimage-fedora:
+    needs: build-container-fedora-bootc
+    uses: ./.github/workflows/build-diskimage-fedora-bootc.yml
