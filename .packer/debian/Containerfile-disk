@@ -1,0 +1,2 @@
+FROM scratch
+ADD ./output-debian/packer-debian /disk.qcow2

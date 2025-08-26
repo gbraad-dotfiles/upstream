@@ -3,3 +3,4 @@ config/.env
 *.pyo
 *.pyw
 .zcompdump*
+output-*
