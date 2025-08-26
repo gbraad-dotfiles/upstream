@@ -1,5 +1,5 @@
-name: build diskimage - centos-bootc
-run-name: building diskimage - centos-bootc
+name: build diskimage - fedora-bootc
+run-name: building diskimage - fedora-bootc
 on:
   workflow_dispatch:
 
@@ -11,7 +11,7 @@ env:
 
 jobs:
   build:
-    name: build-diskimage-centos
+    name: build-diskimage-fedora
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
@@ -41,7 +41,7 @@ jobs:
     - name: Create empty user configuration
       run: touch config.toml
 
-    - name: Build image - centos
+    - name: Build image - fedora
       id: build-image-dotfiles
       run: |
         mkdir -p ./output
@@ -62,17 +62,17 @@ jobs:
           --local \
           ${{ env.IMAGE_NAME }}
       env:
-        IMAGE_NAME: ghcr.io/gbraad-dotfiles/centos-bootc:latest
+        IMAGE_NAME: ghcr.io/gbraad-dotfiles/fedora-bootc:latest
 
     - name: Rename output file - dotfiles
-      run: sudo mv ./output/qcow2/disk.qcow2 ./output/qcow2/centos-disk.qcow2
+      run: sudo mv ./output/qcow2/disk.qcow2 ./output/qcow2/fedora-disk.qcow2
 
 #    - name: Upload Artifact - dotfiles
 #      uses: actions/upload-artifact@v4
 #      with:
 #        name: dotfiles-disk
 #        path: |
-#          ./output/qcow2/centos-disk.qcow2
+#          ./output/qcow2/fedora-disk.qcow2
 #        retention-days: 5
 
     - name: Set release tag
@@ -80,17 +80,17 @@ jobs:
       run: |
         echo "TAG=$(date +'%y%m%d')" >> $GITHUB_OUTPUT
 
-    - name: Wrap disk image in container
+    - name: Wrap bootc disk image in container
       run: |
-        podman build -t ghcr.io/gbraad-dotfiles/centos-disk:latest \
-          -f .devcontainer/centos/Containerfile-disk .
+        podman build -t ghcr.io/gbraad-dotfiles/fedora-bootc-disk:latest \
+          -f .bootc/fedora/Containerfile-disk .
 
     - name: Tag image container
       run: |
-        podman tag ghcr.io/gbraad-dotfiles/centos-disk:latest \
-          ghcr.io/gbraad-dotfiles/centos-disk:stream9
-        podman tag ghcr.io/gbraad-dotfiles/centos-disk:latest \
-          ghcr.io/gbraad-dotfiles/centos-disk:${{steps.get-tag.outputs.TAG}}
+        podman tag ghcr.io/gbraad-dotfiles/fedora-bootc-disk:latest \
+          ghcr.io/gbraad-dotfiles/fedora-bootc-disk:41
+        podman tag ghcr.io/gbraad-dotfiles/fedora-bootc-disk:latest \
+          ghcr.io/gbraad-dotfiles/fedora-bootc-disk:${{steps.get-tag.outputs.TAG}}
 
     - name: Login to registry
       run: |
@@ -99,6 +99,6 @@ jobs:
 
     - name: Push image container to registry
       run: |
-        podman push ghcr.io/gbraad-dotfiles/centos-disk:latest
-        podman push ghcr.io/gbraad-dotfiles/centos-disk:stream9
-        podman push ghcr.io/gbraad-dotfiles/centos-disk:${{steps.get-tag.outputs.TAG}}
+        podman push ghcr.io/gbraad-dotfiles/fedora-bootc-disk:latest
+        podman push ghcr.io/gbraad-dotfiles/fedora-bootc-disk:41
+        podman push ghcr.io/gbraad-dotfiles/fedora-bootc-disk:${{steps.get-tag.outputs.TAG}}

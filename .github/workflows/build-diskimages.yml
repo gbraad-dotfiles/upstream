@@ -9,42 +9,42 @@ jobs:
   trigger-build-diskimage-almalinux:
     runs-on: ubuntu-latest
     steps:
-      - name: Start AlmaLinux diskimage build
+      - name: Start AlmaLinux bootc diskimage build
         uses: actions/github-script@v7
         with:
           script: |
             await github.rest.actions.createWorkflowDispatch({
               owner: context.repo.owner,
               repo: context.repo.repo,
-              workflow_id: 'build-diskimage-almalinux.yml',
+              workflow_id: 'build-diskimage-almalinux-bootc.yml',
               ref: context.ref,
             });
 
   trigger-build-diskimage-centos:
     runs-on: ubuntu-latest
     steps:
-      - name: Start CentOS diskimage build
+      - name: Start CentOS bootc diskimage build
         uses: actions/github-script@v7
         with:
           script: |
             await github.rest.actions.createWorkflowDispatch({
               owner: context.repo.owner,
               repo: context.repo.repo,
-              workflow_id: 'build-diskimage-centos.yml',
+              workflow_id: 'build-diskimage-centos-bootc.yml',
               ref: context.ref,
             });
 
   trigger-build-diskimage-fedora:
     runs-on: ubuntu-latest
     steps:
-      - name: Start Fedora diskimage build
+      - name: Start Fedora bootc diskimage build
         uses: actions/github-script@v7
         with:
           script: |
             await github.rest.actions.createWorkflowDispatch({
               owner: context.repo.owner,
               repo: context.repo.repo,
-              workflow_id: 'build-diskimage-fedora.yml',
+              workflow_id: 'build-diskimage-fedora-bootc.yml',
               ref: context.ref,
             });
 
