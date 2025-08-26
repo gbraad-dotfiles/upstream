@@ -43,7 +43,7 @@ jobs:
       - name: Save container as OCI
         run: |
           podman save ghcr.io/${{ github.repository_owner }}/${{ inputs.container_name }}-bootc:${{ inputs.arch }} \
-            --format=oci-dir -o oci-bootc-${{ inputs.arch }}
+            --format=oci-dir -o ${{ inputs.container_name }}-oci-bootc-${{ inputs.arch }}
 
       - uses: actions/upload-artifact@v4
         with:
