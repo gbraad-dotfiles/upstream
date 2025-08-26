@@ -1,0 +1,16 @@
+name: Build and Push Fedora cloud diskimage
+
+on:
+  push:
+    branches:
+      - "main"
+  schedule:
+    - cron: "0 0 */2 * *"
+  workflow_dispatch:
+
+
+jobs:
+  build-diskimage-fedora-packer:
+    uses: ./.github/workflows/reusable-build-diskimage-packer.yml
+    with:
+      container_name: fedora-cloud

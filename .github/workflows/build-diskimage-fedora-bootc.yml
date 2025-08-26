@@ -1,0 +1,25 @@
+name: Build and Push Fedora bootc diskimage
+
+on:
+  push:
+    branches:
+      - "main"
+  schedule:
+    - cron: "0 0 */2 * *"
+  workflow_dispatch:
+
+
+jobs:
+  build-container-fedora-bootc:
+    name: Build and push - Fedora bootc
+    uses: ./.github/workflows/reusable-build-and-push-bootable-containers.yml
+    with:
+      container_name: "fedora"
+    secrets: inherit
+
+  build-diskimage-fedora:
+    needs: build-container-fedora-bootc
+    uses: ./.github/workflows/reusable-build-diskimage-bootc.yml
+    with:
+      container_name: "fedora"
+    secrets: inherit

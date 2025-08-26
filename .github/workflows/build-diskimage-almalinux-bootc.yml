@@ -1,0 +1,25 @@
+name: Build and Push AlmaLinux bootc diskimage
+
+on:
+  push:
+    branches:
+      - "main"
+  schedule:
+    - cron: "0 0 */2 * *"
+  workflow_dispatch:
+
+
+jobs:
+  build-container-almalinux-bootc:
+    name: Build and push - AlmaLinux bootc
+    uses: ./.github/workflows/reusable-build-and-push-bootable-containers.yml
+    with:
+      container_name: "almalinux"
+    secrets: inherit
+
+  build-diskimage-almalinux-bootc:
+    needs: build-container-almalinux-bootc
+    uses: ./.github/workflows/reusable-build-diskimage-bootc.yml
+    with:
+      container_name: "almalinux"
+    secrets: inherit

@@ -7,12 +7,12 @@ packer {
   }
 }
 
-source "qemu" "debian" {
+source "qemu" "ubuntu" {
   accelerator       = "kvm"
   disk_image        = true
-  iso_url           = "https://cloud.debian.org/images/cloud/bookworm/20250814-2204/debian-12-generic-amd64-20250814-2204.qcow2"
-  iso_checksum      = "sha256:1830fe2391308aa13008d196f2125570ad3fb03c5ca3585848b2f8361e877d7d"
-  output_directory  = "output-debian"
+  iso_url           = "https://cloud-images.ubuntu.com/releases/24.04/release/ubuntu-24.04-server-cloudimg-amd64.img"
+  iso_checksum      = "sha256:834af9cd766d1fd86eca156db7dff34c3713fbbc7f5507a3269be2a72d2d1820"
+  output_directory  = "output-ubuntu"
   format            = "qcow2"
   memory            = 2048
   disk_size         = "20480"
@@ -22,7 +22,7 @@ source "qemu" "debian" {
   net_device        = "virtio-net"
   headless          = true
 
-  cd_files = [".packer/debian/cloud-init/user-data", ".packer/debian/cloud-init/meta-data"]
+  cd_files = [".packer/ubuntu-cloud/cloud-init/user-data", ".packer/ubuntu-cloud/cloud-init/meta-data"]
   cd_label = "CIDATA"
 
   shutdown_command  = "shutdown -P now"
@@ -34,13 +34,13 @@ source "qemu" "debian" {
 }
 
 build {
-  name    = "debian"
-  sources = ["source.qemu.debian"]
+  name    = "ubuntu"
+  sources = ["source.qemu.ubuntu"]
 
   provisioner "shell-local" {
     script = ".packer/machinefile.sh"
     environment_vars = [
-      "TARGET=debian",
+      "TARGET=ubuntu-cloud",
       "SSH_HOST=${build.Host}",
       "SSH_PORT=${build.Port}"]
   }
@@ -59,7 +59,8 @@ build {
     inline = [
       "apt-get update",
       "apt-get install -y ifupdown",
-      "rm -f /etc/netplan/50-cloud-init.yaml"
+      "rm -f /etc/netplan/50-cloud-init.yaml",
+      "systemctl disable systemd-networkd"
     ]
   }
 

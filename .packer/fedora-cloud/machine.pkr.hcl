@@ -22,7 +22,7 @@ source "qemu" "fedora" {
   net_device        = "virtio-net"
   headless          = true
 
-  cd_files = [".packer/fedora/cloud-init/user-data", ".packer/fedora/cloud-init/meta-data"]
+  cd_files = [".packer/fedora-cloud/cloud-init/user-data", ".packer/fedora-cloud/cloud-init/meta-data"]
   cd_label = "CIDATA"
 
   shutdown_command  = "shutdown -P now"
@@ -40,7 +40,7 @@ build {
   provisioner "shell-local" {
     script = ".packer/machinefile.sh"
     environment_vars = [
-      "TARGET=fedora",
+      "TARGET=fedora-cloud",
       "SSH_HOST=${build.Host}",
       "SSH_PORT=${build.Port}"]
   }
