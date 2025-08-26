@@ -1,9 +1,9 @@
-name: Build OS Image
+name: reusable-build-diskimage-packer
 
 on:
   workflow_call:
     inputs:
-      target:
+      container_name:
         required: true
         type: string
 
@@ -44,18 +44,17 @@ jobs:
         with:
           as_user: runner
           run: |
-            packer init  .packer/${{ inputs.target }}/machine.pkr.hcl
-            packer build .packer/${{ inputs.target }}/machine.pkr.hcl
+            packer init  .packer/${{ inputs.container_name }}/machine.pkr.hcl
+            packer build .packer/${{ inputs.container_name }}/machine.pkr.hcl
 
       - name: Create and push disk image
         run: |
           TAG=$(date +'%y%m%d')
 
-          podman build -t ghcr.io/gbraad-dotfiles/${{ inputs.target }}-disk:latest -f .packer/${{ inputs.target }}/Containerfile-disk .
-          podman tag ghcr.io/gbraad-dotfiles/${{ inputs.target }}-disk:latest ghcr.io/gbraad-dotfiles/${{ inputs.target }}-disk:${TAG}
+          podman build -t ghcr.io/gbraad-dotfiles/${{ inputs.container_name }}-disk:latest -f .packer/${{ inputs.container_name }}/Containerfile-disk .
+          podman tag ghcr.io/gbraad-dotfiles/${{ inputs.container_name }}-disk:latest ghcr.io/gbraad-dotfiles/${{ inputs.container_name }}-disk:${TAG}
 
           podman login ghcr.io -u ${{ github.actor }} -p ${{ secrets.GITHUB_TOKEN }}
 
-          podman push ghcr.io/gbraad-dotfiles/${{ inputs.target }}-disk:latest
-          podman push ghcr.io/gbraad-dotfiles/${{ inputs.target }}-disk:${TAG}
-
+          podman push ghcr.io/gbraad-dotfiles/${{ inputs.container_name }}-disk:latest
+          podman push ghcr.io/gbraad-dotfiles/${{ inputs.container_name }}-disk:${TAG}

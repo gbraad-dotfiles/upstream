@@ -1,12 +1,12 @@
 name: reusable-build-and-push-containers
 
 on:
-    workflow_call:
-      inputs:
-        container_name:
-          description: "Name of the container (e.g., fedora, ubi9)"
-          required: true
-          type: string
+  workflow_call:
+    inputs:
+      container_name:
+        description: "Name of the container (e.g., fedora, ubi9)"
+        required: true
+        type: string
 
 jobs:
   shared-config:

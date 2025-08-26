@@ -1,18 +1,21 @@
-Packer + Machinefile test
-=========================
+Packer + Machinefile
+====================
 
-Use Packer and Machinefile to create a Debian VM from a containerfile
-
-
-## Build process
-
-See [GitHub workflows](./.github/workflows)
+Use Packer and Machinefile to create VM diskimages from a containerfile and cloud images.
 
 
 ## Usage
 
 ```sh
-$ machine dotdebian install
+$ machine dotfedora [download|create|start|shell]
+```
+
+```sh
+$ machine dotdebian [download|create|start|shell]
+```
+
+```sh
+$ machine dotubuntu [download|create|start|shell]
 ```
 
 > [!NOTE]

@@ -1,0 +1,132 @@
+name: reusable-build-diskimage-bootc
+
+on:
+  workflow_call:
+    inputs:
+      container_name:
+        description: "Name of the container (e.g., fedora, ubi9)"
+        required: true
+        type: string
+
+env:
+  DISK_TYPE: qcow2
+  ROOTFS: xfs
+  ARCH: amd64
+  BIB_IMAGE: quay.io/${{ inputs.container_name }}-bootc/bootc-image-builder:latest
+
+jobs:
+  shared-config:
+    name: Shared Configuration
+    runs-on: ubuntu-latest
+    outputs:
+      container_name: ${{ inputs.container_name }}
+      base_image: ${{ steps.config.outputs.base_image }}
+      base_version: ${{ steps.config.outputs.base_version }}
+      bootc_image: ${{ steps.config.outputs.bootc_image }}
+      release_tag: ${{ steps.release.outputs.tag }}
+      user: ${{ steps.userinfo.outputs.user_username }}
+      user_password: ${{ steps.userinfo.outputs.user_password }}
+    steps:
+      - name: Fetch user configuration and use output
+        id: userinfo
+        uses: gbraad-actions/shared-config@v2
+        with:
+          config_repo: https://github.com/${{ vars.OWNER }}/shared-config.git
+          config_file: user.ini
+          use_output: true
+      - name: Fetch container configuration and use output
+        id: config
+        uses: gbraad-actions/shared-config@v2
+        with:
+          config_repo: https://github.com/gbraad-dotfiles/shared-config.git
+          config_file: containers/${{ inputs.container_name }}.ini
+          use_output: true
+
+  build:
+    needs: shared-config
+    name: build-diskimage
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os:
+          - ubuntu-latest
+
+    steps:
+    - name: Remove unwanted stuff
+      uses: gbraad-actions/remove-unwanted@v1
+
+    - uses: actions/checkout@v4
+
+    - name: Workaround podman issues in GH actions
+      run: |
+        # see https://github.com/osbuild/bootc-image-builder/issues/446
+        sudo rm -rf /var/lib/containers/storage
+        sudo mkdir -p /etc/containers
+        echo -e "[storage]\ndriver = \"overlay\"\nrunroot = \"/run/containers/storage\"\ngraphroot = \"/var/lib/containers/storage\"" | sudo tee /etc/containers/storage.conf
+
+    - name: Workarounds for GH runner diskspace
+      run: |
+        sudo mkdir -p /mnt/var/lib/containers
+        sudo mount -o bind /mnt/var/lib/containers /var/lib/containers
+        sudo mkdir /var/lib/containers/storage
+
+    - name: Create empty user configuration
+      run: touch config.toml
+
+    - name: Build image
+      id: build-image-dotfiles
+      run: |
+        mkdir -p ./output
+        sudo podman pull ${{ env.IMAGE_NAME }}
+        sudo podman run \
+          --rm \
+          -it \
+          --privileged \
+          --pull=newer \
+          --security-opt label=type:unconfined_t \
+          -v ./config.toml:/config.toml:ro \
+          -v ./output:/output \
+          -v /var/lib/containers/storage:/var/lib/containers/storage \
+          ${{ env.BIB_IMAGE }} \
+          --target-arch ${{ env.ARCH }} \
+          --type ${{ env.DISK_TYPE }} \
+          --rootfs ${{ env.ROOTFS }} \
+          --local \
+          ${{ env.IMAGE_NAME }}
+      env:
+        IMAGE_NAME: ghcr.io/gbraad-dotfiles/${{ needs.shared-config.outputs.container_name }}-bootc:latest
+
+    - name: Rename output file - dotfiles
+      run: sudo mv ./output/qcow2/disk.qcow2 ./output/qcow2/${{ needs.shared-config.outputs.container_name }}-disk.qcow2
+
+#    - name: Upload Artifact - dotfiles
+#      uses: actions/upload-artifact@v4
+#      with:
+#        name: dotfiles-disk
+#        path: |
+#          ./output/qcow2/${{ needs.shared-config.outputs.container_name }}-disk.qcow2
+#        retention-days: 5
+
+    - name: Wrap bootc disk image in container
+      run: |
+        podman build -t ghcr.io/gbraad-dotfiles/${{ needs.shared-config.outputs.container_name }}-bootc-disk:latest \
+          -f .bootc/${{ needs.shared-config.outputs.container_name }}/Containerfile-disk .
+
+    - name: Tag image container
+      run: |
+        podman tag ghcr.io/gbraad-dotfiles/${{ needs.shared-config.outputs.container_name }}-bootc-disk:latest \
+          ghcr.io/gbraad-dotfiles/${{ needs.shared-config.outputs.container_name }}-bootc-disk:${{ needs.shared-config.outputs.base_version }}
+        podman tag ghcr.io/gbraad-dotfiles/${{ needs.shared-config.outputs.container_name }}-bootc-disk:latest \
+          ghcr.io/gbraad-dotfiles/${{ needs.shared-config.outputs.container_name }}-bootc-disk:${{ needs.shared-config.outputs.release_tag }}
+
+    - name: Login to registry
+      run: |
+        podman login ghcr.io -u ${{ github.actor }} \
+          -p ${{ secrets.GITHUB_TOKEN }}
+
+    - name: Push image container to registry
+      run: |
+        podman push ghcr.io/gbraad-dotfiles/${{ needs.shared-config.outputs.container_name }}-bootc-disk:latest
+        podman push ghcr.io/gbraad-dotfiles/${{ needs.shared-config.outputs.container_name }}-bootc-disk:${{ needs.shared-config.outputs.base_version }}
+        podman push ghcr.io/gbraad-dotfiles/${{ needs.shared-config.outputs.container_name }}-bootc-disk:${{ needs.shared-config.outputs.release_tag }}

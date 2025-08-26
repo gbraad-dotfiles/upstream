@@ -14,37 +14,59 @@ jobs:
   build-diskimage-fedora-packer:
     uses: ./.github/workflows/reusable-build-diskimage-packer.yml
     with:
-      target: fedora
+      container_name: fedora
 
   build-diskimage-debian-packer:
     uses: ./.github/workflows/reusable-build-diskimage-packer.yml
     with:
-      target: debian
+      container_name: debian
 
   build-diskimage-ubuntu-packer:
     uses: ./.github/workflows/reusable-build-diskimage-packer.yml
     with:
-      target: ubuntu
+      container_name: ubuntu
 
 
   build-container-almalinux-bootc:
-    uses: ./.github/workflows/build-container-almalinux-bootc.yml
-
-  build-container-centos-bootc:
-    uses: ./.github/workflows/build-container-centos-bootc.yml
-            
-  build-container-fedora-bootc:
-    uses: ./.github/workflows/build-container-fedora-bootc.yml
-
+    name: Build and push - AlmaLinux bootc
+    uses: ./.github/workflows/reusable-build-and-push-bootable-containers.yml
+    with:
+      container_name: "almalinux"
+    secrets: inherit
 
   build-diskimage-almalinux-bootc:
     needs: build-container-almalinux-bootc
-    uses: ./.github/workflows/build-diskimage-almalinux-bootc.yml
+    uses: ./.github/workflows/reusable-build-diskimage-bootc.yml
+    with:
+      container_name: "almalinux"
+    secrets: inherit
+
+
+  build-container-centos-bootc:
+    name: Build and push - CentOS bootc
+    uses: ./.github/workflows/reusable-build-and-push-bootable-containers.yml
+    with:
+      container_name: "centos"
+    secrets: inherit
 
   build-diskimage-centos:
     needs: build-container-centos-bootc
-    uses: ./.github/workflows/build-diskimage-centos-bootc.yml
+    uses: ./.github/workflows/reusable-build-diskimage-bootc.yml
+    with:
+      container_name: "centos"
+    secrets: inherit
+
+
+  build-container-fedora-bootc:
+    name: Build and push - Fedora bootc
+    uses: ./.github/workflows/reusable-build-and-push-bootable-containers.yml
+    with:
+      container_name: "fedora"
+    secrets: inherit
 
   build-diskimage-fedora:
     needs: build-container-fedora-bootc
-    uses: ./.github/workflows/build-diskimage-fedora-bootc.yml
+    uses: ./.github/workflows/reusable-build-diskimage-bootc.yml
+    with:
+      container_name: "fedora"
+    secrets: inherit
