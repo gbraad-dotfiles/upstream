@@ -12,7 +12,7 @@ env:
   DISK_TYPE: qcow2
   ROOTFS: xfs
   ARCH: amd64
-  BIB_IMAGE: quay.io/${{ inputs.container_name }}-bootc/bootc-image-builder:latest
+  BIB_IMAGE: quay.io/centos-bootc/bootc-image-builder:latest
 
 jobs:
   shared-config:
