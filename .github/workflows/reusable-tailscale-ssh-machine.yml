@@ -13,10 +13,6 @@ on:
         type: string
         default: "ubuntu-latest"
 
-defaults:
-  run:
-    shell: bash
-
 jobs:
   dotfiles-test:
     runs-on: ${{ inputs.runs-on }}
@@ -90,25 +86,32 @@ jobs:
           run: |
             machine ${{ inputs.prefix_name }} start
 
+      # zsh-action because of the machine command
       - name: Tailscale setup (machine)
-        run: |
-          sleep 1
-          until machine ${{ inputs.prefix_name }} exec tailscale up \
-            --auth-key ${TAILSCALE_AUTHKEY} \
-            --hostname ${{ inputs.prefix_name }}-${{ steps.runner_id.outputs.last3 }} \
-            --ssh --accept-dns=false \
-            --operator=gbraad \
-            --advertise-exit-node
-          do
-              sleep 0.1
-          done
-        env:
-          TAILSCALE_AUTHKEY: ${{ secrets.TAILSCALE_AUTHKEY_DEVENV }}
+        id: machine
+        uses: gbraad-actions/zsh-action@main
+        with:
+          as_user: runner
+          run: |
+            sleep 1
+            until machine ${{ inputs.prefix_name }} sudo tailscale up \
+              --auth-key ${{ secrets.TAILSCALE_AUTHKEY_DEVENV }} \
+              --hostname ${{ inputs.prefix_name }}-${{ steps.runner_id.outputs.last3 }} \
+              --ssh --accept-dns=false \
+              --operator=gbraad \
+              --advertise-exit-node
+            do
+                sleep 0.1
+            done
 
+            IP=`machine ${{ inputs.prefix_name }} exec tailscale ip -4`
+            echo "ip=${IP}" >> $GITHUB_OUTPUT
+
+
+      # using run otherwise issues with backticks occur
       - name: Hang around
         run: |
-          IP=`machine ${{ inputs.prefix_name }} exec tailscale ip -4`
-          echo "Use the following command to connect \`tailscale ssh gbraad@${IP}\` or \`rshell gbraad@${IP}\`"
+          echo "Use the following command to connect \`tailscale ssh gbraad@${{ steps.machine.outputs.ip }}\` or \`rhsell gbraad@${{ steps.machine.outputs.ip }}\`"
           IP=`tailscale ip -4`
           echo "Use the following command to debug from the host \`tailscale ssh runner@${IP}\` or \`rshell runner@${IP}\`"
           sleep 18000
@@ -124,7 +127,5 @@ jobs:
           sleep 1200
 
       - name: Hang around
-        # debug
-        if: ${{ always() }}
         run: |
           sleep infinity
