@@ -1,4 +1,4 @@
-name: Build and Push Alpine Container
+name: Build and Push Alpine container
 
 on:
   workflow_dispatch:

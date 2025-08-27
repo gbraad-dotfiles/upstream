@@ -1,4 +1,4 @@
-name: Build and Push AlmaLinux Container
+name: Build and Push AlmaLinux container
 
 on:
   workflow_dispatch:

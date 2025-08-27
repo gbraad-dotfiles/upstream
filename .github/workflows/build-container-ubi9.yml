@@ -1,4 +1,4 @@
-name: Build and Push UBI9 Container
+name: Build and Push UBI9 container
 
 on:
   workflow_dispatch:

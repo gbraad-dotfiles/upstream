@@ -1,5 +1,4 @@
-name: build container - fedora-eln
-run-name: Building container - Fedora ELN
+name: Build and Push Fedora ELN container
 
 on:
   workflow_dispatch:

@@ -1,4 +1,4 @@
-name: Build and Push CentOS Container
+name: Build and Push CentOS container
 
 on:
   workflow_dispatch:

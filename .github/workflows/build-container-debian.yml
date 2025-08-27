@@ -1,4 +1,4 @@
-name: Build and Push Debian Container
+name: Build and Push Debian container
 
 on:
   workflow_dispatch:
