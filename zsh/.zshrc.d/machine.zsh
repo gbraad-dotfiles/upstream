@@ -48,6 +48,9 @@ machine() {
       download "$(dotini machine --get disks.${PREFIX})" "${DISKFOLDER}/${PREFIX}.qcow2"
       ;;
     "system" | "create" | "init")
+      if [[ ! -f "${DISKFOLDER}/${PREFIX}.qcow2" ]]; then
+        machine ${PREFIX} download
+      fi
       macadam init --name "${SYSNAME}" "${START_ARGS[@]}" "${DISKFOLDER}/${PREFIX}.qcow2"
       ;;
     "restart" | "reboot")
@@ -55,6 +58,9 @@ machine() {
       machine ${PREFIX} start
       ;;
     "start")
+      if ! machine ${PREFIX} exists; then
+        machine ${PREFIX} create
+      fi
       macadam start "${SYSNAME}"
       ;;
     "stop")
@@ -102,6 +108,9 @@ machine() {
       ;;
     "from")
       # use $1 as prefix value for the image
+      if [[ ! -f "${DISKFOLDER}/$1.qcow2" ]]; then
+        machine $1 download
+      fi
       macadam init --name "${SYSNAME}" "${START_ARGS[@]}" "${DISKFOLDER}/$1.qcow2"
       ;;
     "tsconnect")
