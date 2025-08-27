@@ -1,0 +1,13 @@
+name: tailscale-ssh-machine-debian
+
+on:
+  workflow_dispatch:
+
+jobs:
+  dotfiles-test:
+    name: Tailscale SSH Machine - Debian
+    uses: ./.github/workflows/reusable-tailscale-ssh-machine.yml
+    with:
+      prefix_name: "dotdebian"
+      runs-on: "ubuntu-latest"
+    secrets: inherit

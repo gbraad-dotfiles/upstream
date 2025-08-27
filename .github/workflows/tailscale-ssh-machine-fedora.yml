@@ -1,0 +1,13 @@
+name: tailscale-ssh-machine-fedora
+
+on:
+  workflow_dispatch:
+
+jobs:
+  dotfiles-test:
+    name: Tailscale SSH Machine - Fedora
+    uses: ./.github/workflows/reusable-tailscale-ssh-machine.yml
+    with:
+      prefix_name: "dotfedora"
+      runs-on: "ubuntu-latest"
+    secrets: inherit
