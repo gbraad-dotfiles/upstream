@@ -5,9 +5,9 @@ on:
 
 jobs:
   dotfiles-test:
-    name: Tailscale SSH Machine - Debian
+    name: Tailscale SSH Machine - Debian cloud
     uses: ./.github/workflows/reusable-tailscale-ssh-machine.yml
     with:
-      prefix_name: "dotdebian"
+      prefix_name: "dotdebian-cloud"
       runs-on: "ubuntu-latest"
     secrets: inherit

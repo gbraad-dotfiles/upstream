@@ -5,9 +5,9 @@ on:
 
 jobs:
   dotfiles-test:
-    name: Tailscale SSH Machine - Fedora
+    name: Tailscale SSH Machine - Fedora cloud
     uses: ./.github/workflows/reusable-tailscale-ssh-machine.yml
     with:
-      prefix_name: "dotfedora"
+      prefix_name: "dotfedora-cloud"
       runs-on: "ubuntu-latest"
     secrets: inherit
