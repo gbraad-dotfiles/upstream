@@ -70,14 +70,27 @@ jobs:
           run: |
             apps macadam install
 
-      - name: Run machine command - start machine
-        id: machine
+      - name: Run machine command - create machine
         uses: gbraad-dotfiles/machine-action@main
         with:
           prefix: ${{ inputs.prefix_name }}
-          command: start
+          command: create
 
-      - name: Tailscale setup (devenv)
+      #- name: Run machine command - start machine
+      #  uses: gbraad-dotfiles/machine-action@main
+      #  with:
+      #    prefix: ${{ inputs.prefix_name }}
+      #    command: start
+
+      # unsure to run a new session; need to add `as_user` to the action itself?
+      - name: Run machine command - start machine
+        uses: gbraad-actions/zsh-action@main
+        with:
+          as_user: runner
+          run: |
+            machine ${{ inputs.prefix_name }} start
+
+      - name: Tailscale setup (machine)
         run: |
           sleep 1
           until machine ${{ inputs.prefix_name }} exec tailscale up \
