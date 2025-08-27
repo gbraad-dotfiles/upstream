@@ -111,5 +111,7 @@ jobs:
           sleep 1200
 
       - name: Hang around
+        # debug
+        if: ${{ always() }}
         run: |
           sleep infinity
