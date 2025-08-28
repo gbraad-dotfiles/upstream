@@ -1,4 +1,4 @@
-name: reusable-tailscale-ssh-devenv
+name: Callable - Run dotfiles using devenv
 
 on:
   workflow_dispatch:

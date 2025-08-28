@@ -1,4 +1,4 @@
-name: reusable-tailscale-ssh-machine
+name: Callable - Run dotfiles using machine
 
 on:
   workflow_dispatch:

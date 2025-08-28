@@ -1,4 +1,4 @@
-name: reusable-tailscale-ssh-dotscreen
+name: Callable - Run dotfiles for dotscreen
 
 on:
   workflow_dispatch:

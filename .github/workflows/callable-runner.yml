@@ -1,4 +1,4 @@
-name: reusable-tailscale-ssh-runner
+name: Callable - Run dotfiles on runner
 
 on:
   workflow_dispatch:
