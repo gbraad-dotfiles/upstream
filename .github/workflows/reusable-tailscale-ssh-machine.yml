@@ -88,7 +88,7 @@ jobs:
 
       # zsh-action because of the machine command
       - name: Tailscale setup (machine)
-        id: machine
+        id: tailscale-machine
         uses: gbraad-actions/zsh-action@main
         with:
           as_user: runner
@@ -111,7 +111,10 @@ jobs:
       # using run otherwise issues with backticks occur
       - name: Hang around
         run: |
-          echo "Use the following command to connect \`tailscale ssh gbraad@${{ steps.machine.outputs.ip }}\` or \`rhsell gbraad@${{ steps.machine.outputs.ip }}\`"
+          # get values from results file
+          IP=`grep '^ip=' ${{ steps.tailscale-machine.outputs.results }} | cut -d= -f2`
+          echo "Use the following command to connect \`tailscale ssh gbraad@${IP}\` or \`rshell gbraad@${IP}\`"
+
           IP=`tailscale ip -4`
           echo "Use the following command to debug from the host \`tailscale ssh runner@${IP}\` or \`rshell runner@${IP}\`"
           sleep 18000
