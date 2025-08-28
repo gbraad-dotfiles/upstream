@@ -150,6 +150,7 @@ machine() {
 
 if [[ $(dotini machine --get "machine.aliases") == true ]]; then
   alias m="machine"
+  alias ms="apps machines"
   alias mcn="machine"
 fi
 
