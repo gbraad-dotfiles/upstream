@@ -113,10 +113,10 @@ jobs:
         run: |
           # get values from results file
           IP=`grep '^ip=' ${{ steps.tailscale-machine.outputs.results }} | cut -d= -f2`
-          echo "Use the following command to connect \`tailscale ssh gbraad@${IP}\` or \`rshell gbraad@${IP}\`"
+          echo "Use the following command to connect \`tailscale ssh gbraad@${IP}\` or \`rscreen gbraad@${IP}\`"
 
           IP=`tailscale ip -4`
-          echo "Use the following command to debug from the host \`tailscale ssh runner@${IP}\` or \`rshell runner@${IP}\`"
+          echo "Use the following command to debug from the host \`tailscale ssh runner@${IP}\` or \`rscreen runner@${IP}\`"
           sleep 18000
 
       - name: Message user; 1 hour
