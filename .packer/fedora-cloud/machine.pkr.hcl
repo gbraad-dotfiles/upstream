@@ -41,6 +41,7 @@ build {
     script = ".packer/machinefile.sh"
     environment_vars = [
       "TARGET=fedora-cloud",
+      "USER_PASSWD=password",
       "SSH_HOST=${build.Host}",
       "SSH_PORT=${build.Port}"]
   }
