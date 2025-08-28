@@ -61,6 +61,13 @@ RUN curl -fsSL https://pkgs.tailscale.com/stable/ubuntu/noble.noarmor.gpg -o /us
 # already 'enabled' by default
 #   && systemctl enable tailscaled
 
+# restore cloudflared install
+RUN curl -fsSL https://github.com/cloudflare/cloudflared/releases/latest/download/cloudflared-linux-${ARCH}.deb -o /tmp/cloudflared.deb \
+    && apt install -y \
+        /tmp/cloudflared.deb \
+    && rm -f /tmp/cloudflared.deb \
+    && rm -rf /var/lib/apt/lists/*
+
 # enable linger for the user (loginctl won't work without systemd running)
 RUN mkdir -p /var/lib/systemd/linger \
     && touch /var/lib/systemd/linger/${USER}
