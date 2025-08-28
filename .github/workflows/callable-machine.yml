@@ -1,7 +1,7 @@
 name: reusable-tailscale-ssh-machine
 
 on:
-  workflow_call:
+  workflow_dispatch:
     inputs:
       prefix_name:
         description: "Name of the container to run with machine (e.g., dotfedora, dotdebian)"

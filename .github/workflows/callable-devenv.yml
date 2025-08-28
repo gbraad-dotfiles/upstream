@@ -1,7 +1,7 @@
 name: reusable-tailscale-ssh-devenv
 
 on:
-  workflow_call:
+  workflow_dispatch:
     inputs:
       prefix_name:
         description: "Name of the container to run with devenv (e.g., dotfedora, dotubi9)"
@@ -12,11 +12,11 @@ on:
         required: true
         type: string
         default: "ubuntu-latest"
-      arch:
-        description: "Target architecture (e.g., arm64, amd64)"
-        required: true
-        type: string
-        default: "amd64"
+      #arch:
+      #  description: "Target architecture (e.g., arm64, amd64)"
+      #  required: true
+      #  type: string
+      #  default: "amd64"
 
 defaults:
   run:
@@ -24,7 +24,8 @@ defaults:
 
 jobs:
   dotfiles-test:
-    runs-on: ${{ inputs.runs-on }}${{ inputs.arch == 'arm64' && '-arm' || '' }}
+    runs-on: ${{ inputs.runs-on }}
+    #runs-on: ${{ inputs.runs-on }}${{ inputs.arch == 'arm64' && '-arm' || '' }}
     
     steps:
 
@@ -47,7 +48,7 @@ jobs:
         with:
           authkey: ${{ secrets.TAILSCALE_AUTHKEY }}
           args: --ssh --accept-dns=false --operator=runner --advertise-exit-node
-          hostname: "dotfiles-${{ inputs.arch }}-${{ steps.runner_id.outputs.last3 }}"
+          hostname: "dotfiles-${{ steps.runner_id.outputs.last3 }}"
 
       - name: Create and share userdirs
         run: |
@@ -91,7 +92,7 @@ jobs:
           sleep 1
           until podman exec ${{ inputs.prefix_name }}sys tailscale up \
             --auth-key ${TAILSCALE_AUTHKEY} \
-            --hostname ${{ inputs.prefix_name }}-${{ inputs.arch }}-${{ steps.runner_id.outputs.last3 }} \
+            --hostname ${{ inputs.prefix_name }}-${{ steps.runner_id.outputs.last3 }} \
             --ssh --accept-dns=false \
             --operator=gbraad \
             --advertise-exit-node

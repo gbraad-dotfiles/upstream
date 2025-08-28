@@ -1,7 +1,7 @@
 name: reusable-tailscale-ssh-machine
 
 on:
-  workflow_call:
+  workflow_dispatch:
     inputs:
       runs-on:
         description: "Target runner"
