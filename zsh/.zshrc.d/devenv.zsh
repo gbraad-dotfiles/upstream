@@ -1,5 +1,15 @@
 #!/bin/zsh
 
+# Extract devenv prefixes from dotini devenv --list
+devenv_prefixes() {
+  local key="images"
+  local output prefixes
+  output=($(dotini devenv --list | grep "^${key}\." || true))
+  prefixes=(${output//${key}./})
+  prefixes=(${prefixes//=*/})
+  printf "%s\n" "${prefixes[@]}"
+}
+
 devenv() {
   local SUFFIX="sys"
   if [ $# -lt 2 ]; then

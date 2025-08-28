@@ -1,5 +1,15 @@
 #!/bin/zsh
 
+# Extract machine prefixes from dotini machine --list
+machine_prefixes() {
+  local key="disks"
+  local output prefixes
+  output=($(dotini machine --list | grep "^${key}\." || true))
+  prefixes=(${output//${key}./})
+  prefixes=(${prefixes//=*/})
+  printf "%s\n" "${prefixes[@]}"
+}
+
 machine() { 
  if [ $# -lt 2 ]; then
     macadam list | awk 'NR>1 {

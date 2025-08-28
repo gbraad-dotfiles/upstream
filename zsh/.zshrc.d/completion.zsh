@@ -90,10 +90,9 @@ _devenv() {
   local -a prefixes commands
   local images_output
 
-  images_output=(${(f)"$(dotini devenv --list | grep '^images\.')"})
-  prefixes=(${images_output//images./})
-  prefixes=(${prefixes//=*/})
-
+  # Use the reusable function to get the prefixes
+  prefixes=("${(@f)$(devenv_prefixes)}")
+  
   commands=(
     env run rootenv userenv userrun create sys system
     noinit dumb nosys init start stop kill rm remove exec execute
@@ -166,9 +165,8 @@ _machine() {
   local -a prefixes commands
   local disks_output
 
-  disks_output=(${(f)"$(dotini machine --list | grep '^disks\.')"})
-  prefixes=(${disks_output//disks./})
-  prefixes=(${prefixes//=*/})
+  # Use the reusable function to get the prefixes
+  prefixes=("${(@f)$(machine_prefixes)}")
 
   commands=(
     download system create start stop kill rm remove
