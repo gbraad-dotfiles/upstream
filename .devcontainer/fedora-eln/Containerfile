@@ -67,7 +67,8 @@ RUN dnf config-manager addrepo --from-repofile=https://pkgs.tailscale.com/stable
     && systemctl enable tailscaled
 
 # restore cloudflared install
-RUN curl -fsSL https://github.com/cloudflare/cloudflared/releases/latest/download/cloudflared-linux-${ARCH}.rpm -o /tmp/cloudflared.rpm \
+RUN ARCH=$( [ "$ARCH" = "amd64" ] && echo "x86_64" || { [ "$ARCH" = "arm64" ] && echo "aarch64" || echo "$ARCH"; } ) \
+    && curl -fsSL https://github.com/cloudflare/cloudflared/releases/latest/download/cloudflared-linux-${ARCH}.rpm -o /tmp/cloudflared.rpm \
     && dnf install -y \
         /tmp/cloudflared.rpm \
     && dnf clean all \
