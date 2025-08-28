@@ -1,4 +1,4 @@
-name: Callable - Run dotfiles on runner
+name: Callable - Run dotfiles on runner with action
 
 on:
   workflow_dispatch:

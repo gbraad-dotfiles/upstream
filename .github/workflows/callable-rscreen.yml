@@ -1,4 +1,4 @@
-name: Callable - Run dotfiles for dotscreen
+name: Callable - Run dotfiles on runner with rscreen
 
 on:
   workflow_dispatch:
