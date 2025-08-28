@@ -1,6 +1,9 @@
 #!/bin/zsh
 
-# Extract machine prefixes from dotini machine --list
+machine_commands=(
+  create start download stop remove shell status from
+)
+
 machine_prefixes() {
   local key="disks"
   local output prefixes
