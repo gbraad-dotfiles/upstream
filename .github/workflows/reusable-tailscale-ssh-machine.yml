@@ -69,8 +69,8 @@ jobs:
       - name: Run machine command - create machine
         uses: gbraad-dotfiles/machine-action@main
         with:
-          prefix: ${{ inputs.prefix_name }}
-          command: create
+          prefix: system
+          command: from ${{ inputs.prefix_name }}
 
       #- name: Run machine command - start machine
       #  uses: gbraad-dotfiles/machine-action@main
@@ -84,7 +84,7 @@ jobs:
         with:
           as_user: runner
           run: |
-            machine ${{ inputs.prefix_name }} start
+            machine system start
 
       # zsh-action because of the machine command
       - name: Tailscale setup (machine)
@@ -94,7 +94,7 @@ jobs:
           as_user: runner
           run: |
             sleep 1
-            until machine ${{ inputs.prefix_name }} sudo tailscale up \
+            until machine system sudo tailscale up \
               --auth-key ${{ secrets.TAILSCALE_AUTHKEY_DEVENV }} \
               --hostname ${{ inputs.prefix_name }}-${{ steps.runner_id.outputs.last3 }} \
               --ssh --accept-dns=false \
@@ -104,7 +104,7 @@ jobs:
                 sleep 0.1
             done
 
-            IP=`machine ${{ inputs.prefix_name }} exec tailscale ip -4`
+            IP=`machine system exec tailscale ip -4`
             echo "ip=${IP}" >> $GITHUB_OUTPUT
 
 
