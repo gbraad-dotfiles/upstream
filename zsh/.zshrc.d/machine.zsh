@@ -1,8 +1,17 @@
 #!/bin/zsh
 
 machine_commands=(
-  create start download stop remove shell status from
+  create start download stop remove shell status from switch
 )
+
+machine_deployments() {
+  local key="images"
+  local output targets
+  output=($(dotini machine --list | grep "^${key}\." || true))
+  targets=(${output//${key}./})
+  targets=(${targets//=*/})
+  printf "%s\n" "${targets[@]}"
+}
 
 machine_prefixes() {
   local key="disks"
