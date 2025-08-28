@@ -105,6 +105,7 @@ jobs:
             done
 
             IP=`machine ${{ inputs.prefix_name }} exec tailscale ip -4`
+            echo $IP
             echo "ip=${IP}" >> $GITHUB_OUTPUT
 
 
