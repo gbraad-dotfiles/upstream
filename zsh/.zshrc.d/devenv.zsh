@@ -1,6 +1,9 @@
 #!/bin/zsh
 
-# Extract devenv prefixes from dotini devenv --list
+devenv_commands=(
+  start stop remove shell from status
+)
+
 devenv_prefixes() {
   local key="images"
   local output prefixes
@@ -222,6 +225,7 @@ generate_image_name() {
 }
 
 if [[ $(dotini devenv --get "devenv.aliases") == true ]]; then
+  alias ds="apps devenvs"
   dev() { devenv "$@" }
 fi
 
