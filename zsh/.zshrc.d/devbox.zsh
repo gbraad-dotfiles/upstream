@@ -158,7 +158,7 @@ generate_devbox_name() {
 
   if [ -z "${IMAGE}" ]; then
     echo "Unknown distro: $PREFIX"
-    exit 1
+    return 1
   fi
 
   echo ${IMAGE}
