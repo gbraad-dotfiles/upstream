@@ -368,6 +368,7 @@ apps() {
 
 if [[ $(dotini apps --get "apps.aliases") == true ]]; then
     alias a="apps"
+    alias al="launcher"
 
     if [ -d "${_appsdefpath}" ]; then
        apps list aliases
