@@ -1,7 +1,7 @@
 #!/bin/zsh
 
 devenv_commands=(
-  start stop remove shell from status
+  status start stop remove from shell
 )
 
 devenv_prefixes() {

@@ -1,7 +1,7 @@
 #!/bin/zsh
 
 machine_commands=(
-  create start download stop remove shell from switch status
+  status start stop download create remove from switch shell
 )
 
 machine_deployments() {
