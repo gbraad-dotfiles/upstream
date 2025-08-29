@@ -1,5 +1,18 @@
 #!/bin/zsh
 
+devbox_commands=(
+  status create start stop remove from apps playbook tsconnect export shell
+)
+
+devbox_prefixes() {
+  local key="images"
+  local output prefixes
+  output=($(dotini devbox --list | grep "^${key}\." || true))
+  prefixes=(${output//${key}./})
+  prefixes=(${prefixes//=*/})
+  printf "%s\n" "${prefixes[@]}"
+}
+
 devbox() {
   if ! apps distrobox check; then
     apps distrobox install
@@ -123,6 +136,10 @@ devbox() {
       distrobox create --yes --init -i $(generate_devbox_name $1) ${BOXNAME}
       echo "$0 $PREFIX enter"
       ;;
+    "from-devenv")
+      distrobox create --yes --init -i $(generate_devenv_name $PREFIX) ${BOXNAME}
+      echo "$0 $PREFIX enter"
+      ;;
     "tsconnect")
       local HOSTNAME=$(hostname)
       local LAST3=${HOSTNAME: -3}
@@ -134,7 +151,6 @@ devbox() {
       ;;
   esac
 }
-
 
 generate_devbox_name() {
   local PREFIX=$1

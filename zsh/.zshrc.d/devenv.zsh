@@ -1,7 +1,7 @@
 #!/bin/zsh
 
 devenv_commands=(
-  status start stop remove from apps playbook shell
+  status create start stop remove from apps playbook tsconnect export shell
 )
 
 devenv_prefixes() {
@@ -73,7 +73,7 @@ devenv() {
     "env" | "run" | "rootenv")
       podman run --rm -it --hostname ${HOSTNAME}-${ENVNAME} --entrypoint='' \
         "${START_ARGS[@]}" "${START_PATHS[@]}" \
-        $(generate_image_name $PREFIX) ${START_SHELL} $@
+        $(generate_devenv_name $PREFIX) ${START_SHELL} $@
       ;;
     "userenv" | "userrun")
       devenv $PREFIX run -c "su - gbraad"
@@ -81,7 +81,7 @@ devenv() {
     "create")
       podman create --name=${SYSNAME} --hostname ${HOSTNAME}-${SYSNAME} \
         --systemd=always "${START_ARGS[@]}" "${START_PATHS[@]}" \
-        $(generate_image_name $PREFIX)
+        $(generate_devenv_name $PREFIX)
       ;;
     "sys" | "system")
       #for (( i=0; i < ${#START_PATHS[@]}; i++ )); do
@@ -89,20 +89,20 @@ devenv() {
       #done
       podman run -d --name=${SYSNAME} --hostname ${HOSTNAME}-${SYSNAME} \
         --systemd=always "${START_ARGS[@]}" "${START_PATHS[@]}" \
-        $(generate_image_name $PREFIX)
+        $(generate_devenv_name $PREFIX)
       # TODO: systemd only when able to check for running state
       ;;
     "noinit" | "dumb")
       # For environments that can not start systemd
       podman run -d --name=${SYSNAME} --hostname ${HOSTNAME}-${SYSNAME} \
         --entrypoint "" "${START_ARGS[@]}" "${START_PATHS[@]}" \
-        $(generate_image_name $PREFIX) $(dotini devenv --get devenv.noinit)
+        $(generate_devenv_name $PREFIX) $(dotini devenv --get devenv.noinit)
       ;;
     "nosys" | "init")
       # For environments that can not start systemd
       podman run -d --name=${SYSNAME} --hostname ${HOSTNAME}-${SYSNAME} \
         --init --entrypoint "" "${START_ARGS[@]}" "${START_PATHS[@]}" \
-        $(generate_image_name $PREFIX) $(dotini devenv --get devenv.noinit)
+        $(generate_devenv_name $PREFIX) $(dotini devenv --get devenv.noinit)
       ;;
     "start")
       if (! podman ps -a --format "{{.Names}}" | grep -q ${SYSNAME}); then
@@ -214,7 +214,7 @@ devenv() {
   esac
 }
 
-generate_image_name() {
+generate_devenv_name() {
   local PREFIX=$1
   local IMAGE=$(dotini devenv --get "images.${PREFIX}")
 

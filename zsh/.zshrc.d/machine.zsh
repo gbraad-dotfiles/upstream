@@ -1,7 +1,7 @@
 #!/bin/zsh
 
 machine_commands=(
-  status start stop download create remove from switch apps playbook shell
+  status create start stop download create remove from switch apps playbook tsconnect export shell
 )
 
 machine_deployments() {
