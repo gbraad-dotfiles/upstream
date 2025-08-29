@@ -103,6 +103,9 @@ machine() {
     "exec" | "user")
       macadam ssh "${SYSNAME}" "$@"
       ;;
+    "apps")
+      machine ${PREFIX} dot apps $*
+      ;;
     "dot")
       mdot ${SYSNAME} "dotfiles source; export DISPLAY=:0; $*"
       ;;
@@ -110,6 +113,7 @@ machine() {
       mshell ${SYSNAME}
       ;;
     "screen")
+      #machine ${PREFIX} dot screen
       mscreen ${SYSNAME}
       ;;
     "switch")
@@ -147,7 +151,7 @@ machine() {
     "service")
       macadam start ${SYSNAME} -q
       while pgrep -f "qemu-system.*${SYSNAME}" >/dev/null; do
-        echo "running"
+        #echo "running"
         sleep 5
       done
       ;;
