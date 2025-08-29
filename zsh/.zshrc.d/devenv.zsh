@@ -23,7 +23,9 @@ devenv() {
   local PREFIX=$1
   local COMMAND=$2
   local ENVNAME=${PREFIX}env
+
   local SYSNAME=${PREFIX}${SUFFIX}
+  [[ $PREFIX == "podmansh" ]] && SYSNAME="podmansh" 
   shift 2
 
   local START_SHELL=$(dotini devenv --get devenv.shell)
