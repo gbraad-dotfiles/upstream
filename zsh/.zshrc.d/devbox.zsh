@@ -169,5 +169,6 @@ generate_devbox_name() {
 }
 
 if [[ $(dotini devbox --get "devbox.aliases") == true ]]; then
+  alias bs="apps devboxes"
   box() { devbox "$@" }
 fi
