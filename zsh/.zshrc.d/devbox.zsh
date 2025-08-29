@@ -1,7 +1,7 @@
 #!/bin/zsh
 
 devbox_commands=(
-  status create start stop remove from apps playbook tsconnect export shell
+  status create start stop remove from from-devenv apps playbook tsconnect export shell
 )
 
 devbox_prefixes() {
@@ -137,7 +137,11 @@ devbox() {
       echo "$0 $PREFIX enter"
       ;;
     "from-devenv")
-      distrobox create --yes --init -i $(generate_devenv_name $PREFIX) ${BOXNAME}
+      distrobox create --yes --init -i $(generate_devenv_name $1) ${BOXNAME}
+      echo "$0 $PREFIX enter"
+      ;;
+    "from-image")
+      distrobox create --yes --init -i $1 ${BOXNAME}
       echo "$0 $PREFIX enter"
       ;;
     "tsconnect")

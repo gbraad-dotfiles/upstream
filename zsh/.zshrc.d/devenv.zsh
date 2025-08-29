@@ -187,9 +187,11 @@ devenv() {
       ;;
     "from")
       # use $1 as prefix value for the image
-      podman run -d --name=${SYSNAME} --hostname ${HOSTNAME}-${SYSNAME} \
-        --systemd=always "${START_ARGS[@]}" "${START_PATHS[@]}" \
-        $(generate_image_name $1)
+      podman run -d --name=${SYSNAME} --hostname ${HOSTNAME}-${SYSNAME} --systemd=always "${START_ARGS[@]}" "${START_PATHS[@]}" $(generate_image_name $1)
+      ;;
+    "from-image")
+      # use $1 as prefix value for the image
+      podman run -d --name=${SYSNAME} --hostname ${HOSTNAME}-${SYSNAME} --systemd=always "${START_ARGS[@]}" "${START_PATHS[@]}" $1
       ;;
     "tsconnect")
       local HOSTNAME=$(hostname)

@@ -139,6 +139,9 @@ machine() {
       fi
       macadam init --name "${SYSNAME}" "${START_ARGS[@]}" "${DISKFOLDER}/$1.qcow2"
       ;;
+    "from-image")
+      macadam init --name "${SYSNAME}" "${START_ARGS[@]}" "$1"
+      ;;
     "tsconnect")
       local HOSTNAME=$(hostname)
       local LAST3=${HOSTNAME: -3}
