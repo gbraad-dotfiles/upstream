@@ -1,7 +1,7 @@
 #!/bin/zsh
 
 devenv_commands=(
-  status start stop remove from shell
+  status start stop remove from apps playbook shell
 )
 
 devenv_prefixes() {

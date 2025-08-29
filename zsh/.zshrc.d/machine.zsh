@@ -1,7 +1,7 @@
 #!/bin/zsh
 
 machine_commands=(
-  status start stop download create remove from switch shell
+  status start stop download create remove from switch apps playbook shell
 )
 
 machine_deployments() {
