@@ -22,6 +22,14 @@ machine_prefixes() {
   printf "%s\n" "${prefixes[@]}"
 }
 
+machine_targets() {
+  machine | awk '{print $1 "\t" $2 }'
+}
+
+machine_running_targets() {
+  machine | awk '$2 == "Running" {print $1 "\t[" $2 "]"}'
+}
+
 machine() { 
  if [ $# -lt 2 ]; then
     macadam list | awk 'NR>1 {

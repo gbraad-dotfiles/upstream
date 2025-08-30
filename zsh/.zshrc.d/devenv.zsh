@@ -13,6 +13,14 @@ devenv_prefixes() {
   printf "%s\n" "${prefixes[@]}"
 }
 
+devenv_targets() {
+  devenv | awk -F' - ' '{sub(/sys$/, "", $1); print $1 "\t" $2}'
+}
+
+devenv_running_targets() {
+  devenv | awk -F' - ' '$2 ~ /^Up/ {sub(/sys$/, "", $1); print $1 "\t" $2}'
+}
+
 devenv() {
   local SUFFIX="sys"
   if [ $# -lt 2 ]; then

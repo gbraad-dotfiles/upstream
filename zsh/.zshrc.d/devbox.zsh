@@ -13,6 +13,14 @@ devbox_prefixes() {
   printf "%s\n" "${prefixes[@]}"
 }
 
+devbox_targets() {
+  devbox | awk -F' - ' '{sub(/box$/, "", $1); print $1 "\t" $2}'
+}
+
+devenv_running_targets() {
+  devbox | awk -F' - ' '$2 ~ /^Up/ {sub(/box$/, "", $1); print $1 "\t" $2}'
+}
+
 devbox() {
   if ! apps distrobox check; then
     apps distrobox install
