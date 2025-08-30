@@ -23,20 +23,32 @@ machine_prefixes() {
 }
 
 machine_targets() {
-  machine | awk '{print $1 "\t" $2 }'
+  machine_status | awk '{print $1 "\t" $2 }'
 }
 
 machine_running_targets() {
-  machine | awk '$2 == "Running" {print $1 "\t[" $2 "]"}'
+  machine_status | awk '$2 == "Running" {print $1 "\t[" $2 "]"}'
+}
+
+machine_status() {
+  macadam list | awk '
+  NR==1 {
+    # Find header indices
+    for(i=1;i<=NF;i++) {
+        if($i=="NAME") name_idx=i;
+    }
+    next
+  }
+  {
+    name = gensub(/^machine-/, "", "g", $(name_idx));
+    status = ($0 ~ /Currently running/) ? "Running" : "Stopped";
+    print name "\t" status;
+  }' | column -t
 }
 
 machine() { 
  if [ $# -lt 2 ]; then
-    macadam list | awk 'NR>1 {
-      name = gensub(/^machine-/, "", "g", $1);
-      status = ($7 == "running") ? "Running" : "Stopped";
-      printf "%s\t%s\n", name, status
-    }' | column -t
+    machine_status
     return 0
   fi
 
