@@ -1,7 +1,7 @@
 #!/bin/zsh
 
 machine_commands=(
-  status create start stop download create remove from switch apps playbook tsconnect export shell
+  status create start stop download create remove from switch apps playbook tsconnect export copy-id shell
 )
 
 machine_deployments() {
@@ -116,6 +116,9 @@ machine() {
       ;;
     "dot")
       mdot ${SYSNAME} "dotfiles source; export DISPLAY=:0; $*"
+      ;;
+    "copyid" | "copy-id")
+      mcopyid ${SYSNAME}
       ;;
     "shell")
       mshell ${SYSNAME}
