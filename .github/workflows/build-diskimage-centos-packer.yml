@@ -1,0 +1,16 @@
+name: Build and Push CentOS cloud diskimage
+
+on:
+  push:
+    branches:
+      - "main"
+  schedule:
+    - cron: "0 0 */2 * *"
+  workflow_dispatch:
+
+
+jobs:
+  build-diskimage-centos-packer:
+    uses: ./.github/workflows/reusable-build-diskimage-packer.yml
+    with:
+      container_name: centos-cloud
