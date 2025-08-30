@@ -42,6 +42,25 @@ fi
   ssh ${SSH_OPTS[@]} ${USERHOST} ${COMMAND_TO_SEND}
 }
 
+rcopyid() {
+  local ADDRESS=$1
+
+  # Parse address and port
+  local USERHOST PORT
+  if [[ "$ADDRESS" == *:* ]]; then
+    USERHOST="${ADDRESS%%:*}"
+    PORT="${ADDRESS##*:}"
+  else
+    USERHOST="$ADDRESS"
+    PORT=""
+  fi
+  
+  local -a SSH_OPTS
+  [[ -n "$PORT" ]] && SSH_OPTS+=(-p "$PORT")
+
+  ssh-copy-id ${SSH_OPTS[@]} ${USERHOST}
+}
+
 rshell() {
   if [ $# -lt 1 ]; then
     echo "Usage: $0 <user@host>"
@@ -81,6 +100,28 @@ mdot() {
     fi
 
     rdot ${user}@localhost:${port} $@
+}
+
+mcopyid() {
+    local sysname="$1"
+    local config_path="$HOME/.config/containers/macadam/machine/qemu/${sysname}.json"
+
+    if [[ ! -f "$config_path" ]]; then
+        echo "Config file not found: $config_path"
+        return 1
+    fi
+
+    # Extract SSH Port and RemoteUsername from JSON
+    local port user
+    port=$(jq -r '.SSH.Port' "$config_path")
+    user=$(jq -r '.SSH.RemoteUsername' "$config_path")
+
+    if [[ "$port" == "null" || "$user" == "null" ]]; then
+        echo "Could not extract SSH credentials from $config_path"
+        return 1
+    fi
+
+    rcopyid ${user}@localhost:${port}
 }
 
 mshell() {
