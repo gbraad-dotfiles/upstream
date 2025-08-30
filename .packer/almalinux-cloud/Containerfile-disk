@@ -1,0 +1,2 @@
+FROM scratch
+ADD ./output-almalinux/packer-almalinux /disk.qcow2
