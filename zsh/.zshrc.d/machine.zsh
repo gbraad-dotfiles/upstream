@@ -151,7 +151,6 @@ machine() {
       macadam init --name "${SYSNAME}" "${START_ARGS[@]}" "$1"
       ;;
     "tsconnect")
-      local HOSTNAME=$(hostname)
       local LAST3=${HOSTNAME: -3}
       secrets var tailscale_authkey
       machine ${PREFIX} sudo tailscale up --auth-key "${TAILSCALE_AUTHKEY}" --hostname ${SYSNAME}-${LAST3} --operator ${IMAGE_USER} --ssh
