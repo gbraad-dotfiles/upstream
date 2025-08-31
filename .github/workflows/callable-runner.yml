@@ -25,8 +25,11 @@ jobs:
       - name: Allow unprivileged userns (workaround)
         uses: gbraad-actions/warpbuild-unprivileged-userns@main
 
-      #- name: Remove unwanted stuff
-      #  uses: gbraad-actions/remove-unwanted@v1
+      - name: Remove unwanted stuff
+        uses: gbraad-actions/remove-unwanted@v1
+
+      - name: Change containers storage
+        uses: gbraad-actions/change-containers-storage@v1
 
       - name: Get last 3 chars of hostname
         id: runner_id
