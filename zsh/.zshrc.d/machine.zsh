@@ -75,12 +75,19 @@ machine() {
     mkdir -p "${DISKFOLDER}"
   fi
 
-  local START_ARGS=(
+  
+  local START_ARGS=()
+  local INIT_ARGS=(
     "--cpus=$(dotini machine --get machine.vcpus)"
     "--memory=$(dotini machine --get machine.memory)"
     "--username=${IMAGE_USER}"
     "--ssh-identity-path=${IDENTITYPATH}"
   )
+  if [[ "$(dotini machine --get machine.debug)" == "true" ]]; then
+    local debug="--log-level=debug"
+    START_ARGS+=($debug)
+    INIT_ARGS+=($debug)
+  fi
 
   case "$COMMAND" in
     "exists")
@@ -93,7 +100,7 @@ machine() {
       if [[ ! -f "${DISKFOLDER}/${PREFIX}.qcow2" ]]; then
         machine ${PREFIX} download
       fi
-      macadam init --name "${SYSNAME}" "${START_ARGS[@]}" "${DISKFOLDER}/${PREFIX}.qcow2"
+      macadam init --name "${SYSNAME}" ${INIT_ARGS[@]} "${DISKFOLDER}/${PREFIX}.qcow2"
       ;;
     "restart" | "reboot")
       machine ${PREFIX} stop
@@ -103,7 +110,7 @@ machine() {
       if ! machine ${PREFIX} exists; then
         machine ${PREFIX} create
       fi
-      macadam start "${SYSNAME}"
+      macadam start ${START_ARGS[@]} "${SYSNAME}"
       ;;
     "stop")
       macadam stop "${SYSNAME}"
@@ -160,10 +167,10 @@ machine() {
       if [[ ! -f "${DISKFOLDER}/$1.qcow2" ]]; then
         machine $1 download
       fi
-      macadam init --name "${SYSNAME}" "${START_ARGS[@]}" "${DISKFOLDER}/$1.qcow2"
+      macadam init --name "${SYSNAME}" "${INIT_ARGS[@]}" "${DISKFOLDER}/$1.qcow2"
       ;;
     "from-image")
-      macadam init --name "${SYSNAME}" "${START_ARGS[@]}" "$1"
+      macadam init --name "${SYSNAME}" "${INIT_ARGS[@]}" "$1"
       ;;
     "tsconnect")
       local LAST3=${HOSTNAME: -3}
