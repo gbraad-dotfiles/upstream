@@ -1,0 +1,24 @@
+#cloud-config
+system_info:
+  default_user:
+    name: ""
+
+chpasswd:
+  list: |
+    root:password
+  expire: false
+
+ssh_pwauth: true
+
+network:
+  version: 2
+  ethernets:
+    "*":
+      dhcp4: true
+
+runcmd:
+  - echo "PermitRootLogin yes" > /etc/ssh/sshd_config.d/00-packer.conf
+  - echo "PasswordAuthentication yes" >> /etc/ssh/sshd_config.d/00-packer.conf
+  - systemctl restart sshd
+  - userdel -r alpine || true
+  - reboot

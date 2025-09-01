@@ -1,0 +1,2 @@
+FROM scratch
+ADD ./output-alpine/packer-alpine /disk.qcow2
