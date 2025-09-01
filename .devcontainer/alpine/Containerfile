@@ -4,6 +4,7 @@ ARG BASE_VERSION="3.21"
 FROM ${BASE_IMAGE}:${BASE_VERSION}
 
 ARG USER="gbraad"
+ARG USER_PASSWD
 ARG HOMEBASE="/home"
 ARG USERHOME="${HOMEBASE}/${USER}"
 ARG ROOTHOME="/root"
@@ -33,7 +34,10 @@ RUN apk add --update --no-cache \
 
 # Add user with the expected ID (automated setup does not work atm)
 RUN echo '%wheel ALL=(ALL) NOPASSWD: ALL' > /etc/sudoers.d/wheel \
-    && adduser -u 1000 -G wheel -h ${USERHOME} -s /bin/zsh -D ${USER}
+    && adduser -u 1000 -G wheel -h ${USERHOME} -s /bin/zsh -D ${USER} \
+    && if [ -n "${USER_PASSWD}" ] ; then \
+        echo "${USER}:${USER_PASSWD}" | sudo chpasswd && echo "Password set to: ${USER_PASSWD}"; \
+    fi
 
 USER ${USER}
 
