@@ -93,6 +93,9 @@ machine() {
     "exists")
       return $(macadam list | grep -q -E "${SYSNAME} ")
       ;;
+    "status")
+      machine_targets | awk -v prefix="$PREFIX" '$1 == prefix {print $2}'
+      ;;
     "download")
       download "$(dotini machine --get disks.${PREFIX})" "${DISKFOLDER}/${PREFIX}.qcow2"
       ;;

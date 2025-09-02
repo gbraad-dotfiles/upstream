@@ -78,6 +78,9 @@ devenv() {
     "exists")
       return $(podman ps -a --format "{{.Names}}" | grep -q ${SYSNAME})
       ;;
+    "status")
+      devenv_targets | awk -v prefix="$PREFIX" '$1 == prefix {print $2}'
+      ;;
     "env" | "run" | "rootenv")
       podman run --rm -it --hostname ${HOSTNAME}-${ENVNAME} --entrypoint='' \
         "${START_ARGS[@]}" "${START_PATHS[@]}" \
