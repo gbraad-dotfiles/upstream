@@ -159,7 +159,7 @@ devenv() {
     "usercmd")
       devenv ${PREFIX} exec su ${IMAGE_USER} -l -c $*
       ;;
-    "sysctl" | "systemctl" | "systemd")
+    "systemctl" | "systemd")
       if (podman ps --filter "name=${SYSNAME}" --filter "status=stopped" | grep -q ${SYSNAME}); then
         echo "${SYSNAME} not running"
         return

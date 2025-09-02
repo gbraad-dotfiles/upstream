@@ -133,6 +133,9 @@ machine() {
     "exec" | "user")
       macadam ssh "${SYSNAME}" "$@"
       ;;
+    "systemctl" | "systemd")
+      machine ${PREFIX} exec sudo systemctl $@
+      ;;
     "apps")
       machine ${PREFIX} dot apps $*
       ;;
