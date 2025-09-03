@@ -80,6 +80,7 @@ machine() {
   local INIT_ARGS=(
     "--cpus=$(dotini machine --get machine.vcpus)"
     "--memory=$(dotini machine --get machine.memory)"
+    "--disk-size=$(dotini machine --get machine.disksize)"
     "--username=${IMAGE_USER}"
     "--ssh-identity-path=${IDENTITYPATH}"
   )
