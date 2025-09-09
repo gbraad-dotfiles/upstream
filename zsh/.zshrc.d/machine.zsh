@@ -271,8 +271,13 @@ machine() {
       [[ -f $config_path ]] || { print -u2 "Config file not found: $config_path"; return 1; }
       local imagepath=$(jq -r '.ImagePath.Path' $config_path)
 
-      cp $imagepath ${DISKFOLDER}/$1
-      echo "Copied to ${DISKFOLDER}/$1"
+      if [[ "$1" = /* || "$1" = ./* || "$1" = ../* || "$1" = ~* ]]; then
+        cp "$imagepath" "$1"
+        echo "Copied to $1"
+      else
+        cp "$imagepath" "${DISKFOLDER}/$1"
+        echo "Copied to ${DISKFOLDER}/$1"
+      fi
       ;;
     "tsconnect")
       local LAST3=${HOSTNAME: -3}
