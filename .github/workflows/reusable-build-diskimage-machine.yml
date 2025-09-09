@@ -1,0 +1,65 @@
+name: reusable-build-diskimage-machine
+
+on:
+  workflow_call:
+    inputs:
+      container_name:
+        required: true
+        type: string
+
+jobs:
+  machine-machinefile:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out repository code
+        uses: actions/checkout@v4
+
+      - name: Dotfiles (install from action)
+        uses: gbraad-dotfiles/install-action@main
+        with:
+          upstream: true
+
+      - name: Install required virtualization software
+        continue-on-error: true
+        uses: gbraad-actions/setup-virtualization@v2
+
+      - name: Install containers tools (optional)
+        continue-on-error: true
+        uses: gbraad-actions/setup-container-tools@v1
+
+      - name: Install dependencies
+        uses: gbraad-actions/zsh-action@main
+        with:
+          as_user: runner
+          run: |
+            apps macadam install
+            apps machinefile install
+
+      # as_user starts a new process/session; ensures this runs accelerated
+      - name: Run machine build
+        uses: gbraad-actions/zsh-action@main
+        with:
+          as_user: runner
+          run: |
+            machine dotfedora build ./.machine/fedora-cloud/Machinefile from fedora-cloud
+
+      - name: Export disk image
+        uses: gbraad-actions/zsh-action@main
+        with:
+          as_user: runner
+          run: |
+            mkdir -p ./output-fedora/
+            machine dotfedora export ./output-fedora/dotfedora.qcow2
+
+      - name: Create and push disk image
+        run: |
+          TAG=$(date +'%y%m%d')
+
+          podman build -t ghcr.io/gbraad-dotfiles/${{ inputs.container_name }}-disk:latest -f .machine/${{ inputs.container_name }}/Containerfile-disk .
+          podman tag ghcr.io/gbraad-dotfiles/${{ inputs.container_name }}-disk:latest ghcr.io/gbraad-dotfiles/${{ inputs.container_name }}-disk:${TAG}
+
+          podman login ghcr.io -u ${{ github.actor }} -p ${{ secrets.GITHUB_TOKEN }}
+
+          podman push ghcr.io/gbraad-dotfiles/${{ inputs.container_name }}-disk:latest
+          podman push ghcr.io/gbraad-dotfiles/${{ inputs.container_name }}-disk:${TAG}

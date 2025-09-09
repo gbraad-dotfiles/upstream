@@ -10,7 +10,7 @@ on:
 
 
 jobs:
-  build-diskimage-fedora-packer:
-    uses: ./.github/workflows/reusable-build-diskimage-packer.yml
+  build-diskimage-fedora-machine:
+    uses: ./.github/workflows/reusable-build-diskimage-machine.yml
     with:
       container_name: fedora-cloud

@@ -1,0 +1,2 @@
+FROM scratch
+ADD ./output-fedora/dotfedora.qcow2 /disk.qcow2
