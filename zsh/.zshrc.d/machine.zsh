@@ -233,6 +233,12 @@ machine() {
       macadam init --name "${SYSNAME}" "${INIT_ARGS[@]}" "$1"
       ;;
     "build")
+      local subcommand=$2
+      if [ "${subcommand}" = "from" ]; then
+        machine ${PREFIX} from $3
+        machine ${PREFIX} start
+      fi
+
       machine_build "${SYSNAME}" $@ # <filename>|<args>
       ;;
     "tsconnect")
