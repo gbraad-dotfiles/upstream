@@ -36,15 +36,25 @@ machine_credentials() {
 }
 
 machine_build() {
-  local sysnname=$1
+  local sysname=$1
   local filename=$2
 
   local mport muser midentity
   local userpasswd
   userpasswd="$(dotini machine --get machine.userpasswd)"
+  rootpasswd="$(dotini machine --get machine.rootpasswd)"
   machine_credentials "${sysname}" mport muser midentity
 
-  machinefile --host localhost --port ${mport} --user ${muser} --key ${midentity} --arg=USER_PASSWD=${userpasswd} ${filename} .
+  if [[ -f "${filename}-pre" ]]; then
+    machinefile --host localhost --port ${mport} --user ${muser} --key ${midentity} --arg=ROOT_PASSWD=${rootpasswd} "${filename}-pre" .
+  fi
+
+  machinefile --host localhost --port ${mport} --user root --password ${rootpasswd} --arg=USER_PASSWD=${userpasswd} ${filename} .
+
+  if [[ -f "${filename}-post" ]]; then
+    machinefile --host localhost --port ${mport} --user ${muser} --key ${midentity} --arg=USER_PASSWD=${userpasswd} "${filename}-post" .
+  fi
+
 }
 
 machine_deployments() {
