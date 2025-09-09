@@ -223,6 +223,11 @@ machine() {
       remote_playbook macadam ${SYSNAME} $@ # <filename> <...> 
       ;;
     "from")
+      if machine ${PREFIX} exists; then
+        echo "Machine ${PREFIX} already exists"
+        return 0
+      fi
+
       # use $1 as prefix value for the image
       if [[ ! -f "${DISKFOLDER}/$1.qcow2" ]]; then
         machine $1 download
@@ -230,12 +235,21 @@ machine() {
       macadam init --name "${SYSNAME}" "${INIT_ARGS[@]}" "${DISKFOLDER}/$1.qcow2"
       ;;
     "from-image")
+      if machine ${PREFIX} exists; then
+        echo "Machine ${PREFIX} already exists"
+        return 0
+      fi
+
       macadam init --name "${SYSNAME}" "${INIT_ARGS[@]}" "$1"
       ;;
     "build")
       local subcommand=$2
       if [ "${subcommand}" = "from" ]; then
         machine ${PREFIX} from $3
+      fi
+
+      local vmstate=$(machine ${PREFIX} status)
+      if [ "${vmstate}" = "Stopped" ]; then
         machine ${PREFIX} start
       fi
 
