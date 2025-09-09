@@ -225,7 +225,7 @@ machine() {
     "from")
       if machine ${PREFIX} exists; then
         echo "Machine ${PREFIX} already exists"
-        return 0
+        return 1
       fi
 
       # use $1 as prefix value for the image
@@ -237,7 +237,7 @@ machine() {
     "from-image")
       if machine ${PREFIX} exists; then
         echo "Machine ${PREFIX} already exists"
-        return 0
+        return 1
       fi
 
       macadam init --name "${SYSNAME}" "${INIT_ARGS[@]}" "$1"
@@ -245,7 +245,7 @@ machine() {
     "build")
       local subcommand=$2
       if [ "${subcommand}" = "from" ]; then
-        machine ${PREFIX} from $3
+        machine ${PREFIX} from $3 || { echo "Machine build failed"; return 1; }
       fi
 
       local vmstate=$(machine ${PREFIX} status)
@@ -253,7 +253,7 @@ machine() {
         machine ${PREFIX} start
       fi
 
-      machine_build "${SYSNAME}" $@ # <filename>|<args>
+      machine_build "${SYSNAME}" $@ || { echo "Machine build failed"; return 1; }
       ;;
     "tsconnect")
       local LAST3=${HOSTNAME: -3}
