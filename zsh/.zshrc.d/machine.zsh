@@ -210,6 +210,15 @@ machine() {
     "from-image")
       macadam init --name "${SYSNAME}" "${INIT_ARGS[@]}" "$1"
       ;;
+    "build")
+      local mport muser midentity
+      local userpasswd
+      userpasswd="$(dotini machine --get machine.userpasswd)"
+      machine_credentials "${SYSNAME}" mport muser midentity
+      # test if machine exists
+      # test if file exists
+      machinefile --host localhost --port ${mport} --user ${muser} --key ${midentity} --arg=USER_PASSWD=${userpasswd} $1 .
+      ;;
     "tsconnect")
       local LAST3=${HOSTNAME: -3}
       secrets var tailscale_authkey
