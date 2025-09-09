@@ -1,7 +1,7 @@
 #!/bin/zsh
 
 machine_commands=(
-  status create start stop download create remove from switch apps playbook tsconnect export copy-id shell
+  status create start stop download create remove from switch apps playbook tsconnect export service-install copy-id shell
 )
 
 machine_credentials() {
@@ -254,14 +254,33 @@ machine() {
       fi
 
       machine_build "${SYSNAME}" $@ || { echo "Machine build failed"; return 1; }
+      echo "Machine build succeeded"
+      ;;
+    "export")
+      if ! machine ${PREFIX} exists; then
+        echo "Machine ${PREFIX} does not exist"
+        return 1
+      fi
+
+      local vmstate=$(machine ${PREFIX} status)
+      if [ "${vmstate}" = "Running" ]; then
+        machine ${PREFIX} stop
+      fi
+
+      local config_path="$HOME/.config/containers/macadam/machine/qemu/${SYSNAME}.json"
+      [[ -f $config_path ]] || { print -u2 "Config file not found: $config_path"; return 1; }
+      local imagepath=$(jq -r '.ImagePath.Path' $config_path)
+
+      cp $imagepath ${DISKFOLDER}/$1
+      echo "Copied to ${DISKFOLDER}/$1"
       ;;
     "tsconnect")
       local LAST3=${HOSTNAME: -3}
       secrets var tailscale_authkey
       machine ${PREFIX} sudo tailscale up --auth-key "${TAILSCALE_AUTHKEY}" --hostname ${SYSNAME}-${LAST3} --operator ${IMAGE_USER} --ssh
       ;;
-    "export")
-      machine-export-service ${PREFIX}
+    "service-install")
+      machine-service-install ${PREFIX}
       ;;
     "service")
       macadam start ${SYSNAME} -q
@@ -449,7 +468,7 @@ download() {
     fi
 }
 
-machine-export-service() {
+machine-service-install() {
   local vmname="$1"
   if [[ -z "$vmname" ]]; then
     echo "Usage: machine-export-service <vmname>"
