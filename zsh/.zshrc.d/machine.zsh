@@ -35,6 +35,18 @@ machine_credentials() {
   printf -v "$ident_var" '%s' "$parts[3]"
 }
 
+machine_build() {
+  local sysnname=$1
+  local filename=$2
+
+  local mport muser midentity
+  local userpasswd
+  userpasswd="$(dotini machine --get machine.userpasswd)"
+  machine_credentials "${sysname}" mport muser midentity
+
+  machinefile --host localhost --port ${mport} --user ${muser} --key ${midentity} --arg=USER_PASSWD=${userpasswd} ${filename} .
+}
+
 machine_deployments() {
   local key="images"
   local output targets
@@ -211,13 +223,7 @@ machine() {
       macadam init --name "${SYSNAME}" "${INIT_ARGS[@]}" "$1"
       ;;
     "build")
-      local mport muser midentity
-      local userpasswd
-      userpasswd="$(dotini machine --get machine.userpasswd)"
-      machine_credentials "${SYSNAME}" mport muser midentity
-      # test if machine exists
-      # test if file exists
-      machinefile --host localhost --port ${mport} --user ${muser} --key ${midentity} --arg=USER_PASSWD=${userpasswd} $1 .
+      machine_build "${SYSNAME}" $@ # <filename>|<args>
       ;;
     "tsconnect")
       local LAST3=${HOSTNAME: -3}
