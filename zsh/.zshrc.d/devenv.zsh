@@ -1,7 +1,7 @@
 #!/bin/zsh
 
 devenv_commands=(
-  status create start stop remove from apps playbook tsconnect export shell
+  status create start stop remove from apps playbook tsconnect service-install shell
 )
 
 devenv_prefixes() {
@@ -213,7 +213,7 @@ devenv() {
       secrets var tailscale_authkey
       devenv ${PREFIX} sudo tailscale up --auth-key "${TAILSCALE_AUTHKEY}" --hostname ${SYSNAME}-${LAST3} --operator ${IMAGE_USER} --ssh
       ;;
-    "export")
+    "service-install")
       local from=$1
       local image=""
       if [[ -n "$from" ]]; then
@@ -221,7 +221,7 @@ devenv() {
       else
         image=$(generate_image_name $PREFIX)
       fi
-      devenv-export-service $PREFIX $image
+      devenv-service-install $PREFIX $image
       echo "Start with:\nsystemctl --user start dotfiles-devenv-${PREFIX}"
       ;;
     *)
@@ -247,7 +247,7 @@ if [[ $(dotini devenv --get "devenv.aliases") == true ]]; then
   dev() { devenv "$@" }
 fi
 
-devenv-export-service() {
+devenv-service-install() {
   local name="$1"
   local image="$2"
   local sysname=${name}sys
