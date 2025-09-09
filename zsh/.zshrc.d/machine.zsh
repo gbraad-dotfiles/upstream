@@ -243,10 +243,15 @@ machine() {
       macadam init --name "${SYSNAME}" "${INIT_ARGS[@]}" "$1"
       ;;
     "build")
-      local subcommand=$2
-      if [ "${subcommand}" = "from" ]; then
-        machine ${PREFIX} from $3 || { echo "Machine build failed"; return 1; }
-      fi
+      local SUBCOMMAND=$2
+      case "$SUBCOMMAND" in
+        "from")
+          machine ${PREFIX} from "$3" || { echo "Machine build failed"; return 1; }
+          ;;
+        "from-image")
+          machine ${PREFIX} from-image "$3" || { echo "Machine build failed"; return 1; }
+          ;;
+      esac
 
       local vmstate=$(machine ${PREFIX} status)
       if [ "${vmstate}" = "Stopped" ]; then
