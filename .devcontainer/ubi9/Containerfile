@@ -3,12 +3,16 @@ ARG BASE_VERSION="9.5"
 
 FROM ${BASE_IMAGE}:${BASE_VERSION}
 
+LABEL org.opencontainers.image.source = "https://github.com/gbraad-dotfiles/upstream"
+
 ARG USER="gbraad"
 ARG USER_PASSWD
 ARG HOMEBASE="/home"
 ARG USERHOME="${HOMEBASE}/${USER}"
 ARG ROOTHOME="/root"
 ARG ARCH="x86_64"
+
+USER root
 
 # fix issue with sudo and SSH
 RUN chmod 640 /etc/shadow

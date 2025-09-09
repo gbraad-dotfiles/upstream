@@ -3,6 +3,8 @@ ARG BASE_VERSION="latest"
 
 FROM ${BASE_IMAGE}:${BASE_VERSION}
 
+LABEL org.opencontainers.image.source = "https://github.com/gbraad-dotfiles/upstream"
+
 ARG USER="gbraad"
 ARG HOMEBASE="/home"
 ARG USERHOME="${HOMEBASE}/${USER}"
@@ -10,7 +12,7 @@ ARG ROOTHOME="/root"
 ARG ARCH="amd64"
 ARG USERID=1000
 
-LABEL org.opencontainers.image.source = "https://github.com/gbraad-dotfiles/"
+USER root
 
 RUN apt update \
     && apt install -y \

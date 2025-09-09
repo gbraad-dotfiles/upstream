@@ -3,13 +3,15 @@ ARG BASE_VERSION="bookworm"
 
 FROM ${BASE_IMAGE}:${BASE_VERSION}
 
+LABEL org.opencontainers.image.source = "https://github.com/gbraad-dotfiles/upstream"
+
 ARG USER="gbraad"
 ARG HOMEBASE="/home"
 ARG USERHOME="${HOMEBASE}/${USER}"
 ARG ROOTHOME="/root"
 ARG ARCH="amd64"
 
-LABEL org.opencontainers.image.source = "https://github.com/gbraad-dotfiles/debian"
+USER root
 
 RUN apt update \
     && apt install -y \

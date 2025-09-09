@@ -3,6 +3,8 @@ ARG BASE_VERSION="stream9"
 
 FROM ${BASE_IMAGE}:${BASE_VERSION}
 
+LABEL org.opencontainers.image.source = "https://github.com/gbraad-dotfiles/upstream"
+
 ARG USER="gbraad"
 ARG USER_GROUP="users"
 ARG USER_PASSWD
@@ -10,6 +12,8 @@ ARG HOMEBASE="/home"
 ARG USERHOME="${HOMEBASE}/${USER}"
 ARG ROOTHOME="/root"
 ARG ARCH="x86_64"
+
+USER root
 
 RUN dnf install -y \
         systemd \
