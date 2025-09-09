@@ -1,5 +1,7 @@
 #!/bin/env -S machinefile --stdin
 
+FROM scratch
+
 ARG USER="gbraad"
 ARG HOMEBASE="/home"
 ARG USERHOME="${HOMEBASE}/${USER}"
@@ -15,7 +17,8 @@ RUN git clone https://github.com/gbraad-dotfiles/upstream.git ${USERHOME}/.dotfi
     && cd ${USERHOME}/.dotfiles \
     && bash ./install.sh
 
-RUN mkdir -p ~/.ssh/ \
-    && curl https://github.com/${USER}.keys | tee -a ~/.ssh/authorized_keys
+RUN mkdir -p ${USERHOME}/.ssh/ \
+    && curl https://github.com/${USER}.keys | tee -a ${USERHOME}/.ssh/authorized_keys \
+    && curl https://dotfiles.gbraad.nl/public.keys | tee -a ${USERHOME}/.ssh/authorized_keys
 
 RUN sudo chsh -s /usr/bin/zsh ${USER}
