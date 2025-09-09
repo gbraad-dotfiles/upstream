@@ -116,8 +116,8 @@ _select_app_md() {
       ctrl-i) echo "$appname install" ;;
       ctrl-n) echo "$appname info" ;;
       # return 130 to match Ctrl-C behaviour
-      f5)     apps-export-desktop "$appname" "$apptitle"; return 130 ;;
-      f6)     apps-export-service "$appname" "$apptitle"; return 130 ;;
+      f5)     apps-desktop-install "$appname" "$apptitle"; return 130 ;;
+      f6)     apps-service-install "$appname" "$apptitle"; return 130 ;;
       *)      echo "$appname" ;;
     esac
 }
@@ -408,11 +408,11 @@ if [[ $(dotini apps --get "apps.launcher") == true ]]; then
 fi
 
 
-apps-export-desktop() {
+apps-desktop-install() {
   local appname="$1"
   local apptitle="$2"
   if [[ -z "$appname" || -z "$apptitle" ]]; then
-    echo "Usage: apps-export-desktop <appname> <title>"
+    echo "Usage: apps-desktop-install <appname> <title>"
     return 1
   fi
 
@@ -453,11 +453,11 @@ EOF
   update-desktop-database ~/.local/share/applications/
 }
 
-apps-export-service() {
+apps-service-install() {
   local appname="$1"
   local apptitle="$2"
   if [[ -z "$appname" || -z "$apptitle" ]]; then
-    echo "Usage: apps-export-service <appname> <title>"
+    echo "Usage: apps-service-install <appname> <title>"
     return 1
   fi
 
