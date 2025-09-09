@@ -14,3 +14,4 @@ jobs:
     uses: ./.github/workflows/reusable-build-diskimage-machine.yml
     with:
       container_name: fedora-cloud
+    secrets: inherit
