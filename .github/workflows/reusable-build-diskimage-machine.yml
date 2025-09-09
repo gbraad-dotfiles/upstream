@@ -48,15 +48,15 @@ jobs:
         with:
           as_user: runner
           run: |
-            machine dotfedora build ./.machine/fedora-cloud/Machinefile from fedora-cloud
+            machine machinebuild build ./.machine/${{ inputs.container_name }}/Machinefile from ${{ inputs.container_name }}
 
       - name: Export disk image
         uses: gbraad-actions/zsh-action@main
         with:
           as_user: runner
           run: |
-            mkdir -p ./output-fedora/
-            machine dotfedora export ./output-fedora/dotfedora.qcow2
+            mkdir -p ./output-${{ inputs.container_name }}/
+            machine machinebuild export ./output-${{ inputs.container_name }}/disk.qcow2
 
       - name: Create and push disk image
         run: |

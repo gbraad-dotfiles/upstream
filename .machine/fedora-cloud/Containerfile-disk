@@ -1,2 +1,2 @@
 FROM scratch
-ADD ./output-fedora/dotfedora.qcow2 /disk.qcow2
+ADD ./output-fedora-cloud/disk.qcow2 /disk.qcow2
