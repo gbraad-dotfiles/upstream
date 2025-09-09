@@ -4,6 +4,37 @@ machine_commands=(
   status create start stop download create remove from switch apps playbook tsconnect export copy-id shell
 )
 
+machine_credentials() {
+  if (( $# != 4 )); then
+    print -u2 "Usage: machine_credentials <machine-name> <var_port> <var_user> <var_identity>"
+    return 2
+  fi
+
+  local sysname=$1 port_var=$2 user_var=$3 ident_var=$4
+  local config_path="$HOME/.config/containers/macadam/machine/qemu/${sysname}.json"
+
+  [[ -f $config_path ]] || { print -u2 "Config file not found: $config_path"; return 1; }
+
+  # returns: port \t user \t identity
+  local line
+  if ! line=$(jq -r '[.SSH.Port, .SSH.RemoteUsername, .SSH.IdentityPath] | @tsv' "$config_path"); then
+    print -u2 "jq failed reading $config_path"
+    return 1
+  fi
+
+  local -a parts
+  IFS=$'\t' parts=(${=line})
+
+  if (( ${#parts[@]} != 3 )) || [[ $parts[1] == null || $parts[2] == null || $parts[3] == null ]]; then
+    print -u2 "Invalid or incomplete SSH info in $config_path"
+    return 1
+  fi
+
+  printf -v "$port_var"  '%s' "$parts[1]"
+  printf -v "$user_var"  '%s' "$parts[2]"
+  printf -v "$ident_var" '%s' "$parts[3]"
+}
+
 machine_deployments() {
   local key="images"
   local output targets
