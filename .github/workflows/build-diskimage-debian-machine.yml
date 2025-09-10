@@ -9,7 +9,8 @@ on:
 
 
 jobs:
-  build-diskimage-debian-packer:
-    uses: ./.github/workflows/reusable-build-diskimage-packer.yml
+  build-diskimage-debian-machine:
+    uses: ./.github/workflows/reusable-build-diskimage-machine.yml
     with:
       container_name: debian-cloud
+    secrets: inherit
