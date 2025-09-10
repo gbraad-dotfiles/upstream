@@ -194,7 +194,9 @@ apps() {
     if [[ -n "$1" ]]; then
 
         # allow the use of a filename being passed
-        if [[ -f "$1" || "$1" = /* || "$1" = ./* || "$1" = ../* || "$1" = ~* ]]; then
+        if [[ "$1" = "." && -f "README.md" ]]; then
+          desc_file="./README.md"
+        elif [[ -f "$1" || "$1" = /* || "$1" = ./* || "$1" = ../* || "$1" = ~* ]]; then
           desc_file=${1}
         else
           desc_file="${_appsdefpath}/${1}.md"

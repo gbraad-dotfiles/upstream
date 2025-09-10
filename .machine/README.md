@@ -7,7 +7,7 @@ These files describe how to build a VM image with dotfiles based on a provided c
 Each of these images can be build as follows:
 
 ```sh
-apps README.md build fedora
+apps . build fedora
 ```
 
 > [!NOTE]
