@@ -1,7 +1,7 @@
 #!/bin/zsh
 
 machine_commands=(
-  status create start stop download create remove from switch apps playbook tsconnect export service-install copy-id shell
+  status create start stop download remove from switch apps playbook tsconnect export service-install copy-id shell
 )
 
 machine_credentials() {
