@@ -7,7 +7,8 @@ These files describe how to build a VM image with dotfiles based on a provided c
 Each of these images can be build as follows:
 
 ```sh
-apps . build fedora
+run fedora build
+run fedora export
 ```
 
 ## dependencies
@@ -22,12 +23,12 @@ apps machinefile install
 
 
 
-## fedora-build
+## build-fedora 
 ```sh interactive
 machine output build ./fedora-cloud/Machinefile from fedora-cloud
 ```
 
-## fedora-export
+## export-fedora 
 ```sh interactive
 machine output export dotfedora
 ```
