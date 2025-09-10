@@ -10,6 +10,13 @@ Each of these images can be build as follows:
 apps . build fedora
 ```
 
+## dependencies
+```sh 
+apps macadam install
+apps machinefile install
+```
+
+
 > [!NOTE]
 > This assumes you have my `dotfiles` installed.
 
