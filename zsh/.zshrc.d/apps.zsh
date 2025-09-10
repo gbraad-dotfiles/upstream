@@ -71,7 +71,7 @@ _extract_apps_section_script() {
     }
     in_section && fence==1 { print }
     ' "$2"
-}	
+}
 
 _extract_apps_section_markdown() {
     # $1: section name, $2: file
@@ -192,7 +192,14 @@ apps() {
     local desc_file
     # If $1 is given, check for its existence right away
     if [[ -n "$1" ]]; then
-        desc_file="${_appsdefpath}/${1}.md"
+
+        # allow the use of a filename being passed
+        if [[ -f "$1" || "$1" = /* || "$1" = ./* || "$1" = ../* || "$1" = ~* ]]; then
+          desc_file=${1}
+        else
+          desc_file="${_appsdefpath}/${1}.md"
+        fi
+
         if [[ ! -f "$desc_file" ]]; then
             echo "No description file for '${1}' found in ${_appsdefpath}"
             return 2
