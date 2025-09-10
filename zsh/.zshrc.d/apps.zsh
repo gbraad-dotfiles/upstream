@@ -184,6 +184,18 @@ _find_default_section() {
     awk '/^### default[ ]+/ {print $3; exit}' "$1"
 }
 
+_select_local_section() {
+    local file="$1"
+    local section
+    section=$(awk '
+        /^### / {
+            sub(/^### /,"");
+            print $1
+        }
+    ' "$file" | fzf --prompt="Select action: ")
+    echo "$section"
+}
+
 apps() {
     if ! _appsdefexists; then
         _appsdefclone
@@ -194,7 +206,11 @@ apps() {
     if [[ -n "$1" ]]; then
 
         # allow the use of a filename being passed
-        if [[ "$1" = "." && -f "README.md" ]]; then
+        if [[ "$1" = "." && -f "Actionfile.md" ]]; then
+          desc_file="./Actionfile.md"
+        elif [[ "$1" = "." && -f "Actfile.md" ]]; then
+          desc_file="./Actfile.md"
+        elif [[ "$1" = "." && -f "README.md" ]]; then
           desc_file="./README.md"
         elif [[ -f "$1" || "$1" = /* || "$1" = ./* || "$1" = ../* || "$1" = ~* ]]; then
           desc_file=${1}
@@ -211,19 +227,16 @@ apps() {
     # Fuzzy app and section picker if no arguments
     if [[ -z "$1" || ( -n "$1" && -z "$2" ) ]]; then
         local action default_action pick
-        # If called as 'apps .' and README.md exists, use it.
-        if [[ "$1" = "." && -f "README.md" ]]; then
-            desc_file="./README.md"
-            app="."
-            default_action=$(_find_default_section "$desc_file")
-            if [[ -n "$default_action" ]]; then
-                apps "$app" "$default_action"
+    	if [[ "$desc_file" == *.md ]]; then
+            # If no action is provided, fuzzy pick one
+            if [[ -z "$2" ]]; then
+                action=$(_select_local_section "$desc_file")
+                [[ -z "$action" ]] && return 1
+                apps "$1" "$action"
                 return
             fi
-            # fallback to info if no default
-            apps "$app" "info"
-            return
         fi
+
         if [[ -n "$1" ]]; then
             default_action=$(_find_default_section "$desc_file")
             if [[ -n "$default_action" ]]; then
