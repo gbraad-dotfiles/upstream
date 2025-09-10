@@ -26,22 +26,39 @@ apps macadam install
 apps machinefile install
 ```
 
-### clean
-```sh interactive
-machine output rm
-```
-
----
 
 ## Fedora-specifc actions
 
-### build-fedora 
+### build-fedora
 ```sh interactive
-machine output build ./fedora-cloud/Machinefile from fedora-cloud
+machine fedora-output build ./fedora-cloud/Machinefile from fedora-cloud
 ```
 
-### export-fedora 
+### export-fedora
 ```sh interactive
-machine output export dotfedora
+machine fedora-output export dotfedora
+```
+
+### clean-fedora
+```sh interactive
+machine fedora-output rm
+```
+
+
+## Debian-specifc actions
+
+### build-debian
+```sh interactive
+machine debian-output build ./debian-cloud/Machinefile from debian-cloud
+```
+
+### export-debian
+```sh interactive
+machine debian-output export dotdebian
+```
+
+### clean-debian
+```sh interactive
+machine debian-output rm
 ```
 

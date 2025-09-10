@@ -1,0 +1,18 @@
+FROM scratch
+
+ARG ROOT_PASSWD
+ARG USER="gbraad"
+
+USER root
+
+RUN true && if [ -n "${ROOT_PASSWD}" ] ; then \
+        echo "root:${ROOT_PASSWD}" | sudo chpasswd ; \
+    fi
+
+RUN echo "PermitRootLogin yes" > /etc/ssh/sshd_config.d/00-machine.conf \
+    && echo "PasswordAuthentication yes" >> /etc/ssh/sshd_config.d/00-machine.conf \
+    && systemctl restart sshd
+
+RUN userdel -r debian || true
+
+RUN userdel -r "${USER}" -f 2>/dev/null || true
