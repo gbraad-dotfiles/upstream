@@ -184,16 +184,30 @@ _find_default_section() {
     awk '/^### default[ ]+/ {print $3; exit}' "$1"
 }
 
+# quick hack
 _select_local_section() {
     local file="$1"
-    local section
-    section=$(awk '
+    local action display
+    local actions=()
+
+    while IFS= read -r line; do
+        actions+=("$line")
+    done < <(awk '
         /^### / {
             sub(/^### /,"");
-            print $1
+            n = split($1, parts, "-")
+            if (n == 2) {
+                print parts[2] " " parts[1] "|" $1
+            } else {
+                print $1 "|" $1
+            }
         }
-    ' "$file" | fzf --prompt="Select action: ")
-    echo "$section"
+    ' "$file")
+
+    display=$(printf "%s\n" "${actions[@]}" | cut -d'|' -f1 | fzf --prompt="Select action: ")
+    action=$(printf "%s\n" "${actions[@]}" | grep "^${display}|" | cut -d'|' -f2)
+
+    echo "$action"
 }
 
 apps() {
