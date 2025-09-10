@@ -1,6 +1,7 @@
 # Machinefiles
 
-## info
+
+### info
 
 These files describe how to build a VM image with dotfiles based on a provided cloudimage.
 
@@ -16,30 +17,31 @@ run clean
 > [!NOTE]
 > This assumes you have my `dotfiles` installed.
 
----
 
-## dependencies
+## Generic actions
+
+### dependencies
 ```sh 
 apps macadam install
 apps machinefile install
 ```
 
+### clean
+```sh interactive
+machine output rm
+```
+
 ---
 
-## build-fedora 
+## Fedora-specifc actions
+
+### build-fedora 
 ```sh interactive
 machine output build ./fedora-cloud/Machinefile from fedora-cloud
 ```
 
-## export-fedora 
+### export-fedora 
 ```sh interactive
 machine output export dotfedora
-```
-
----
-
-## clean
-```sh interactive
-machine output rm
 ```
 

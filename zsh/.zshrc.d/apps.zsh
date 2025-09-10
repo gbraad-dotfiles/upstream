@@ -75,9 +75,9 @@ _extract_apps_section_script() {
 
 _extract_apps_section_markdown() {
     # $1: section name, $2: file
-    awk -v section="## $1" '
+    awk -v section="### $1" '
     $0 == section {in_section=1; next}
-    /^### / && in_section {exit}
+    (in_section && ($0 ~ /^## / || $0 ~ /^### / || $0 ~ /^---$/)) {exit}
     in_section {print}
     ' "$2"
 }
@@ -126,7 +126,7 @@ _apps_action_list() {
   local desc_file="$1"
   awk '
     /^### / {
-      sub(/^## /,"");
+      sub(/^### /,"");
       for (i=1; i<=NF; i++) {
         word = $i
         dash = index(word, "-")
