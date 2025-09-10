@@ -21,8 +21,19 @@ apps machinefile install
 > This assumes you have my `dotfiles` installed.
 
 
+
 ## fedora-build
 ```sh interactive
 machine output build ./fedora-cloud/Machinefile from fedora-cloud
 ```
 
+## fedora-export
+```sh interactive
+machine output export dotfedora
+```
+
+
+## clean
+```sh interactive
+machine output rm
+```
