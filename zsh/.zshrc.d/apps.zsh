@@ -211,6 +211,19 @@ apps() {
     # Fuzzy app and section picker if no arguments
     if [[ -z "$1" || ( -n "$1" && -z "$2" ) ]]; then
         local action default_action pick
+        # If called as 'apps .' and README.md exists, use it.
+        if [[ "$1" = "." && -f "README.md" ]]; then
+            desc_file="./README.md"
+            app="."
+            default_action=$(_find_default_section "$desc_file")
+            if [[ -n "$default_action" ]]; then
+                apps "$app" "$default_action"
+                return
+            fi
+            # fallback to info if no default
+            apps "$app" "info"
+            return
+        fi
         if [[ -n "$1" ]]; then
             default_action=$(_find_default_section "$desc_file")
             if [[ -n "$default_action" ]]; then
