@@ -43,7 +43,7 @@ get_os_id() {
 
 _extract_apps_section_script() {
     awk -v action="$1" '
-    /^## / {
+    /^### / {
         split($0, arr, " ")
         in_section = 0
         for (i = 2; i <= NF; i++) {
@@ -77,7 +77,7 @@ _extract_apps_section_markdown() {
     # $1: section name, $2: file
     awk -v section="## $1" '
     $0 == section {in_section=1; next}
-    /^## / && in_section {exit}
+    /^### / && in_section {exit}
     in_section {print}
     ' "$2"
 }
@@ -125,7 +125,7 @@ _select_app_md() {
 _apps_action_list() {
   local desc_file="$1"
   awk '
-    /^## / {
+    /^### / {
       sub(/^## /,"");
       for (i=1; i<=NF; i++) {
         word = $i
@@ -181,7 +181,7 @@ _apps_fuzzy_pick() {
 
 _find_default_section() {
     # $1: file
-    awk '/^## default[ ]+/ {print $3; exit}' "$1"
+    awk '/^### default[ ]+/ {print $3; exit}' "$1"
 }
 
 apps() {
