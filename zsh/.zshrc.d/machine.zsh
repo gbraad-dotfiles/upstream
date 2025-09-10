@@ -277,12 +277,18 @@ machine() {
       local imagepath=$(jq -r '.ImagePath.Path' $config_path)
 
       if [[ "$1" = /* || "$1" = ./* || "$1" = ../* || "$1" = ~* ]]; then
-        cp "$imagepath" "$1"
-        echo "Copied to $1"
+        target="$1"
       else
-        cp "$imagepath" "${DISKFOLDER}/$1"
-        echo "Copied to ${DISKFOLDER}/$1"
+        target="${DISKFOLDER}/$1"
       fi
+
+      # If target does not end with .qcow2, add it
+      if [[ "$target" != *.qcow2 ]]; then
+        target="${target}.qcow2"
+      fi
+
+      cp "$imagepath" "$target"
+      echo "Copied to $target"
       ;;
     "tsconnect")
       local LAST3=${HOSTNAME: -3}
