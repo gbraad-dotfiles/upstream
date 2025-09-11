@@ -80,3 +80,22 @@ machine debian-output export dotdebian
 machine debian-output rm
 ```
 
+
+## Ubuntu-specifc actions
+
+### build-ubuntu
+```sh interactive
+machine ubuntu-output build ./ubuntu-cloud/Machinefile from ubuntu-cloud
+```
+
+### export-ubuntu
+```sh interactive
+machine ubuntu-output export dotubuntu
+```
+
+### clean-ubuntu
+```sh interactive
+machine ubuntu-output rm
+```
+
+

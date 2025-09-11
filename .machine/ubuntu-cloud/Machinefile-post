@@ -1,0 +1,17 @@
+FROM scratch
+
+USER root
+
+RUN echo 'GRUB_CMDLINE_LINUX="cloud-init=disabled"' >> /etc/default/grub \
+    && update-grub \
+    && touch /etc/cloud/cloud-init.disabled
+
+RUN apt-get update \
+    && apt-get install -y ifupdown \
+    && rm -f /etc/netplan/50-cloud-init.yaml \
+    && systemctl disable systemd-networkd
+
+RUN printf "source /etc/network/interfaces.d/*\n\nauto lo\niface lo inet loopback\n\nallow-hotplug ens3\niface ens3 inet dhcp\n" > /etc/network/interfaces
+
+RUN rm -f /etc/ssh/sshd_config.d/00-machine.conf
+

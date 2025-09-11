@@ -10,7 +10,9 @@ on:
 
 
 jobs:
-  build-diskimage-ubuntu-packer:
-    uses: ./.github/workflows/reusable-build-diskimage-packer.yml
+  build-diskimage-ubuntu-machine:
+    uses: ./.github/workflows/reusable-build-diskimage-machine.yml
     with:
       container_name: ubuntu-cloud
+    secrets: inherit
+
