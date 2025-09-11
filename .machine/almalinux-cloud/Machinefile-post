@@ -1,0 +1,6 @@
+FROM scratch
+
+USER root
+
+RUN touch /etc/cloud/cloud-init.disabled \
+    && rm -f /etc/ssh/sshd_config.d/00-machine.conf
