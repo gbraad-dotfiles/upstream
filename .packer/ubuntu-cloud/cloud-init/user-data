@@ -15,5 +15,5 @@ network:
 runcmd:
   - echo "PermitRootLogin yes" > /etc/ssh/sshd_config.d/00-packer.conf
   - echo "PasswordAuthentication yes" >> /etc/ssh/sshd_config.d/00-packer.conf
-  - systemctl restart sshd
+  - systemctl restart ssh.service
 
