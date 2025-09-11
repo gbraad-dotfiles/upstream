@@ -241,23 +241,17 @@ apps() {
     # Fuzzy app and section picker if no arguments
     if [[ -z "$1" || ( -n "$1" && -z "$2" ) ]]; then
         local action default_action pick
-    	if [[ "$desc_file" == *.md ]]; then
-            # If no action is provided, fuzzy pick one
-            if [[ -z "$2" ]]; then
-                action=$(_select_local_section "$desc_file")
-                [[ -z "$action" ]] && return 1
-                apps "$1" "$action"
-                return
-            fi
+	default_action=$(_find_default_section "$desc_file")
+        if [[ -n "$default_action" ]]; then
+            apps "$1" "$default_action"
+            return
+        elif [[ -z "$2" ]]; then
+            action=$(_select_local_section "$desc_file")
+            [[ -z "$action" ]] && return 1
+            apps "$1" "$action"
+            return
         fi
 
-        if [[ -n "$1" ]]; then
-            default_action=$(_find_default_section "$desc_file")
-            if [[ -n "$default_action" ]]; then
-                apps "$1" "$default_action"
-                return
-            fi
-        fi
         # fallback to fuzzy picker if no default
         pick=($(_apps_fuzzy_pick "$1"))
         local pick_status=$?
