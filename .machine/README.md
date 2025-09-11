@@ -117,3 +117,22 @@ machine ubuntu-output rm
 ```
 
 
+## Alpine-specifc actions
+
+### build-alpine
+```sh interactive
+machine alpine-output build ./alpine-cloud/Machinefile from alpine-cloud
+```
+
+### export-alpine
+```sh interactive
+machine alpine-output export dotalpine
+```
+
+### clean-alpine
+```sh interactive
+machine alpine-output rm
+```
+
+
+

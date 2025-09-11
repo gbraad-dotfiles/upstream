@@ -1,0 +1,2 @@
+FROM scratch
+ADD ./output-alpine-cloud/disk.qcow2 /disk.qcow2
