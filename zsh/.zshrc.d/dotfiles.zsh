@@ -254,6 +254,9 @@ dotfiles() {
     "switch" | "upstream")
       _dotupstream
       ;;
+    "cd")
+      cd ${HOME}/.dotfiles
+      ;;
     "dot")
       ${HOME}/.dotfiles/activate.sh $@
       ;;
