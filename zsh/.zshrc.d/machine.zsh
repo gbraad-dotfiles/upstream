@@ -233,6 +233,8 @@ machine() {
         machine $1 download
       fi
       macadam init --name "${SYSNAME}" "${INIT_ARGS[@]}" "${DISKFOLDER}/$1.qcow2"
+
+      machine ${PREFIX} start
       ;;
     "from-image")
       if machine ${PREFIX} exists; then
@@ -241,6 +243,8 @@ machine() {
       fi
 
       macadam init --name "${SYSNAME}" "${INIT_ARGS[@]}" "$1"
+
+      machine ${PREFIX} start
       ;;
     "build")
       local SUBCOMMAND=$2
