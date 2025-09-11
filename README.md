@@ -31,6 +31,7 @@ homelab services
 
 
 This forms the basis of my [development environment](https://github.com/gbraad-devenv/) images.
+For more information, please look at [dotfiles.gbraad.nl](https://dotfiles.gbraad.nl)
 
 
 > [!NOTE]
@@ -42,8 +43,8 @@ Installation
 
 ### Automated
 
-```
-$ curl -fsSL https://dotfiles.gbraad.nl/install.sh | sh
+```sh interactive
+curl -fsSL https://dotfiles.gbraad.nl/install.sh | sh
 ```
 
 > [!NOTE]
@@ -52,29 +53,43 @@ $ curl -fsSL https://dotfiles.gbraad.nl/install.sh | sh
 
 ### Manual
 
-```
-$ git clone https://github.com/gbraad-dotfiles/upstream ~/.dotfiles --recursive
-$ ~/.dotfiles/install.sh
+```sh interactive
+git clone https://github.com/gbraad-dotfiles/upstream ~/.dotfiles --recursive
+~/.dotfiles/install.sh
 ```
 
 
 ### Update
 After the dotfiles have been installed, it is easy to update using:
 
-```
-$ dotfiles update
+```sh interactive
+dotfiles update
 ```
 
 > [!NOTE]
 > You can also use the alias `dot up` or `dotup` if `dotini dotfiles.aliases` returns `true`.
 
 
-### On GitHub Action runners
+Alternative installation
+------------------------
+
+#### GitHub Action runners
 For debugging purposes these can also be installed on GitHub Action runners:
 
 ```yaml
       - name: Install dotfiles action
         uses: gbraad-dotfiles/install-dotfiles@v1
+```
+
+#### Ansible
+
+```yaml
+    - name: Install dotfiles
+      hosts: localhost
+      roles:
+        - role: gbraad.dotfiles
+          vars:
+            user: gbraad
 ```
 
 
