@@ -63,6 +63,24 @@ machine centos-output rm
 ```
 
 
+## AlmaLinux-specifc actions
+
+### build-almalinux
+```sh interactive
+machine almalinux-output build ./almalinux-cloud/Machinefile from almalinux-cloud
+```
+
+### export-almalinux
+```sh interactive
+machine almalinux-output export dotalmalinux
+```
+
+### clean-almalinux
+```sh interactive
+machine almalinux-output rm
+```
+
+
 ## Debian-specifc actions
 
 ### build-debian
