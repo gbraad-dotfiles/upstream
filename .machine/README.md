@@ -45,6 +45,24 @@ machine fedora-output rm
 ```
 
 
+## CentOS-specifc actions
+
+### build-centos
+```sh interactive
+machine centos-output build ./centos-cloud/Machinefile from centos-cloud
+```
+
+### export-centos
+```sh interactive
+machine centos-output export dotcentos
+```
+
+### clean-centos
+```sh interactive
+machine centos-output rm
+```
+
+
 ## Debian-specifc actions
 
 ### build-debian

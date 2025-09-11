@@ -10,7 +10,8 @@ on:
 
 
 jobs:
-  build-diskimage-centos-packer:
-    uses: ./.github/workflows/reusable-build-diskimage-packer.yml
+  build-diskimage-centos-machine:
+    uses: ./.github/workflows/reusable-build-diskimage-machine.yml
     with:
       container_name: centos-cloud
+    secrets: inherit
