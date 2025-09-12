@@ -239,7 +239,7 @@ apps() {
     fi
 
     # Fuzzy app and section picker if no arguments
-    if [[ -z "$1" || ( -n "$1" && -z "$2" ) ]]; then
+    if [[ -n "$1" && -z "$2" ]]; then
         local action default_action pick
 	default_action=$(_find_default_section "$desc_file")
         if [[ -n "$default_action" ]]; then
@@ -251,7 +251,10 @@ apps() {
             apps "$1" "$action"
             return
         fi
+    fi
 
+    # Nothing was given which opens apps fuzzy picker
+    if [[ -z "$1" ]]; then
         # fallback to fuzzy picker if no default
         pick=($(_apps_fuzzy_pick "$1"))
         local pick_status=$?
