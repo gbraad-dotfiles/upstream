@@ -175,9 +175,9 @@ _dotrestow() {
   # (re)stow
   stow -R config
 
-  stowlist=$(dotini dotfiles --list | grep '^stow\.' | awk -F '=' '$2 == "true" {print $1}' | sed 's/^stow\.//g')
-  for tostow in $stowlist; do
-    stow -R $(echo "$tostow" | xargs)
+  IFS=$'\n' stowlist=($(dotini dotfiles --list | grep '^stow\.' | awk -F '=' '$2 == "true" {print $1}' | sed 's/^stow\.//g'))
+  for tostow in "${stowlist[@]}"; do
+    stow -R "$tostow"
   done
 
   cd - > /dev/null
