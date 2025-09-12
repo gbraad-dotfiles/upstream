@@ -175,8 +175,8 @@ _dotrestow() {
   # (re)stow
   stow -R config
 
-  IFS=$'\n' stowlist=($(dotini dotfiles --list | grep '^stow\.' | awk -F '=' '$2 == "true" {print $1}' | sed 's/^stow\.//g'))
-  for tostow in "${stowlist[@]}"; do
+  stowlist=$(dotini dotfiles --list | grep '^stow\.' | awk -F '=' '$2 == "true" {print $1}' | sed 's/^stow\.//g')
+  echo "$stowlist" | while IFS= read -r tostow; do
     stow -R "$tostow"
   done
 
