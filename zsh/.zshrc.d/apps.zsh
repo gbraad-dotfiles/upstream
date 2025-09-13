@@ -41,6 +41,16 @@ get_os_id() {
     fi
 }
 
+_extract_apps_section_config() {
+  awk '
+    BEGIN {in_config=0; in_code=0}
+    /^### config/ {in_config=1; next}
+    in_config && /^```ini/ {in_code=1; next}
+    in_code && /^```/ {exit}
+    in_code {print}
+  ' "$1"
+}
+
 _extract_apps_section_script() {
     awk -v action="$1" '
     /^### / {
@@ -210,6 +220,23 @@ _select_local_section() {
     echo "$action"
 }
 
+_parse_ini_config() {
+  awk '
+    BEGIN {section=""}
+    /^\[([A-Za-z0-9_]+)\]$/ {
+      match($0, /^\[([A-Za-z0-9_]+)\]$/, m)
+      section = toupper(m[1])
+      next
+    }
+    /^[[:space:]]*([A-Za-z0-9_]+)[[:space:]]*=[[:space:]]*"([^"]*)"[[:space:]]*$/ {
+      match($0, /^[[:space:]]*([A-Za-z0-9_]+)[[:space:]]*=[[:space:]]*"([^"]*)"[[:space:]]*$/, m)
+      key = toupper(m[1])
+      value = m[2]
+      print section "_" key "=\"" value "\""
+    }
+  '
+}
+
 apps() {
     if ! _appsdefexists; then
         _appsdefclone
@@ -370,6 +397,10 @@ apps() {
         eval "$shared_script"
       fi
     done
+
+    local config_script
+    config_script="$(_extract_apps_section_config $desc_file | _parse_ini_config)"
+    eval $config_script
 
     # set arguments to override
     local name value
