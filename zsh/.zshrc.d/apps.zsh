@@ -263,6 +263,9 @@ apps() {
           desc_file="./Actfile.md"
         elif [[ "$1" = "." && -f "README.md" ]]; then
           desc_file="./README.md"
+        elif [[ "$1" = "." && -f "$2" ]]; then
+          desc_file="$2"
+          shift 1
         elif [[ -f "$1" || "$1" = /* || "$1" = ./* || "$1" = ../* || "$1" = ~* ]]; then
           desc_file=${1}
         else
