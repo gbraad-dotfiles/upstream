@@ -228,11 +228,21 @@ _parse_ini_config() {
       section = toupper(m[1])
       next
     }
+    # key="value"
     /^[[:space:]]*([A-Za-z0-9_]+)[[:space:]]*=[[:space:]]*"([^"]*)"[[:space:]]*$/ {
       match($0, /^[[:space:]]*([A-Za-z0-9_]+)[[:space:]]*=[[:space:]]*"([^"]*)"[[:space:]]*$/, m)
       key = toupper(m[1])
       value = m[2]
-      print section "_" key "=\"" value "\""
+      print "export " section "_" key "=\"" value "\""
+      next
+    }
+    # key=value (unquoted)
+    /^[[:space:]]*([A-Za-z0-9_]+)[[:space:]]*=[[:space:]]*([^"]\S*)[[:space:]]*$/ {
+      match($0, /^[[:space:]]*([A-Za-z0-9_]+)[[:space:]]*=[[:space:]]*([^"]\S*)[[:space:]]*$/, m)
+      key = toupper(m[1])
+      value = m[2]
+      print "export " section "_" key "=\"" value "\""
+      next
     }
   '
 }
