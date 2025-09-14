@@ -414,6 +414,10 @@ apps() {
     local config_script
     config_script="$(_extract_apps_section_config $desc_file | _parse_ini_config)"
     eval $config_script
+    if [[ -f ${HOME}/.config/dotapps/${app}.ini ]]; then
+      config_script="$(cat ${HOME}/.config/dotapps/${app}.ini | _parse_ini_config)"
+      eval $config_script
+    fi
 
     # set arguments to override
     local name value
