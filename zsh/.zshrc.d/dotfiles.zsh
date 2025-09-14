@@ -305,7 +305,7 @@ if [ "$(expr "$0" : '.*source.sh')" -gt 0 ]; then
 fi
 
 if [ "$(dotini dotfiles --get "dotfiles.aliases")" = true ]; then
-  :
+  alias dot="${HOME}/.dotfiles/activate.sh"
 fi
 
 if [ "$(dotini dotfiles --get "dotfiles.autoupdate")" = true ]; then
