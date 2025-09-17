@@ -36,6 +36,10 @@ machine_credentials() {
 }
 
 machine_build() {
+  if ! app machinefile check; then
+    app machinefile install
+  fi
+
   local sysname=$1
   local filename=$2
 
@@ -100,7 +104,11 @@ machine_status() {
 }
 
 machine() { 
- if [ $# -lt 2 ]; then
+  if ! app macadam check; then
+    app macadam install
+  fi
+
+  if [ $# -lt 2 ]; then
     machine_status
     return 0
   fi

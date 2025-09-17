@@ -22,8 +22,8 @@ devenv_running_targets() {
 }
 
 devbox() {
-  if ! apps distrobox check; then
-    apps distrobox install
+  if ! app distrobox check; then
+    app distrobox install
   fi
 
   local SUFFIX="box"
