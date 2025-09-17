@@ -243,7 +243,7 @@ generate_devenv_name() {
 }
 
 if [[ $(dotini devenv --get "devenv.aliases") == true ]]; then
-  alias ds="apps devenvs"
+  alias ds="app devenvs"
   dev() { devenv "$@" }
 fi
 
