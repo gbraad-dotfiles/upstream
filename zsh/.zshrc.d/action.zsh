@@ -223,7 +223,18 @@ action() {
         key=""
       elif [[ "$line" == KEY:* ]]; then
         key="${line#KEY:}"
-        keys+=("$key")
+        if (( list_as_actions )); then
+          # dash-separated and no spaces: reverse order
+          if [[ "$key" == *-* && "$key" != *" "* ]]; then
+            context="${key%%-*}"
+            action="${key#*-}"
+            keys+=("$action $context")
+          else
+            keys+=("$key")
+          fi
+        else
+          keys+=("$key")
+        fi
       fi
     done < <(printf "%s\n" "$sectiondump")
     print -l "${keys[@]}"
