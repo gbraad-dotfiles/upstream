@@ -41,7 +41,7 @@ actions_extract_action_sections() {
           }
         }
       }
-      # --- SINGLE KEY INSIDE BACKTICKS ---
+      # Single key inside backticks
       if (match($0, /`([^`]*)`/, m)) {
         keys = m[1]
         from_backticks = 1
@@ -306,8 +306,6 @@ action() {
     local joined="${act}${ctx}"
     script="${sections_body["$joined"]}"
     execmode="${sections_mode["$joined"]}"
-
-    echo $script
   fi
 
   # Context match: ctx-act (e.g. background-run)
