@@ -7,10 +7,34 @@ eval APPSHOME=$(echo ${_app_installpath})
 mkdir -p $APPSHOME
 export LOCALBIN=${HOME}/.local/bin
 
+app_list_names_and_descs() {
+    local appspath="$1"
+    find -L "$appspath" -type f -name '*.md' ! -name 'README.md' | sort | while IFS= read -r file; do
+        relpath="${file#$appspath/}"
+        relpath="${relpath%.md}"
+        desc=$(grep -m1 '^# ' "$file" | sed 's/^# //')
+        printf "%s %s\n" "$relpath" "$desc"
+    done
+}
+
 app() {
 
   local appspath="${_app_defpath:-$HOME/.dotapps}"
   local appfile="${_app_defpath}/${1}.md"
+  local list_mode=0
+
+  local i=1
+  while (( i <= $# )); do
+    if [[ "${@[i]}" == "--list-apps" ]]; then
+      list_mode=1
+    fi
+    ((i++))
+  done
+
+  if (( list_mode )); then
+    app_list_names_and_descs ${_app_defpath}
+    return 0
+  fi
 
   if [[ -n "$1" ]]; then
 
