@@ -14,7 +14,7 @@ app_list_names_and_descs() {
         relpath="${file#$appspath/}"
         relpath="${relpath%.md}"
         desc=$(grep -m1 '^# ' "$file" | sed 's/^# //')
-        printf "%s %s\n" "$relpath" "$desc"
+        printf "%s\t%s\n" "$relpath" "$desc"
     done
 }
 
