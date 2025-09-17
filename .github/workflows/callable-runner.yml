@@ -87,6 +87,10 @@ jobs:
       #- name: Jupyter Notebook
       #  uses: gbraad-actions/jupyter-action@v1
 
+      - name: GH login
+        run: |
+          echo ${{ secrets.GITHUB_TOKEN }} | gh auth login --with-token
+
       - name: Hang around
         run: |
           IP=`tailscale ip -4`
