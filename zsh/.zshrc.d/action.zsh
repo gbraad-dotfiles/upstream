@@ -100,7 +100,18 @@ actions_extract_action_sections() {
 }
 
 # Extract config
-actions_extract_ini_vars() {
+actions_extract_config_block() {
+  local file="$1"
+  awk '
+    BEGIN {in_config=0}
+    /^### config/ {in_config=1; next}
+    in_config && /^```ini/ {in_code=1; next}
+    in_config && in_code && /^```/ {exit}
+    in_config && in_code {print}
+  ' "$file"
+}
+
+actions_parse_ini() {
   local file="$1"
   awk '
     BEGIN {section=""}
@@ -245,8 +256,11 @@ action() {
   local -A predefined_vars
   predefined_vars[FILENAME]="$file"
   predefined_vars[TITLE]="$(awk '/^# / {sub(/^# /,""); print; exit}' "$file")"
-  local setenv
-  setenv="$(actions_extract_ini_vars "$file")"
+  local configblock setenv
+  configblock="$(actions_extract_config_block "$file")"
+  if [[ -n $configblock ]]; then
+    setenv="$(printf '%s\n' "$configblock" | actions_parse_ini)"
+  fi
   # Add predefined variables programmatically
   local varsblock
   varsblock="$(actions_extract_vars_block "$file")"
@@ -341,9 +355,9 @@ action() {
     *sourced*)     sourced=1 ;;
     *background*)  background=1 ;;
     *interactive*) interactive=1 ;;
-    *)	           subshell=1 ;;	# default execution mode
+    *)             subshell=1 ;;        # default execution mode
   esac
-  
+
   # Execution according to mode
   if (( evaluate )); then
     eval "$setenv"
