@@ -1,5 +1,6 @@
 #!/bin/zsh
 
+export ACTIONFILE_SHELL=zsh
 _app_defpath=$(dotini apps --get "apps.definitions" || echo "${HOME}/.dotapps")
 eval _app_defpath=$(echo ${_app_defpath})
 _app_installpath=$(dotini apps --get "apps.path" || echo "${HOME}/Applications")
@@ -45,7 +46,7 @@ app() {
 
     shift 1
 
-    action $appfile $@
+    action $appfile $@ --subshell
   else
     echo "No application Actionfile specified"
   fi
