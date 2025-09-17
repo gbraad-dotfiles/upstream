@@ -232,7 +232,7 @@ action() {
 
   # Set predefined variables
   local -A predefined_vars
-  predefined_vars[NAME]="$file"
+  predefined_vars[FILENAME]="$file"
   predefined_vars[TITLE]="$(awk '/^# / {sub(/^# /,""); print; exit}' "$file")"
   local setenv
   setenv="$(actions_extract_ini_vars "$file")"
@@ -295,6 +295,8 @@ action() {
     local joined="${act}${ctx}"
     script="${sections_body["$joined"]}"
     execmode="${sections_mode["$joined"]}"
+
+    echo $script
   fi
 
   # Context match: ctx-act (e.g. background-run)
