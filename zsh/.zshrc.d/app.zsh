@@ -29,6 +29,34 @@ apps_list_names_and_descs() {
   done
 }
 
+apps_extract_markdown() {
+  # $1: section name, $2: file
+  awk -v section="### $1" '
+    $0 == section {in_section=1; next}
+    (in_section && ($0 ~ /^## / || $0 ~ /^### / || $0 ~ /^---$/)) {exit}
+    in_section {print}
+    ' "$2"
+}
+
+apps_info() {
+
+  local info_block app appfile
+  app=$1
+  appfile=$2
+
+  info_block="$(apps_extract_markdown "info" "$appfile")"
+  if [[ -n "$info_block" ]]; then
+    if command -v glow &>/dev/null; then
+      echo "$info_block" | glow -
+    else
+      echo "$info_block"
+    fi
+  else
+    echo "No info section found for $app"
+  fi
+  return
+}
+
 app() {
 
   if ! apps_repo_exists; then
@@ -38,11 +66,14 @@ app() {
   local APPNAME=$1
   local APPFILE="${APPSREPO}/${APPNAME}.md"
   local list_mode=0
+  local info_mode=0
 
   local i=1
   while (( i <= $# )); do
     if [[ "${@[i]}" == "--list-apps" ]]; then
       list_mode=1
+    elif [[ "${@[i]}" == "info" ]]; then
+      info_mode=1
     elif [[ "${@[i]}" == "alias" ]]; then
       shift 1
     fi
@@ -60,6 +91,11 @@ app() {
     if [[ ! -f "${APPFILE}" ]]; then
       echo "No application Actionfile for '${APPNAME}' found in ${APPSREPO}"
       return 2
+    fi
+
+    if (( info_mode )); then
+      apps_info ${APPNAME} ${APPFILE}
+      return 0
     fi
 
     shift 1
