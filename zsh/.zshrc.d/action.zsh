@@ -261,6 +261,12 @@ action() {
   if [[ -n $configblock ]]; then
     setenv="$(printf '%s\n' "$configblock" | actions_parse_ini)"
   fi
+
+  #if [[ -f ${HOME}/.config/dotapps/${app}.ini ]]; then
+  #  config_script="$(cat ${HOME}/.config/dotapps/${app}.ini | _parse_ini_config)"
+  #  eval $config_script
+  #fi
+
   # Add predefined variables programmatically
   local varsblock
   varsblock="$(actions_extract_vars_block "$file")"
@@ -307,6 +313,7 @@ action() {
   done <<< "$sectiondump"
 
   local script=""
+  local shared=""
   local execmode=""
   local platform="$(actions_detect_platform)"
 
@@ -348,6 +355,9 @@ action() {
     return 2
   fi
 
+  # Get shared
+  shared="${sections_body["shared"]}"
+
   # Set background/interactive from execmode (if not already forced by CLI)
   case "$execmode" in
     *subshell*)    subshell=1 ;;
@@ -362,12 +372,14 @@ action() {
   if (( evaluate )); then
     eval "$setenv"
     eval "$varsblock"
+    eval "$shared"
     eval "$script"
   elif (( subshell )); then
     local output exitcode
     output=$(
       eval "$setenv"
       eval "$varsblock"
+      eval "$shared"
       eval "$script"
     )
     exitcode=$?
@@ -377,6 +389,7 @@ action() {
     _tmpfile=$(mktemp)
     echo "$setenv" > $_tmpfile
     echo "$varsblock" >> $_tmpfile
+    echo "$shared" >> $_tmpfile
     echo "$script" >> $_tmpfile
     source $_tmpfile
     rm -f $_tmpfile
@@ -384,6 +397,7 @@ action() {
     nohup "$shell" <<EOF &>/dev/null &
 $setenv
 $varsblock
+$shared
 $script
 EOF
    elif (( interactive )); then
@@ -395,6 +409,7 @@ EOF
     "$shell" -i <<EOF
 $setenv
 $varsblock
+$shared
 $script
 EOF
   fi

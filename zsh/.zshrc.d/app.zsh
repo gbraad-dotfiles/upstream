@@ -7,6 +7,20 @@ _app_installpath=$(dotini apps --get "apps.path" || echo "${HOME}/Applications")
 eval APPSHOME=$(echo ${_app_installpath})
 mkdir -p $APPSHOME
 export LOCALBIN=${HOME}/.local/bin
+APPSREPO="${_app_defpath:-$HOME/.dotapps}"
+
+apps_repo_exists() {
+    if [ -d "${APPSREPO}" ]; then
+        return 0
+    else
+        return 1
+    fi
+}
+
+apps_repo_clone() {
+  local repo=$(dotini apps --get "apps.repository")
+  git clone ${repo} ${_appsdefpath} --depth 2
+}
 
 app_list_names_and_descs() {
     local appspath="$1"
@@ -20,8 +34,12 @@ app_list_names_and_descs() {
 
 app() {
 
-  local appspath="${_app_defpath:-$HOME/.dotapps}"
-  local appfile="${_app_defpath}/${1}.md"
+  if ! apps_repo_exists; then
+    apps_repo_clone
+  fi
+
+  local appspath="${APPSREPO:-$HOME/.dotapps}"
+  local appfile="${APPSREPO}/${1}.md"
   local list_mode=0
 
   local i=1
@@ -33,14 +51,14 @@ app() {
   done
 
   if (( list_mode )); then
-    app_list_names_and_descs ${_app_defpath}
+    app_list_names_and_descs ${APPSREPO}
     return 0
   fi
 
   if [[ -n "$1" ]]; then
 
     if [[ ! -f "$appfile" ]]; then
-      echo "No application Actionfile for '${1}' found in ${_app_defpath}"
+      echo "No application Actionfile for '${1}' found in ${APPSREPO}"
       return 2
     fi
 
