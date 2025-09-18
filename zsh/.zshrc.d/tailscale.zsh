@@ -12,27 +12,27 @@ alias tsnet_filter='grep ".ts.net"'
 
 if [[ $(dotini tailscale --get "tailscale.aliases") == true ]]; then
   # tailscale helpers
-  alias td='apps taildrop run'
-  alias ts='apps tailscale'
-  alias tss='apps tailscale status'
+  alias td='app taildrop run'
+  alias ts='app tailscale'
+  alias tss='app tailscale status'
   alias tsh='tailscale ssh'
   alias tsip='tailscale ip -4'
-  alias tpexit='apps tailscale exitnode select'
-  alias tpmull='apps tailscale exitmull select'
-  alias tsconnect='apps tailscale connect'
+  alias tpexit='app tailscale exitnode select'
+  alias tpmull='app tailscale exitmull select'
+  alias tsconnect='app tailscale connect'
 fi
 
 if [[ $(dotini tailscale --get "tailproxy.aliases") == true ]]; then
   # tailproxy helpers
-  alias tp='apps tailproxy'
-  alias tpkill='apps tailproxy kill'
-  alias tps='apps tailproxy status'
+  alias tp='app tailproxy'
+  alias tpkill='app tailproxy kill'
+  alias tps='app tailproxy status'
   alias tph='tailproxy ssh'
   alias tpip='tailproxy ip -4'
-  alias tpexit='apps tailproxy exitnode select'
-  alias tpmull='apps tailproxy exitmull select'
-  alias tptp='apps tailproxy up; proxy tailproxy-resolve'
-  alias tpconnect='apps tailproxy connect'
+  alias tpexit='app tailproxy exitnode select'
+  alias tpmull='app tailproxy exitmull select'
+  alias tptp='app tailproxy up; proxy tailproxy-resolve'
+  alias tpconnect='app tailproxy connect'
 
   # ssh/scp over tailproxy
   PROXYHOST="localhost:3215"
