@@ -375,12 +375,29 @@ action() {
   esac
 
   # Execution according to mode
-  if (( evaluate )); then
+  if (( background )); then
+    nohup "$shell" <<EOF &>/dev/null &
+$setenv
+$varsblock
+$setoverride
+$shared
+$script
+EOF
+  elif (( evaluate )); then
     eval "$setenv"
     eval "$varsblock"
     eval "$setoverride"
     eval "$shared"
     eval "$script"
+  elif (( sourced )); then
+    _tmpfile=$(mktemp)
+    echo "$setenv" > $_tmpfile
+    echo "$varsblock" >> $_tmpfile
+    echo "$setoverride" >> $_tmpfile
+    echo "$shared" >> $_tmpfile
+    echo "$script" >> $_tmpfile
+    source $_tmpfile
+    rm -f $_tmpfile
   elif (( subshell )); then
     local output exitcode
     output=$(
@@ -393,23 +410,6 @@ action() {
     exitcode=$?
     [ -n "$output" ] && echo "$output"
     return $exitcode
-  elif (( sourced )); then
-    _tmpfile=$(mktemp)
-    echo "$setenv" > $_tmpfile
-    echo "$varsblock" >> $_tmpfile
-    echo "$setoverride" >> $_tmpfile
-    echo "$shared" >> $_tmpfile
-    echo "$script" >> $_tmpfile
-    source $_tmpfile
-    rm -f $_tmpfile
-  elif (( background )); then
-    nohup "$shell" <<EOF &>/dev/null &
-$setenv
-$varsblock
-$setoverride
-$shared
-$script
-EOF
    elif (( interactive )); then
     if [[ "$shell" == *zsh* ]]; then
       echo "WARNING: You selected zsh as the execution shell. Note: Running zsh in interactive mode (-i) with a heredoc will NOT execute the script input!"

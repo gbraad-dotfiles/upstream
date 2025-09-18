@@ -54,7 +54,7 @@ app() {
     return 0
   fi
 
-  if [[ -n "$1" ]]; then
+  if [[ -n "${APPNAME}" ]]; then
 
     # Check if application actually defined
     if [[ ! -f "${APPFILE}" ]]; then
