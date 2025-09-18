@@ -262,10 +262,6 @@ action() {
     setenv="$(printf '%s\n' "$configblock" | actions_parse_ini)"
   fi
 
-  #if [[ -f ${HOME}/.config/dotapps/${app}.ini ]]; then
-  #  config_script="$(cat ${HOME}/.config/dotapps/${app}.ini | _parse_ini_config)"
-  #  eval $config_script
-  #fi
 
   # Add predefined variables programmatically
   local varsblock
@@ -274,12 +270,22 @@ action() {
     val="${predefined_vars[$key]}"
     varsblock="${varsblock}"$'\n'"${key}=\"${val//\"/\\\"}\""
   done
+
   # Apply --arg overrides
   for k v in "${(@kv)arg_vars}"; do
     # Remove any previous definition for this variable, then append the override
     varsblock=$(echo "$varsblock" | awk -v k="$k" '!($0 ~ "^"k"=") {print}')
     varsblock="${varsblock}"$'\n'"${k}=\"${v//\"/\\\"}\""
   done
+
+  # Handle configdir and possible override config
+  local configdir configname configfile setoverride
+  configpath=${arg_vars[CONFIGPATH]}
+  configname=${arg_vars[APPNAME]}
+  configfile="${configpath}/${configname}.ini"
+  if [[ -f "${configfile}" ]]; then
+    setoverride="$(cat ${configfile} | actions_parse_ini)"
+  fi
 
   # Parse action sections
   local -A sections_body sections_mode
@@ -357,7 +363,7 @@ action() {
 
   # Get shared
   shared="${sections_body["shared"]}"
-
+ 
   # Set background/interactive from execmode (if not already forced by CLI)
   case "$execmode" in
     *subshell*)    subshell=1 ;;
@@ -372,6 +378,7 @@ action() {
   if (( evaluate )); then
     eval "$setenv"
     eval "$varsblock"
+    eval "$setoverride"
     eval "$shared"
     eval "$script"
   elif (( subshell )); then
@@ -379,6 +386,7 @@ action() {
     output=$(
       eval "$setenv"
       eval "$varsblock"
+      eval "$setoverride"
       eval "$shared"
       eval "$script"
     )
@@ -389,6 +397,7 @@ action() {
     _tmpfile=$(mktemp)
     echo "$setenv" > $_tmpfile
     echo "$varsblock" >> $_tmpfile
+    echo "$setoverride" >> $_tmpfile
     echo "$shared" >> $_tmpfile
     echo "$script" >> $_tmpfile
     source $_tmpfile
@@ -397,6 +406,7 @@ action() {
     nohup "$shell" <<EOF &>/dev/null &
 $setenv
 $varsblock
+$setoverride
 $shared
 $script
 EOF
@@ -409,6 +419,7 @@ EOF
     "$shell" -i <<EOF
 $setenv
 $varsblock
+$setoverride
 $shared
 $script
 EOF

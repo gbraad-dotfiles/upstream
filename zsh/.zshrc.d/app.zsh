@@ -5,6 +5,8 @@ APPSREPO=$(dotini apps --get "apps.definitions" || echo "${HOME}/.dotapps")
 eval APPSREPO=$(echo ${APPSREPO})
 APPSHOME=$(dotini apps --get "apps.path" || echo "${HOME}/Applications")
 eval APPSHOME=$(echo ${APPSHOME})
+APPSCONFIG=$(dotini apps --get "apps.configpath" || echo "${HOME}/.config/dotapps")
+eval APPSCONFIG=$(echo ${APPSCONFIG})
 mkdir -p $APPSHOME
 export LOCALBIN=${HOME}/.local/bin
 
@@ -61,7 +63,7 @@ app() {
     shift 1
 
     # Perform execution as action
-    action ${APPFILE} $@ --arg APPNAME=${APPNAME}
+    action ${APPFILE} $@ --arg APPNAME=${APPNAME} --arg CONFIGPATH=${APPSCONFIG}
 
   else
 
