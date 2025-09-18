@@ -16,7 +16,7 @@ apps_repo_exists() {
 
 apps_repo_clone() {
   local repo=$(dotini apps --get "apps.repository")
-  git clone ${repo} ${_appsdefpath} --depth 2
+  git clone ${repo} ${APPSREPO} --depth 2
 }
 
 apps_list_names_and_descs() {
@@ -43,6 +43,8 @@ app() {
   while (( i <= $# )); do
     if [[ "${@[i]}" == "--list-apps" ]]; then
       list_mode=1
+    elif [[ "${@[i]}" == "alias" ]]; then
+      shift 1
     fi
     ((i++))
   done

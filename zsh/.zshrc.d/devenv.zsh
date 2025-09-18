@@ -247,7 +247,7 @@ if [[ $(dotini devenv --get "devenv.aliases") == true ]]; then
   dev() { devenv "$@" }
 fi
 
-devenv-service-install() {
+devenv-quadlet-install() {
   local name="$1"
   local image="$2"
   local sysname=${name}sys
@@ -258,7 +258,7 @@ devenv-service-install() {
   fi
 
   local service_dir="${HOME}/.config/containers/systemd"
-  local service_name="dotfiles-devenv-${name}.container"
+  local service_name="dotfiles-quadlet-${name}.container"
   local service_file="${service_dir}/${service_name}"
 
   mkdir -p "$service_dir"
@@ -279,3 +279,4 @@ EOF
   fi
   systemctl --user daemon-reload
 }
+
