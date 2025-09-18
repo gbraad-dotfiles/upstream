@@ -16,10 +16,8 @@ function apps_launcher_widget() {
 }
 
 function apps_launcher_command() {
-  app apps shared --evaluate
-
   local pick
-  pick=($(apps_fuzzy_pick))
+  pick=($(apps pick))
   [[ -z "$pick" ]] && return 1
   LBUFFER="app ${pick[1]} ${pick[2]} ${pick[3]}"
   zle accept-line
