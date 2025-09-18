@@ -39,7 +39,8 @@ app() {
   fi
 
   local appspath="${APPSREPO:-$HOME/.dotapps}"
-  local appfile="${APPSREPO}/${1}.md"
+  local APPNAME=$1
+  local APPFILE="${APPSREPO}/${APPNAME}.md"
   local list_mode=0
 
   local i=1
@@ -57,14 +58,15 @@ app() {
 
   if [[ -n "$1" ]]; then
 
-    if [[ ! -f "$appfile" ]]; then
-      echo "No application Actionfile for '${1}' found in ${APPSREPO}"
+    if [[ ! -f "${APPFILE}" ]]; then
+      echo "No application Actionfile for '${APPNAME}' found in ${APPSREPO}"
       return 2
     fi
 
     shift 1
 
-    action $appfile $@ --subshell
+    action ${APPFILE} $@ --arg APPNAME=${APPNAME} --subshell
+
   else
     echo "No application Actionfile specified"
   fi
