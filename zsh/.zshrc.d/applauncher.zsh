@@ -1,7 +1,8 @@
 if [[ $(dotini apps --get "apps.aliases") == true ]]; then
-    alias apps="app apps"
-    alias a="apps"
+    alias a="app"
+    alias as="apps"
     alias al="launcher"
+    alias apps="app apps"
 
     if [ -d "${APPSREPO}" ]; then
        app list aliases
