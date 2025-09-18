@@ -41,9 +41,9 @@ For more information, please look at [dotfiles.gbraad.nl](https://dotfiles.gbraa
 Installation
 ------------
 
-### Automated
+### Perform `install`
 
-```sh interactive
+```sh
 curl -fsSL https://dotfiles.gbraad.nl/install.sh | sh
 ```
 
@@ -51,18 +51,18 @@ curl -fsSL https://dotfiles.gbraad.nl/install.sh | sh
 > Source for this file: https://github.com/gbraad-dotfiles/gbraad-dotfiles.github.io/blob/main/install.sh. The `install.sh` in the repository itself is merely a symlink to the helper `dotfiles.zsh`. This will therefore not work when downloaded using `curl`.
 
 
-### Manual
+### Perform install from `repo`
 
-```sh interactive
+```sh
 git clone https://github.com/gbraad-dotfiles/upstream ~/.dotfiles --recursive
 ~/.dotfiles/install.sh
 ```
 
 
-### Update
+### Perform `update`
 After the dotfiles have been installed, it is easy to update using:
 
-```sh interactive
+```sh
 dotfiles update
 ```
 
