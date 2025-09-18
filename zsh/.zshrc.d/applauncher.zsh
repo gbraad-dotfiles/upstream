@@ -1,5 +1,6 @@
 if [[ $(dotini apps --get "apps.aliases") == true ]]; then
-    alias a="app apps"
+    alias apps="app apps"
+    alias a="apps"
     alias al="launcher"
 
     if [ -d "${APPSDIR}" ]; then
