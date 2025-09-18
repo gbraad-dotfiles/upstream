@@ -16,6 +16,8 @@ function apps_launcher_widget() {
 }
 
 function apps_launcher_command() {
+  app apps shared --evaluate
+
   local pick
   pick=($(apps_fuzzy_pick))
   [[ -z "$pick" ]] && return 1
