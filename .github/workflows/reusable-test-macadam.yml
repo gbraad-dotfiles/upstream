@@ -86,17 +86,17 @@ jobs:
           as_user: runner
           run: |
             # prepare
-            apps projects/gvproxy source checkout
-            apps projects/macadam source checkout
+            app projects/gvproxy source checkout
+            app projects/macadam source checkout
             devenv gofedora noinit
 
             # gvproxy
-            apps projects/gvproxy make
-            apps projects/gvproxy cp
+            app projects/gvproxy make
+            app projects/gvproxy cp
             
             # macadam
-            apps projects/macadam make
-            apps projects/macadam cp
+            app projects/macadam make
+            app projects/macadam cp
           
       - name: Prepare images for use with macadam
         uses: gbraad-actions/zsh-action@main
@@ -162,12 +162,12 @@ jobs:
           as_user: runner
           run: |
             # checkout source
-            machine ${{ inputs.prefix_name }} exec dotfiles apps projects/gvproxy source checkout
-            machine ${{ inputs.prefix_name }} exec dotfiles apps projects/macadam source checkout
+            machine ${{ inputs.prefix_name }} exec dotfiles app projects/gvproxy source checkout
+            machine ${{ inputs.prefix_name }} exec dotfiles app projects/macadam source checkout
             
             # this is a temporary solution as ssh does not pass arguments correctly
-            machine ${{ inputs.prefix_name }} exec dotfiles apps projects/gvproxy make local
-            machine ${{ inputs.prefix_name }} exec dotfiles apps projects/macadam make local
+            machine ${{ inputs.prefix_name }} exec dotfiles app projects/gvproxy make local
+            machine ${{ inputs.prefix_name }} exec dotfiles app projects/macadam make local
 
       - name: Hang around
         if: ${{ failure() }}

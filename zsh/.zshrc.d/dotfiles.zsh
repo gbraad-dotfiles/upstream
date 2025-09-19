@@ -319,7 +319,7 @@ dotup() {
    fi
 
    if [ "$(dotini dotfiles --get "dotup.apps")" = true ]; then
-     apps list update
+     app list update
    fi
 
    if [ "$(dotini dotfiles --get "dotup.secrets")" = true ]; then

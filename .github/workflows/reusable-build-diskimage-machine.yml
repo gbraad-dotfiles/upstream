@@ -39,8 +39,8 @@ jobs:
         with:
           as_user: runner
           run: |
-            apps macadam install
-            apps machinefile install
+            app macadam install
+            app machinefile install
 
       # as_user starts a new process/session; ensures this runs accelerated
       - name: Run machine build

@@ -36,7 +36,7 @@ jobs:
         with:
           as_user: runner
           run: |
-            apps machinefile install
+            app machinefile install
 
       # as_user starts a new process/session; ensures this runs accelerated
       - name: Run packer init and build process

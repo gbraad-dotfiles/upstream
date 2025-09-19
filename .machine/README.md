@@ -22,8 +22,8 @@ run clean
 
 ### dependencies
 ```sh 
-apps macadam install
-apps machinefile install
+app macadam install
+app machinefile install
 ```
 
 

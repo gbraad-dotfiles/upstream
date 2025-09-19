@@ -64,7 +64,7 @@ jobs:
         with:
           as_user: runner
           run: |
-            apps macadam install
+            app macadam install
 
       - name: Run machine command - create machine
         uses: gbraad-dotfiles/machine-action@main
