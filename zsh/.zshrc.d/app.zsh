@@ -66,12 +66,15 @@ app() {
   local APPNAME=$1
   local APPFILE="${APPSREPO}/${APPNAME}.md"
   local list_mode=0
+  local edit_mode=0
   local info_mode=0
 
   local i=1
   while (( i <= $# )); do
     if [[ "${@[i]}" == "--list-apps" ]]; then
       list_mode=1
+    elif [[ "${@[i]}" == "--edit" ]]; then
+      edit_mode=1
     elif [[ "${@[i]}" == "info" ]]; then
       info_mode=1
     elif [[ "${@[i]}" == "alias" ]]; then
@@ -79,6 +82,11 @@ app() {
     fi
     ((i++))
   done
+
+  if (( edit_mode )); then
+    vi ${APPSREPO}/${APPNAME}.md
+    return 0
+  fi
 
   if (( list_mode )); then
     apps_list_names_and_descs ${APPSREPO}
