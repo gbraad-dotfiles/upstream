@@ -18,7 +18,7 @@ function apps_launcher_widget() {
 
 function apps_launcher_command() {
   local pick
-  pick=($(apps pick))
+  pick=($(apps all))
   [[ -z "$pick" ]] && return 1
   LBUFFER="app ${pick[1]} ${pick[2]} ${pick[3]}"
   zle accept-line
