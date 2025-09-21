@@ -143,14 +143,6 @@ actions_extract_vars_block() {
   ' "$file"
 }
 
-# Platform detection (for context fallback)
-actions_detect_platform() {
-  if [[ -f /etc/os-release ]]; then
-    local os_id=$(awk -F= '$1=="ID"{print $2}' /etc/os-release)
-    echo $os_id
-  fi
-}
-
 action() {
   local shell="${ACTIONFILE_SHELL:-bash}"
   local search_dir=""
@@ -321,7 +313,6 @@ action() {
   local script=""
   local shared=""
   local execmode=""
-  local platform="$(actions_detect_platform)"
 
   # Set action to "default" if none provided
   if [[ -z "$act" ]]; then
@@ -346,13 +337,6 @@ action() {
   if [[ -z "${script//[[:space:]]/}" && -n "$act" ]]; then
     script="${sections_body["$act"]}"
     execmode="${sections_mode["$act"]}"
-  fi
-
-  # Platform match: platform-act (e.g. fedora-run)
-  if [[ -z "${script//[[:space:]]/}" && -n "$platform" && -n "$act" ]]; then
-    local platform_key="${platform}-${act}"
-    script="${sections_body["$platform_key"]}"
-    execmode="${sections_mode["$platform_key"]}"
   fi
 
   # Fallback: error
