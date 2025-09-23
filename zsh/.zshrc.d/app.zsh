@@ -197,6 +197,9 @@ app() {
         override_args+="--background"
       elif [[ "$arg" == "-i" || "$arg" == "--interactive" ]]; then
         override_args+="--evaluate"
+      elif [[ "$arg" == --* ]]; then
+        # ignore unknown -- arguments
+        :
       else
         other_args+=("$arg")
       fi
