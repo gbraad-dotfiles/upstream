@@ -87,7 +87,7 @@ app() {
   done
 
   if (( list_actions )); then
-    action ${APPFILE} --list-actions | grep -vE '^(run|alias|var|default|shared)$'
+    action ${APPFILE} --list-actions | grep -vE '^(info|run|alias|vars|default|shared)$'
     return 0
   fi; 
 
