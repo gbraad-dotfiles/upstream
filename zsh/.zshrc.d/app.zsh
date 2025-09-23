@@ -11,30 +11,35 @@ mkdir -p $APPSHOME
 export LOCALBIN=${HOME}/.local/bin
 
 appini() {
-  local config_name="$1"
+  local appname="$1"
+  if [ -z ${appname} ]; then
+    echo "No application specified"
+    return 1
+  fi
+
   shift
 
-  config_file="${APPSCONFIG}/${config_name}.ini"     
-  if [ ! -f "$config_file" ]; then
+  appconfig="${APPSCONFIG}/${appname}.ini"     
+  if [ ! -f "${appconfig}" ]; then
     local result
-    result=$(actions_extract_config_block ${APPSREPO}/${config_name}.md)
+    result=$(actions_extract_config_block ${APPSREPO}/${appname}.md)
     mkdir -p ${APPSCONFIG}
-    if [[ -z $result ]]; then
+    if [[ -z ${result} ]]; then
       echo "No application config available"
       return 1
     else
-      echo $result > ${APPSCONFIG}/${config_name}.ini
-      echo "Created local configuration for ${config_name}"
+      echo ${result} > ${appconfig}
+      echo "Created local configuration for ${appname}"
     fi
   fi
-  if [ ! -f "$config_file" ]; then
+  if [ ! -f "${appconfig}" ]; then
     echo "No local configuration available"
   else
     if echo "$@" | grep -q -- '--edit'; then
-      git config -f $config_file --edit
+      git config -f ${appconfig} --edit
       return 0
     else
-      git config -f $config_file $@
+      git config -f ${appconfig} $@
     fi
   fi
 }
