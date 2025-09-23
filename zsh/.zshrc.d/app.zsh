@@ -39,7 +39,6 @@ apps_extract_markdown() {
 }
 
 apps_info() {
-
   local info_block app appfile
   app=$1
   appfile=$2
@@ -55,6 +54,27 @@ apps_info() {
     echo "No info section found for $app"
   fi
   return
+}
+
+apps_detect_pkg() {
+    if [[ -n "$FORCE_PKG" ]]; then
+        echo "$FORCE_PKG"
+    elif command -v apt &>/dev/null; then
+        echo "apt"
+    elif command -v dnf &>/dev/null; then
+        echo "dnf"
+    elif command -v flatpak &>/dev/null; then
+        echo "flatpak"
+    else
+        echo ""
+    fi
+}
+
+apps_get_osid() {
+    if [ -f /etc/os-release ]; then
+        . /etc/os-release
+        echo "$ID"
+    fi
 }
 
 app() {
@@ -102,6 +122,7 @@ app() {
   fi
 
   if [[ -n "${APPNAME}" ]]; then
+    local common_args=(--arg APPNAME="${APPNAME}" --arg CONFIGPATH="${APPSCONFIG}")
 
     # Check if application actually defined
     if [[ ! -f "${APPFILE}" ]]; then
@@ -116,8 +137,29 @@ app() {
 
     shift 1
 
+    local action=$1
+    local context=$2
+
+    # Match section according to inferred context
+    if [[ -z "$context" ]]; then
+      local sections=$(action ${APPFILE} --list-sections)
+
+      # based on OS
+      local osid="$(apps_get_osid)"
+      if echo "$sections" | grep -Fxq "${osid}-${action}"; then
+        action ${APPFILE} "${osid}-${action}" "${common_args[@]}"
+        return
+      fi
+      # based on packager
+      local pkgid="$(apps_detect_pkg)"
+      if echo "$sections" | grep -Fxq "${pkgid}-${action}"; then
+        action ${APPFILE} "${pkgid}-${action}" "${common_args[@]}"
+        return
+      fi
+    fi
+
     # Perform execution as action
-    action ${APPFILE} $@ --arg APPNAME=${APPNAME} --arg CONFIGPATH=${APPSCONFIG}
+    action ${APPFILE} $@ "${common_args[@]}"
 
   else
 
