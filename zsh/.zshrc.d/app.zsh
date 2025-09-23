@@ -197,7 +197,7 @@ app() {
         override_args+="--background"
       elif [[ "$arg" == "-i" || "$arg" == "--interactive" ]]; then
         override_args+="--evaluate"
-      elif [[ "$arg" == --* ]]; then
+      elif [[ "$arg" == -* ]]; then
         # ignore unknown -- arguments
         :
       else
@@ -223,6 +223,7 @@ app() {
       if [ -z "$selected_action" ]; then
         local osid="$(apps_get_osid)"
         if echo "$sections" | grep -Fxq "${osid}-${action}"; then
+          
           selected_action="${osid}-${action}"
         fi
       fi
