@@ -139,27 +139,32 @@ app() {
 
     local action=$1
     local context=$2
+    local selected_action=""
 
     # Match section according to inferred context
     if [[ -z "$context" ]]; then
       local sections=$(action ${APPFILE} --list-sections)
 
-      # based on OS
-      local osid="$(apps_get_osid)"
-      if echo "$sections" | grep -Fxq "${osid}-${action}"; then
-        action ${APPFILE} "${osid}-${action}" "${common_args[@]}"
-        return
-      fi
       # based on packager
       local pkgid="$(apps_detect_pkg)"
       if echo "$sections" | grep -Fxq "${pkgid}-${action}"; then
-        action ${APPFILE} "${pkgid}-${action}" "${common_args[@]}"
-        return
+        selected_action="${pkgid}-${action}"
       fi
+      # based on OS
+      local osid="$(apps_get_osid)"
+      if echo "$sections" | grep -Fxq "${osid}-${action}"; then
+        selected_action="${osid}-${action}"
+      fi
+
+      if echo "$sections" | grep -Fxq "${action}"; then
+        selected_action="${action}"
+      fi  
+    else
+      selected_action="${context}-${action}"
     fi
 
-    # Perform execution as action
-    action ${APPFILE} $@ "${common_args[@]}"
+    # Perform execution using 'selected action'
+    action ${APPFILE} ${selected_action} "${common_args[@]}"
 
   else
 
