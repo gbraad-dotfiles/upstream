@@ -181,7 +181,7 @@ _dotdestow() {
 
 _dotrestow() {
   # Only run if ~/.config/dotfiles/ is a symlink
-  if [ ! -L "${HOME}/.config/dotfiles" ] && [ "$1" != "-f" ] && [ "$1" != "--force" ]; then
+  if [ ! -d "${HOME}/.config/dotfiles" ] && [ "$1" != "-f" ] && [ "$1" != "--force" ]; then
     echo "Aborting: ~/.config/dotfiles does not exist"
     return 1
   fi
