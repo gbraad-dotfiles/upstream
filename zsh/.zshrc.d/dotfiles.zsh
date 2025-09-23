@@ -5,10 +5,26 @@ dotini() {
   local config_name="$1"
   shift
 
-  local config_file="${HOME}/.config/dotfiles/${config_name}.ini"
+  if echo "$@" | grep -q -- '--edit'; then
+    config_file="${HOME}/.config/dotfiles/local/${config_name}.ini"     
+    git config -f $config_file --edit
+    return 0
+  fi
+
+  local config_file result
+  config_file="${HOME}/.config/dotfiles/local/${config_name}.ini"
+  if [ -f "$config_file" ]; then
+    if result=$(git config -f "$config_file" "$@") && [ -n "$result" ]; then
+     echo $result
+     return
+    fi
+  fi
+
+  config_file="${HOME}/.config/dotfiles/${config_name}.ini"
   if [ ! -f "$config_file" ]; then
     config_file="${HOME}/.dotfiles/config/.config/dotfiles/${config_name}.ini"
   fi
+
   if [ ! -f "$config_file" ]; then
     echo "Config file not found: $config_file"
     return 1
@@ -25,6 +41,7 @@ _dotinstall() {
   git submodule update --init --progress
 
   # always
+  mkdir -p ~/.config/dotfiles/local
   stow config
 
   # stow

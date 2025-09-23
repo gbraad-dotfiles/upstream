@@ -57,8 +57,10 @@ apps_info() {
 }
 
 apps_detect_pkg() {
-    if [[ -n "$FORCE_PKG" ]]; then
-        echo "$FORCE_PKG"
+    local forcepkg=$(dotini apps --get "apps.packager")
+
+    if [[ -n "$forcepkg" ]]; then
+        echo "$forcepkg"
     elif command -v apt &>/dev/null; then
         echo "apt"
     elif command -v dnf &>/dev/null; then
@@ -150,15 +152,18 @@ app() {
       if echo "$sections" | grep -Fxq "${pkgid}-${action}"; then
         selected_action="${pkgid}-${action}"
       fi
-      # based on OS
-      local osid="$(apps_get_osid)"
-      if echo "$sections" | grep -Fxq "${osid}-${action}"; then
-        selected_action="${osid}-${action}"
+      # based on OS (only if not already selected)
+      if [ -z "$selected_action" ]; then
+        local osid="$(apps_get_osid)"
+        if echo "$sections" | grep -Fxq "${osid}-${action}"; then
+          selected_action="${osid}-${action}"
+        fi
       fi
 
+      # Direct action takes precedence
       if echo "$sections" | grep -Fxq "${action}"; then
         selected_action="${action}"
-      fi  
+      fi
     else
       selected_action="${context}-${action}"
     fi
