@@ -169,8 +169,37 @@ app() {
 
     shift 1
 
-    local action=$1
-    local context=$2
+    local other_args=()
+    local override_args=()
+    # Loop through all arguments and extract --arg NAME=VALUE
+    local skip_next=0 arg nextarg kv
+    for ((i=1; i<=$#; i++)); do
+      if [[ ${skip_next} -eq 1 ]]; then
+        skip_next=0
+        continue
+      fi
+      arg="${@[i]}"
+      #if [[ "$arg" == "-bg" || "$arg" == "--background" ]]; then
+      #  background=1
+      #elif [[ "$arg" == "-i" || "$arg" == "--interactive" ]]; then
+      #  evaluate=1
+      if [[ "$arg" == "--arg" ]]; then
+        # support both '--arg NAME=VAL' and '--arg=NAME=VAL'
+        nextarg="${@[i+1]}"
+        if [[ "$nextarg" =~ "=" ]]; then
+          override_args+=("--arg=$nextarg")
+          skip_next=1
+        fi
+      elif [[ "$arg" == --arg=* ]]; then
+        override_args+=("--arg=${arg#--arg=}")
+      else
+        other_args+=("$arg")
+      fi
+    done
+
+    # Parse remaining arguments as action and context
+    local action=${other_args[1]}
+    local context=${other_args[2]}
     local selected_action=""
 
     # Match section according to inferred context
@@ -199,7 +228,7 @@ app() {
     fi
 
     # Perform execution using 'selected action'
-    action ${APPFILE} ${selected_action} "${common_args[@]}"
+    action ${APPFILE} ${selected_action} ${common_args[@]} ${override_args[@]}
 
   else
 
