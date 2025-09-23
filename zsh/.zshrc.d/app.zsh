@@ -20,13 +20,15 @@ appini() {
     result=$(actions_extract_config_block ${APPSREPO}/${config_name}.md)
     mkdir -p ${APPSCONFIG}
     if [[ -z $result ]]; then
-      echo "No config available"
+      echo "No application config available"
+      return 1
     else
       echo $result > ${APPSCONFIG}/${config_name}.ini
+      echo "Created local configuration for ${config_name}"
     fi
   fi
   if [ ! -f "$config_file" ]; then
-    echo "No config available"
+    echo "No local configuration available"
   else
     if echo "$@" | grep -q -- '--edit'; then
       git config -f $config_file --edit
