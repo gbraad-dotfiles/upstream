@@ -10,6 +10,34 @@ eval APPSCONFIG=$(echo ${APPSCONFIG})
 mkdir -p $APPSHOME
 export LOCALBIN=${HOME}/.local/bin
 
+appini() {
+  local config_name="$1"
+  shift
+
+  config_file="${APPSCONFIG}/${config_name}.ini"     
+  if [ ! -f "$config_file" ]; then
+    local result
+    result=$(actions_extract_config_block ${APPSREPO}/${config_name}.md)
+    mkdir -p ${APPSCONFIG}
+    if [[ -z $result ]]; then
+      echo "No config available"
+    else
+      echo $result > ${APPSCONFIG}/${config_name}.ini
+    fi
+  fi
+  if [ ! -f "$config_file" ]; then
+    echo "No config available"
+  else
+    if echo "$@" | grep -q -- '--edit'; then
+      git config -f $config_file --edit
+      return 0
+    else
+      git config -f $config_file $@
+    fi
+  fi
+}
+
+
 apps_repo_exists() {
   [ -d "${APPSREPO}" ] 
 }
