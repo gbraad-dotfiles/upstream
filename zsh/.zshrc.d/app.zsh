@@ -179,10 +179,6 @@ app() {
         continue
       fi
       arg="${@[i]}"
-      #if [[ "$arg" == "-bg" || "$arg" == "--background" ]]; then
-      #  background=1
-      #elif [[ "$arg" == "-i" || "$arg" == "--interactive" ]]; then
-      #  evaluate=1
       if [[ "$arg" == "--arg" ]]; then
         # support both '--arg NAME=VAL' and '--arg=NAME=VAL'
         nextarg="${@[i+1]}"
@@ -192,6 +188,10 @@ app() {
         fi
       elif [[ "$arg" == --arg=* ]]; then
         override_args+=("--arg=${arg#--arg=}")
+      elif [[ "$arg" == "-bg" || "$arg" == "--background" ]]; then
+        override_args+="--background"
+      elif [[ "$arg" == "-i" || "$arg" == "--interactive" ]]; then
+        override_args+="--evaluate"
       else
         other_args+=("$arg")
       fi
