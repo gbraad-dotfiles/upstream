@@ -68,11 +68,14 @@ app() {
   local list_mode=0
   local edit_mode=0
   local info_mode=0
+  local list_actions=0
 
   local i=1
   while (( i <= $# )); do
     if [[ "${@[i]}" == "--list-apps" ]]; then
       list_mode=1
+    elif [[ "${@[i]}" == "--list-actions" ]]; then
+      list_actions=1
     elif [[ "${@[i]}" == "--edit" ]]; then
       edit_mode=1
     elif [[ "${@[i]}" == "info" ]]; then
@@ -82,6 +85,11 @@ app() {
     fi
     ((i++))
   done
+
+  if (( list_actions )); then
+    action ${APPFILE} --list-actions | grep -vE '^(run|alias|var|default|shared)$'
+    return 0
+  fi; 
 
   if (( edit_mode )); then
     vi ${APPSREPO}/${APPNAME}.md
