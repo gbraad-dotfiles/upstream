@@ -1,7 +1,8 @@
 if [[ $(dotini apps --get "apps.aliases") == true ]]; then
     alias a="app"
     alias as="apps"
-    alias al="launcher"
+    alias ac="app actions"
+    alias al="app launcher"
     alias ass="apps services"
     alias asd="apps desktop"
     alias asu="apps update"
