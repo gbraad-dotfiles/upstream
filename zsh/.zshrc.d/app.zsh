@@ -137,8 +137,8 @@ app() {
       edit_mode=1
     elif [[ "${@[i]}" == "info" ]]; then
       info_mode=1
-    elif [[ "${@[i]}" == "alias" ]]; then
-      shift 1
+    #elif [[ "${@[i]}" == "alias" ]]; then  # assume app has default
+    #  shift 1
     fi
     ((i++))
   done
