@@ -81,14 +81,14 @@ devenv() {
     "status")
       devenv_targets | awk -v prefix="$PREFIX" '$1 == prefix {print $2}'
       ;;
-    "env" | "run" | "rootenv")
+    "env" | "run" | "ephemeral")
       podman run --rm -it --hostname ${HOSTNAME}-${ENVNAME} --entrypoint='' \
         "${START_ARGS[@]}" "${START_PATHS[@]}" \
         $(generate_devenv_name $PREFIX) ${START_SHELL} $@
       ;;
-    "userenv" | "userrun")
-      devenv $PREFIX run -c "su - gbraad"
-      ;;
+    #"userenv" | "userrun")
+    #  devenv $PREFIX run -c "su - gbraad"
+    #  ;;
     "create")
       podman create --name=${SYSNAME} --hostname ${HOSTNAME}-${SYSNAME} \
         --systemd=always "${START_ARGS[@]}" "${START_PATHS[@]}" \
