@@ -11,6 +11,9 @@ if [[ $(dotini apps --get "apps.aliases") == true ]]; then
     if [ -d "${APPSREPO}" ]; then
        app list aliases
     fi
+    if [ -d "${ACTPATH}" ]; then
+       app actionfiles aliases
+    fi
 fi
 
 function apps_launcher_widget() {
