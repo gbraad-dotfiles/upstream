@@ -92,26 +92,40 @@ apps_info() {
 }
 
 apps_detect_pkg() {
-    local forcepkg=$(dotini apps --get "apps.packager")
+  local forcepkg=$(dotini apps --get "apps.packager")
 
-    if [[ -n "$forcepkg" ]]; then
-        echo "$forcepkg"
-    elif command -v apt &>/dev/null; then
-        echo "apt"
-    elif command -v dnf &>/dev/null; then
-        echo "dnf"
-    elif command -v flatpak &>/dev/null; then
-        echo "flatpak"
-    else
-        echo ""
-    fi
+  if [[ -n "$forcepkg" ]]; then
+    echo "$forcepkg"
+  elif command -v apt &>/dev/null; then
+    echo "apt"     # debian, ubuntu
+  elif command -v dnf &>/dev/null; then
+    echo "dnf"     # fedora, el
+  elif command -v brew &>/dev/null; then
+    echo "brew"    # homebrew
+  elif command -v flatpak &>/dev/null; then
+    echo "flatpak" # desktop
+  elif command -v apk &>/dev/null; then
+    echo "apk"     # alpine
+  elif command -v pkg &>/dev/null; then
+    echo "pkg"     # termux
+  else
+    echo "unknown"
+  fi
 }
 
 apps_get_osid() {
-    if [ -f /etc/os-release ]; then
-        . /etc/os-release
-        echo "$ID"
-    fi
+  if [ -n "$TERMUX_VERSION" ]; then
+    echo "termux"
+    return
+  fi
+
+  if [ -f /etc/os-release ]; then
+    . /etc/os-release
+    echo "${ID:-unknown}"
+    return
+  fi
+
+  echo "unknown"
 }
 
 app() {
@@ -233,6 +247,7 @@ app() {
         selected_action="${action}"
       fi
     else
+      # Might not work with backtick?
       selected_action="${context}-${action}"
     fi
 
