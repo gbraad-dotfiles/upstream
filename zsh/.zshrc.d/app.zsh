@@ -119,6 +119,11 @@ apps_get_osid() {
     return
   fi
 
+  if [[ "$OSTYPE" == "cygwin" ]]; then
+     echo "cygwin"
+     return
+  fi
+
   if [ -f /etc/os-release ]; then
     . /etc/os-release
     echo "${ID:-unknown}"
