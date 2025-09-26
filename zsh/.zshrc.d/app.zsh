@@ -145,6 +145,7 @@ app() {
   local edit_mode=0
   local info_mode=0
   local config_mode=0
+  local screen_mode=0
   local list_actions=0
 
   local i=1
@@ -157,6 +158,8 @@ app() {
       edit_mode=1
     elif [[ "${@[i]}" == "--config" ]]; then
       config_mode=1
+    elif [[ "${@[i]}" == "--screen" ]]; then
+      screen_mode=1
     elif [[ "${@[i]}" == "info" ]]; then
       info_mode=1
     #elif [[ "${@[i]}" == "alias" ]]; then  # assume app has default
@@ -169,6 +172,7 @@ app() {
     action ${APPFILE} --list-actions | grep -vE '^(info|run|alias|vars|default|shared)$'
     return 0
   fi; 
+
 
   if (( config_mode )); then
     appini ${APPNAME} --edit
@@ -265,7 +269,11 @@ app() {
     fi
 
     # Perform execution using 'selected action'
-    action ${APPFILE} ${selected_action} ${common_args[@]} ${override_args[@]}
+    if (( screen_mode )); then
+      screen action ${APPFILE} ${selected_action} ${common_args[@]} ${override_args[@]}
+    else 
+      action ${APPFILE} ${selected_action} ${common_args[@]} ${override_args[@]}
+    fi
 
   else
 
