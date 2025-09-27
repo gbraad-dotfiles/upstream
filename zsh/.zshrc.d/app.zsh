@@ -1,11 +1,11 @@
 #!/bin/zsh
 
 export ACTIONFILE_SHELL=zsh
-APPSREPO=$(dotini apps --get "apps.definitions" || echo "${HOME}/.dotapps")
+APPSREPO=$(dotini app --get "apps.definitions" || echo "${HOME}/.dotapps")
 eval APPSREPO=$(echo ${APPSREPO})
-APPSHOME=$(dotini apps --get "apps.path" || echo "${HOME}/Applications")
+APPSHOME=$(dotini app --get "apps.path" || echo "${HOME}/Applications")
 eval APPSHOME=$(echo ${APPSHOME})
-APPSCONFIG=$(dotini apps --get "apps.configpath" || echo "${HOME}/.config/dotapps")
+APPSCONFIG=$(dotini app --get "apps.configpath" || echo "${HOME}/.config/dotapps")
 eval APPSCONFIG=$(echo ${APPSCONFIG})
 mkdir -p $APPSHOME
 export LOCALBIN=${HOME}/.local/bin
@@ -50,7 +50,7 @@ apps_repo_exists() {
 }
 
 apps_repo_clone() {
-  local repo=$(dotini apps --get "apps.repository")
+  local repo=$(dotini app --get "apps.repository")
   git clone ${repo} ${APPSREPO} --depth 2
 }
 
