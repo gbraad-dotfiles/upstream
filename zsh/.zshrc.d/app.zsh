@@ -180,7 +180,7 @@ app() {
   fi
 
   if (( edit_mode )); then
-    vi ${APPSREPO}/${APPNAME}.md
+    ${EDITOR} ${APPSREPO}/${APPNAME}.md
     return 0
   fi
 
