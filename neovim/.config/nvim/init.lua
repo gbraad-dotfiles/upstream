@@ -43,7 +43,7 @@ require("lazy").setup({
           c = { fg = '#b4b7b4', bg = '#303030' },
           x = { fg = '#b4b7b4', bg = '#303030' },
           y = { fg = '#c5c8c6', bg = '#585858' },
-          z = { fg = '#c5c8c6', bg = '#D0D0D0' }
+          z = { fg = '#303030', bg = '#D0D0D0' }
         },
         insert = {
           a = { fg = '#373b41', bg = '#FFFFFF' },
