@@ -1,12 +1,7 @@
-if [[ $(dotini apps --get "apps.aliases") == true ]]; then
-    alias a="app"
-    alias as="apps"
-    alias ac="app actions"
-    alias al="app launcher"
-    alias ass="apps services"
-    alias asd="apps desktop"
-    alias asu="apps update"
-    alias apps="app apps"
+if [[ $(dotini launcher --get "launcher.aliases") == true ]]; then
+    dotini launcher --list | grep '^aliases\.' | sed 's/^aliases\.//g' | while read -r toalias; do
+      alias $toalias
+    done
 
     if [ -d "${APPSREPO}" ]; then
        app list aliases
@@ -31,8 +26,8 @@ function apps_launcher_command() {
   zle accept-line
 }
 
-if [[ $(dotini apps --get "apps.launcher") == true ]]; then
-  shortcut=$(dotini apps --get "apps.shortcut")
+if [[ $(dotini launcher --get "launcher.enabled") == true ]]; then
+  shortcut=$(dotini launcher --get "launcher.shortcut")
   if [[ $shortcut == \^? ]]; then
     char=${shortcut#^}
     eval "shortcut=\$'\\C-$char'"
