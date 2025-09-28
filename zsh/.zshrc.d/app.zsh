@@ -262,9 +262,11 @@ app() {
 
       # Direct action takes precedence
       #if echo "$sections" | grep -Fxq "${action}"; then
-      selected_action="${action}"
-      #fi
-      
+      # if nothing selected before
+      if [[ -z "$selected_action" ]]; then
+        selected_action="${action}"
+      fi
+ 
     else
       # Might not work with backtick?
       selected_action="${context}-${action}"
