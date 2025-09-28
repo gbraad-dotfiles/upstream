@@ -92,7 +92,7 @@ apps_info() {
 }
 
 apps_detect_pkg() {
-  local forcepkg=$(dotini apps --get "apps.packager")
+  local forcepkg=$(dotini app --get "apps.packager")
 
   if [[ -n "$forcepkg" ]]; then
     echo "$forcepkg"
