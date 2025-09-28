@@ -243,6 +243,7 @@ app() {
 
     # Match section according to inferred context
     if [[ -z "$context" ]]; then
+
       local sections=$(action ${APPFILE} --list-sections)
 
       # based on packager
@@ -260,9 +261,10 @@ app() {
       fi
 
       # Direct action takes precedence
-      if echo "$sections" | grep -Fxq "${action}"; then
-        selected_action="${action}"
-      fi
+      #if echo "$sections" | grep -Fxq "${action}"; then
+      selected_action="${action}"
+      #fi
+      
     else
       # Might not work with backtick?
       selected_action="${context}-${action}"
