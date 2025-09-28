@@ -190,7 +190,7 @@ action() {
     elif [[ "${@[i]}" == "--list-actions" ]]; then
       list_mode=1
       list_as_actions=1
-    elif [[ "${@[i]}" == "." || "${@[i]}" == */ || -d "${@[i]}" ]]; then
+    elif [[ -z $file && ( "${@[i]}" == "." || "${@[i]}" == */ || -d "${@[i]}" ) ]]; then
       search_dir="${@[i]}"
     elif [[ "${@[i]}" == *".md" ]]; then
       file="${@[i]}"
