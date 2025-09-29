@@ -5,8 +5,8 @@ notebook() {
     app jupytext install
   fi
 
-  if [ $# -lt 1 ]; then
-    echo "Usage: $0 <command> [args...]"
+  if [ $# -lt 2 ]; then
+    echo "Usage: $0 [notebook] <command> [args...]"
     return 1
   fi
   
