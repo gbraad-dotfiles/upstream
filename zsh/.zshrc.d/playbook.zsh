@@ -66,6 +66,11 @@ playbook() {
     "execute" | "run")
       ansible-playbook ${PLAYBOOK}
       ;;
+    "remote")
+      local host=$1
+      shift
+      playbook_remote ${host} ${PLAYBOOK} $@
+      ;;
     "devenv")
       devenv $1 playbook ${PLAYBOOK}
       ;;
