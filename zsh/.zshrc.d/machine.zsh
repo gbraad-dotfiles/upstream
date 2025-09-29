@@ -228,7 +228,7 @@ machine() {
       $(dotini machine --add disks.$1 "${IMAGE}")
       ;;
     "playbook")
-      remote_playbook macadam ${SYSNAME} $@ # <filename> <...> 
+      playbook_remote macadam ${SYSNAME} $@ # <filename> <...> 
       ;;
     "from")
       if machine ${PREFIX} exists; then

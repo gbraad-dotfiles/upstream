@@ -1,5 +1,5 @@
 #!/bin/zsh
-remote_playbook() {
+playbook_remote() {
     if [ "$#" -lt 2 ]; then
         echo "Usage: $0 <ssh_target|podman container|macadam vmname> <ansible-playbook arguments...>"
         return 1

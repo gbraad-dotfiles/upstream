@@ -194,7 +194,7 @@ devenv() {
       devenv ${PREFIX} user dotfiles $@
       ;;
     "playbook")
-      remote_playbook podman ${SYSNAME} $@ # <filename> <...> 
+      playbook_remote podman ${SYSNAME} $@ # <filename> <...> 
       ;;
     "from")
       # use $1 as prefix value for the image

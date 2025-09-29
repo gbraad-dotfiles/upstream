@@ -137,7 +137,7 @@ devbox() {
       podman exec -it ${BOXNAME} $@
       ;;
     "playbook")
-      remote_playbook podman ${BOXNAME} $@ # <filename> <...> 
+      playbook_remote podman ${BOXNAME} $@ # <filename> <...> 
       ;;
     "from")
       # use $1 as prefix value for the image
