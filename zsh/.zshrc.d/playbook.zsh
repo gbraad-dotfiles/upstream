@@ -46,3 +46,40 @@ playbook_remote() {
 
     return 0
 }
+
+playbook() {
+  if [ $# -lt 2 ]; then
+    echo "Usage: $0 [playbook] <command> [args...]"
+    return 1
+  fi
+  
+  local PLAYBOOK=$1
+  local COMMAND=$2
+  shift 2
+
+  if [ ! -f "${PLAYBOOK}" ]; then
+    echo "Playbook does not exist."
+    return 1
+  fi
+
+  case "${COMMAND}" in
+    "execute" | "run")
+      ansible-playbook ${PLAYBOOK}
+      ;;
+    "devenv")
+      devenv $1 playbook ${PLAYBOOK}
+      ;;
+    "devbox")
+      devbox $1 playbook ${PLAYBOOK}
+      ;;
+    "machine")
+      machine $1 playbook ${PLAYBOOK}
+      ;;
+    "edit")
+      ${EDITOR} ${PLAYBOOK}
+      ;;
+    *)
+      echo "Unknown command: $0 ${COMMAND}"
+      ;;
+  esac
+}
