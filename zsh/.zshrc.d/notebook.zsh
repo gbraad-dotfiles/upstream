@@ -32,6 +32,12 @@ notebook() {
     "convert")
       jupytext --set-formats ipynb,md ${NOTEBOOK}
       ;;
+    "edit")
+      notebook ${NOTEBOOK} sync >/dev/null 2>&1
+      NOTEBOOK=$(echo "${NOTEBOOK}" | sed 's/\.ipynb$/.md/')
+      ${EDITOR} ${NOTEBOOK}
+      notebook ${NOTEBOOK} sync >/dev/null 2>&1
+      ;;
     *)
       echo "Unknown command: $0 ${COMMAND}"
       ;;
