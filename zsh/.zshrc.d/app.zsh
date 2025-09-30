@@ -1,12 +1,12 @@
 #!/bin/zsh
 
 export ACTIONFILE_SHELL=zsh
-APPSREPO=$(dotini app --get "apps.definitions" || echo "${HOME}/.dotapps")
-eval APPSREPO=$(echo ${APPSREPO})
-APPSHOME=$(dotini app --get "apps.path" || echo "${HOME}/Applications")
+APPS_PATH=$(dotini app --get "apps.path" || echo "${HOME}/.dotapps")
+eval APPS_PATH=$(echo ${APPS_PATH})
+APPSHOME=$(dotini app --get "apps.home" || echo "${HOME}/Applications")
 eval APPSHOME=$(echo ${APPSHOME})
-APPSCONFIG=$(dotini app --get "apps.configpath" || echo "${HOME}/.config/dotapps")
-eval APPSCONFIG=$(echo ${APPSCONFIG})
+APPS_CONFIG=$(dotini app --get "apps.config" || echo "${HOME}/.config/dotapps")
+eval APPS_CONFIG=$(echo ${APPS_CONFIG})
 mkdir -p $APPSHOME
 export LOCALBIN=${HOME}/.local/bin
 
@@ -19,11 +19,11 @@ appini() {
 
   shift
 
-  appconfig="${APPSCONFIG}/${appname}.ini"     
+  appconfig="${APPS_CONFIG}/${appname}.ini"     
   if [ ! -f "${appconfig}" ]; then
     local result
-    result=$(actions_extract_config_block ${APPSREPO}/${appname}.md)
-    mkdir -p ${APPSCONFIG}
+    result=$(actions_extract_config_block ${APPS_PATH}/${appname}.md)
+    mkdir -p ${APPS_CONFIG}
     if [[ -z ${result} ]]; then
       echo "No application config available"
       return 1
@@ -46,12 +46,12 @@ appini() {
 
 
 apps_repo_exists() {
-  [ -d "${APPSREPO}" ] 
+  [ -d "${APPS_PATH}" ]
 }
 
 apps_repo_clone() {
-  local repo=$(dotini app --get "apps.repository")
-  git clone ${repo} ${APPSREPO} --depth 2
+  local APPS_REPO=$(dotini app --get "apps.repo")
+  git clone ${APPS_REPO} ${APPS_PATH} --depth 2
 }
 
 apps_list_names_and_descs() {
@@ -140,7 +140,7 @@ app() {
   fi
 
   local APPNAME=$1
-  local APPFILE="${APPSREPO}/${APPNAME}.md"
+  local APPFILE="${APPS_PATH}/${APPNAME}.md"
   local list_mode=0
   local edit_mode=0
   local info_mode=0
@@ -180,21 +180,21 @@ app() {
   fi
 
   if (( edit_mode )); then
-    ${EDITOR} ${APPSREPO}/${APPNAME}.md
+    ${EDITOR} ${APPS_PATH}/${APPNAME}.md
     return 0
   fi
 
   if (( list_mode )); then
-    apps_list_names_and_descs ${APPSREPO}
+    apps_list_names_and_descs ${APPS_PATH}
     return 0
   fi
 
   if [[ -n "${APPNAME}" ]]; then
-    local common_args=(--arg APPNAME="${APPNAME}" --arg CONFIGPATH="${APPSCONFIG}")
+    local common_args=(--arg APPNAME="${APPNAME}" --arg CONFIGPATH="${APPS_CONFIG}")
 
     # Check if application actually defined
     if [[ ! -f "${APPFILE}" ]]; then
-      echo "No application Actionfile for '${APPNAME}' found in ${APPSREPO}"
+      echo "No application Actionfile for '${APPNAME}' found in ${APPS_PATH}"
       return 2
     fi
 
