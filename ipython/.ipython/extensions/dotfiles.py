@@ -9,7 +9,7 @@ def in_jupyter():
         return False
 
 def load_ipython_extension(ipython):
-    print("dotfiles extension loaded!")
+    pass
 
 def make_tool_magic(tool):
     @register_line_magic(tool)
