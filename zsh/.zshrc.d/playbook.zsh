@@ -70,6 +70,11 @@ playbook() {
     "execute" | "run" | "local")
       ansible-playbook ${PLAYBOOK} $@
       ;;
+    "host" | "hosts")
+      HOST=$1
+      shift
+      ansible-playbook -i ${HOST}, ${PLAYBOOK} $@
+      ;;
     "remote")
       HOST=$1
       shift
