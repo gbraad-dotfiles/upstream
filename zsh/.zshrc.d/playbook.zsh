@@ -55,6 +55,7 @@ playbook() {
   
   local PLAYBOOK=$1
   local COMMAND=$2
+  local HOST
   shift 2
 
   if [ ! -f "${PLAYBOOK}" ]; then
@@ -63,25 +64,31 @@ playbook() {
   fi
 
   case "${COMMAND}" in
-    "execute" | "run")
-      ansible-playbook ${PLAYBOOK}
-      ;;
-    "remote")
-      local host=$1
-      shift
-      playbook_remote ${host} ${PLAYBOOK} $@
-      ;;
-    "devenv")
-      devenv $1 playbook ${PLAYBOOK}
-      ;;
-    "devbox")
-      devbox $1 playbook ${PLAYBOOK}
-      ;;
-    "machine")
-      machine $1 playbook ${PLAYBOOK}
-      ;;
     "edit")
       ${EDITOR} ${PLAYBOOK}
+      ;;
+    "execute" | "run" | "local")
+      ansible-playbook ${PLAYBOOK} $@
+      ;;
+    "remote")
+      HOST=$1
+      shift
+      playbook_remote ${HOST} ${PLAYBOOK} $@
+      ;;
+    "devenv")
+      HOST=$1
+      shift
+      devenv ${HOST} playbook ${PLAYBOOK} $@
+      ;;
+    "devbox")
+      HOST=$1
+      shift
+      devbox ${HOST} playbook ${PLAYBOOK} $@
+      ;;
+    "machine")
+      HOST=$1
+      shift
+      machine ${HOST} playbook ${PLAYBOOK} $@
       ;;
     *)
       echo "Unknown command: $0 ${COMMAND}"
