@@ -1,6 +1,10 @@
 #!/usr/bin/zsh
 
 notebook() {
+  if ! app ipython check; then
+    app ipython install
+  fi
+
   if ! app jupytext check; then
     app jupytext install
   fi
