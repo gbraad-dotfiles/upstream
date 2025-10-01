@@ -17,7 +17,7 @@ def make_tool_magic(tool):
         command = f"zsh -i -c 'if ! typeset -f {tool} >/dev/null; then source ~/.dotfiles/source.sh; fi; {tool} {line}'"
         get_ipython().system(command)
 
-for tool in ["dotfiles", "app", "action", "devenv", "devbox", "machine"]:
+for tool in ["dotfiles", "app", "action", "devenv", "devbox", "machine", "notebook", "playbook"]:
     make_tool_magic(tool)
 
 @register_line_cell_magic
