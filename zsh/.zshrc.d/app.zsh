@@ -144,6 +144,7 @@ app() {
   local list_mode=0
   local edit_mode=0
   local info_mode=0
+  local here_mode=0
   local config_mode=0
   local screen_mode=0
   local list_actions=0
@@ -162,6 +163,8 @@ app() {
       screen_mode=1
     elif [[ "${@[i]}" == "info" ]]; then
       info_mode=1
+    elif [[ "${@[i]}" == "." ]]; then
+      here_mode=1
     #elif [[ "${@[i]}" == "alias" ]]; then  # assume app has default
     #  shift 1
     fi
@@ -228,6 +231,8 @@ app() {
         override_args+="--background"
       elif [[ "$arg" == "-i" || "$arg" == "--interactive" ]]; then
         override_args+="--evaluate"
+      elif [[ "$arg" == "." ]]; then
+        here_mode=1
       elif [[ "$arg" == -* ]]; then
         # ignore unknown -- arguments
         :
@@ -240,6 +245,10 @@ app() {
     local action=${other_args[1]}
     local context=${other_args[2]}
     local selected_action=""
+
+    if (( here_mode )); then
+      action="here"
+    fi
 
     # Match section according to inferred context
     if [[ -z "$context" ]]; then
