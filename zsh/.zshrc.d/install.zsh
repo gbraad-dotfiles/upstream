@@ -6,7 +6,7 @@ apps_desktop_install() {
     return 1
   fi
 
-  local desc_file="${APPSREPO}/${appname}.md"
+  local desc_file="${APPS_PATH}/${appname}.md"
 
   local has_rundesktop=0
   if grep -Eq '^###\s+.*\brun-desktop\b' "$desc_file"; then
@@ -51,7 +51,7 @@ apps_service_install() {
     return 1
   fi
 
-  local desc_file="${APPSREPO}/${appname}.md"
+  local desc_file="${APPS_PATH}/${appname}.md"
 
   if ! grep -Eq '^###\s+.*\brun-service\b' "$desc_file"; then
     echo "Cannot export service: No 'run-service' section found in $desc_file"
