@@ -280,12 +280,15 @@ dotfiles() {
     "paths")
       source ~/.dotfiles/zsh/.zshrc.d/paths.zsh
       ;;
+    # subcommands
+    "action")
+      dotfiles dot action $@
+      ;;
+    "app")
+      dotfiles dot app $@
+      ;;
     "screen")
       dotfiles dot screen
-      ;;
-    # subcommands
-    "apps")
-      dotfiles dot apps $@
       ;;
     "secrets")
       dotfiles dot secrets $@
@@ -301,6 +304,12 @@ dotfiles() {
       ;;
     "machine")
       dotfiles dot machine $@
+      ;;
+    "notebook")
+      dotfiles dot notebook $@
+      ;;
+    "playbook")
+      dotfiles dot playbook $@
       ;;
     *)
       echo "Unknown command: $0 $COMMAND"
@@ -329,22 +338,24 @@ if [ "$(dotini dotfiles --get "dotfiles.autoupdate")" = true ]; then
   dotup
 fi
 
+dotsrc() {
+  dotfiles source
+}
+
 dotup() {
+  if [ "$(dotini dotfiles --get "dotup.dotfiles")" = true ]; then
+    dotfiles update
+  fi
 
-   if [ "$(dotini dotfiles --get "dotup.dotfiles")" = true ]; then
-     dotfiles update
-   fi
+  if [ "$(dotini dotfiles --get "dotup.apps")" = true ]; then
+    app list update
+  fi
 
-   if [ "$(dotini dotfiles --get "dotup.apps")" = true ]; then
-     app list update
-   fi
-
-   if [ "$(dotini dotfiles --get "dotup.secrets")" = true ]; then
-     # TODO: make sure dotini exists as a reusable function
-     # The path is defined in secrets.ini
-     if [ -d "${HOME}/.dotsecrets" ]; then
-       secrets update
-     fi
-   fi
-
+  if [ "$(dotini dotfiles --get "dotup.secrets")" = true ]; then
+    # TODO: make sure dotini exists as a reusable function
+    # The path is defined in secrets.ini
+    if [ -d "${HOME}/.dotsecrets" ]; then
+      secrets update
+    fi
+  fi
 }
