@@ -41,7 +41,7 @@ playbook_remote() {
     local remote_file="/tmp/$(basename ${playbook_file})"
 
     cat ${playbook_file} | ${runner_and_target} sh -c "cat > '${remote_file}'" 
-    ${runner_and_target} ansible-playbook ${remote_file} ${filtered_args[@]}
+    ${runner_and_target} ansible-playbook -i localhost, -c local ${remote_file} ${filtered_args[@]}
     ${runner_and_target} rm -f ${remote_file}
 
     return 0
@@ -68,7 +68,7 @@ playbook() {
       ${EDITOR} ${PLAYBOOK}
       ;;
     "execute" | "run" | "local")
-      ansible-playbook ${PLAYBOOK} $@
+      ansible-playbook -i localhost, -c local ${PLAYBOOK} $@
       ;;
     "host" | "hosts")
       HOST=$1
