@@ -3,10 +3,10 @@ if [[ $(dotini launcher --get "launcher.aliases") == true ]]; then
       alias $toalias
     done
 
-    if [ -d "${APPSREPO}" ]; then
+    if [ -d "${APPS_PATH}" ]; then
        app list aliases
     fi
-    if [ -d "${ACTPATH}" ]; then
+    if [ -d "${ACTIONFILES_PATH}" ]; then
        app actionfiles aliases
     fi
 fi
