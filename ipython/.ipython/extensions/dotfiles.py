@@ -14,7 +14,7 @@ def load_ipython_extension(ipython):
 def make_tool_magic(tool):
     @register_line_magic(tool)
     def magic(line, cell=None):
-        command = f"zsh -i -c 'if ! typeset -f {tool} >/dev/null; then source ~/.dotfiles/source.sh; fi; {tool} {line}'"
+        command = f"zsh -c 'if ! typeset -f {tool} >/dev/null; then source ~/.dotfiles/source.sh; fi; {tool} {line}'"
         get_ipython().system(command)
 
 for tool in ["dotfiles", "app", "action", "devenv", "devbox", "machine", "notebook", "playbook"]:
@@ -22,7 +22,7 @@ for tool in ["dotfiles", "app", "action", "devenv", "devbox", "machine", "notebo
 
 @register_line_cell_magic
 def dotscript(line, cell=None):
-    command = f"zsh -i -c 'source ~/.dotfiles/source.sh; {line}"
+    command = f"zsh -c 'source ~/.dotfiles/source.sh; {line}"
     if cell is not None:
         command += f"; {cell.strip()}"
     command += "'"
