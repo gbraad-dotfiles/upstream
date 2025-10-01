@@ -1,4 +1,4 @@
-#!/bin/zsh
+#!/bin/bash
 
 # this is to make this work with the restricted bash from Debian
 dotini() {
