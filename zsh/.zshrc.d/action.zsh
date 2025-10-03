@@ -1,12 +1,12 @@
 #!/usr/bin/env zsh
 
 # Candidate filenames for actionfile
-actions_candidate_files=("Actionfile.md" "Actfile.md" "README.md")
+ACTIONS_CANDIDATE_FILES=("Actionfile.md" "Actfile.md" "README.md")
 
 # Find the actionfile in a given directory
 actions_find_actionfile() {
   local dir="$1"
-  for fname in "${actions_candidate_files[@]}"; do
+  for fname in "${ACTIONS_CANDIDATE_FILES[@]}"; do
     if [[ -f "$dir/$fname" ]]; then
       echo "$dir/$fname"
       return 0
