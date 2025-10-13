@@ -12,7 +12,12 @@ on:
         required: true
         type: string
         default: "ubuntu-latest"
-
+      cleanup:
+        description: "If true, removes unwanted stuff (snap, lxd, multipass, etc)"
+        required: false
+        type: boolean
+        default: false
+        
 defaults:
   run:
     shell: bash
@@ -29,8 +34,9 @@ jobs:
       - name: Allow unprivileged userns (workaround)
         uses: gbraad-actions/warpbuild-unprivileged-userns@main
 
-      #- name: Remove unwanted stuff
-      #  uses: gbraad-actions/remove-unwanted@v1
+      - name: Remove unwanted stuff
+        if: ${{ inputs.cleanup  }}
+        uses: gbraad-actions/remove-unwanted@v1
 
       - name: Get last 3 chars of hostname
         id: runner_id

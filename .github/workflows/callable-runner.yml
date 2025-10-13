@@ -8,6 +8,11 @@ on:
         required: true
         type: string
         default: "ubuntu-latest"
+      cleanup:
+        description: "If true, removes unwanted stuff (snap, lxd, multipass, etc)"
+        required: false
+        type: boolean
+        default: false
 
 defaults:
   run:
@@ -26,6 +31,7 @@ jobs:
         uses: gbraad-actions/warpbuild-unprivileged-userns@main
 
       - name: Remove unwanted stuff
+        if: ${{ inputs.cleanup  }}
         uses: gbraad-actions/remove-unwanted@v1
 
       - name: Change containers storage
