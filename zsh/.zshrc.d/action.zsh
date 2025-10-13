@@ -409,7 +409,3 @@ $script
 EOF
   fi
 }
-
-if [[ $(dotini apps --get "apps.aliases") == true ]]; then
-  alias run="action ."
-fi

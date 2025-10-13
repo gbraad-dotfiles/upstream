@@ -22,3 +22,6 @@ alias pssh='ssh -o "ProxyCommand=netcat -X 5 -x localhost:3222 %h %p"'
 
 # ANSI
 alias remove-ansi="sed -r 's/\x1b\[[0-9;]*m//g'"
+
+# run
+alias run="action --evaluate"
