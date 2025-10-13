@@ -33,17 +33,28 @@ else
  "${HOME}/.dotfiles/activate.sh" __ARGS__
 fi
 '
-  local COMMAND_TO_SEND="${COMMAND//__ARGS__/$@}"
 
   local -a SSH_OPTS
   SSH_OPTS=(-X -t -o StrictHostKeyChecking=no)
   [[ -n "$PORT" ]] && SSH_OPTS+=(-p "$PORT")
+
+  if [[ "$1" == "--ssh-opts" ]]; then
+    shift
+    while [[ "$1" != "--" && $# -gt 0 ]]; do
+      SSH_OPTS+=("$1")
+      shift
+    done
+    [[ "$1" == "--" ]] && shift
+  fi
+
+  local COMMAND_TO_SEND="${COMMAND//__ARGS__/$@}"
 
   ssh ${SSH_OPTS[@]} ${USERHOST} ${COMMAND_TO_SEND}
 }
 
 rcopyid() {
   local ADDRESS=$1
+  shift
 
   # Parse address and port
   local USERHOST PORT
@@ -57,6 +68,9 @@ rcopyid() {
   
   local -a SSH_OPTS
   [[ -n "$PORT" ]] && SSH_OPTS+=(-p "$PORT")
+
+  # Append any additional SSH options passed as arguments
+  SSH_OPTS+=("$@")
 
   ssh-copy-id ${SSH_OPTS[@]} ${USERHOST}
 }
@@ -93,13 +107,14 @@ mdot() {
     local port user
     port=$(jq -r '.SSH.Port' "$config_path")
     user=$(jq -r '.SSH.RemoteUsername' "$config_path")
+    identity=$(jq -r '.SSH.IdentityPath' "$config_path")
 
     if [[ "$port" == "null" || "$user" == "null" ]]; then
         echo "Could not extract SSH credentials from $config_path"
         return 1
     fi
 
-    rdot ${user}@localhost:${port} $@
+    rdot ${user}@localhost:${port} --ssh-opts -i "${identity}" -- $@
 }
 
 mcopyid() {
@@ -115,13 +130,14 @@ mcopyid() {
     local port user
     port=$(jq -r '.SSH.Port' "$config_path")
     user=$(jq -r '.SSH.RemoteUsername' "$config_path")
+    identity=$(jq -r '.SSH.IdentityPath' "$config_path")
 
     if [[ "$port" == "null" || "$user" == "null" ]]; then
         echo "Could not extract SSH credentials from $config_path"
         return 1
     fi
 
-    rcopyid ${user}@localhost:${port}
+    rcopyid ${user}@localhost:${port} -i "${identity}"
 }
 
 mshell() {
