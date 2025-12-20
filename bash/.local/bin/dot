@@ -4,13 +4,35 @@ if [ ! -L "${HOME}/.config/dotfiles" ]; then
 fi
 export COLORTERM=truecolor
 
-# If the first argument is -c, shift it off
-if [ "$1" = "-c" ]; then
-  shift
-fi
+# Parse flags
+zsh_flags=""
+has_c_flag=0
 
-if [ "$#" -eq 0 ]; then
+while [ "$#" -gt 0 ]; do
+  case "$1" in
+    -l|-i|-s)
+      zsh_flags="$zsh_flags $1"
+      shift
+      ;;
+    -c)
+      has_c_flag=1
+      shift
+      # Continue parsing for more flags
+      ;;
+    *)
+      # First non-flag argument
+      break
+      ;;
+  esac
+done
+
+if [ "$has_c_flag" -eq 1 ] && [ "$#" -gt 0 ]; then
+  # First arg is the command, rest are passed through
+  user_cmd="$1"
+  shift
+  exec zsh $zsh_flags -c "source ${HOME}/.dotfiles/dotfiles.sh && dotfiles source && { $user_cmd; }" "$@"
+elif [ "$#" -eq 0 ]; then
   exec zsh --login
 else
-  exec zsh -c "dotfiles source; $*"
+  exec zsh "$@"
 fi
