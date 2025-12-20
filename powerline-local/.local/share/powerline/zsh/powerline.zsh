@@ -22,12 +22,12 @@ integer -g _POWERLINE_JOBNUM=0
 
 _powerline_tmux_pane() {
 	local -x TMUX="$_POWERLINE_TMUX"
-	echo "${TMUX_PANE:-`tmux display -p "#D"`}" | tr -d ' %'
+	echo "${TMUX_PANE:-$(tmux display -p "#D")}" | tr -d ' %'
 }
 
 _powerline_tmux_pane() {
 	local -x TMUX="$_POWERLINE_TMUX"
-	echo "${TMUX_PANE:-`tmux display -p "#D"`}" | tr -d ' %'
+	echo "${TMUX_PANE:-$(tmux display -p "#D")}" | tr -d ' %'
 }
 
 _powerline_init_tmux_support() {

@@ -24,12 +24,19 @@ if (( !found )) && command -v powerline-daemon &>/dev/null; then
     POWERLINE_ZSH_CONTINUATION=1
     POWERLINE_ZSH_SELECT=1
 
-    # Fedora
-    [[ -f /usr/share/powerline/zsh/powerline.zsh ]] && source /usr/share/powerline/zsh/powerline.zsh
+    # Use custom local repo (with syntax fixes) instead of system files
+    if [[ -f ${HOME}/.dotfiles/powerline-local/.local/share/powerline/zsh/powerline.zsh ]]; then
+        source ${HOME}/.dotfiles/powerline-local/.local/share/powerline/zsh/powerline.zsh
+        found=1
+    fi
 
-    # Debian
-    [[ -f /usr/share/powerline/bindings/zsh/powerline.zsh ]] && source /usr/share/powerline/bindings/zsh/powerline.zsh
+    # Fedora (skip if custom local already loaded)
+    if (( !found )); then
+        [[ -f /usr/share/powerline/zsh/powerline.zsh ]] && source /usr/share/powerline/zsh/powerline.zsh
+    fi
 
-    # custom local repo
-    [[ -f .dotfiles/powerline-local/.local/share/powerline/zsh/powerline.zsh ]] && source .dotfiles/powerline-local/.local/share/powerline/zsh/powerline.zsh
+    # Debian (skip if already loaded)
+    if (( !found )); then
+        [[ -f /usr/share/powerline/bindings/zsh/powerline.zsh ]] && source /usr/share/powerline/bindings/zsh/powerline.zsh
+    fi
 fi
