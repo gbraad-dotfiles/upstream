@@ -7,6 +7,16 @@ on:
           description: "Name of the container (e.g., fedora, ubi9)"
           required: true
           type: string
+        base_image:
+          description: "Base image (overrides shared-config)"
+          required: false
+          type: string
+          default: ''
+        base_version:
+          description: "Base version (overrides shared-config)"
+          required: false
+          type: string
+          default: ''
 
 jobs:
   shared-config:
@@ -14,8 +24,8 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       container_name: ${{ inputs.container_name }}
-      base_image: ${{ steps.config.outputs.base_image }}
-      base_version: ${{ steps.config.outputs.base_version }}
+      base_image: ${{ inputs.base_image || steps.config.outputs.base_image }}
+      base_version: ${{ inputs.base_version || steps.config.outputs.base_version }}
       bootc_image: ${{ steps.config.outputs.bootc_image }}
       release_tag: ${{ steps.release.outputs.tag }}
       user: ${{ steps.userinfo.outputs.user_username }}
