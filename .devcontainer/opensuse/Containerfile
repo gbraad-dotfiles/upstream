@@ -1,0 +1,94 @@
+ARG BASE_IMAGE="opensuse/tumbleweed"
+ARG BASE_VERSION="latest"
+
+FROM ${BASE_IMAGE}:${BASE_VERSION}
+
+LABEL org.opencontainers.image.source = "https://github.com/gbraad-dotfiles/upstream"
+
+ARG USER="gbraad"
+ARG USER_GROUP="users"
+ARG USER_PASSWD
+ARG HOMEBASE="/home"
+ARG USERHOME="${HOMEBASE}/${USER}"
+ARG ROOTHOME="/root"
+ARG ARCH="x86_64"
+
+USER root
+
+RUN zypper install -y \
+        systemd \
+        sudo \
+        stow \
+        gawk \
+        curl \
+        git \
+        zsh \
+        vim \
+        tmux \
+        screen \
+        fzf \
+        jq \
+        powerline \
+        ansible \
+    && zypper clean -a
+
+# fix for PAM/SSH
+RUN chmod 0640 /etc/shadow
+
+# fix for missing users on bootc: https://github.com/gbraad-dotfiles/upstream/issues/69
+RUN grep -qF "users:x:100:" /etc/group || echo "users:x:100:" | sudo tee -a /etc/group
+
+RUN groupadd -f wheel \
+    && useradd -l -u 1000 -G wheel -md ${USERHOME} -s /bin/bash -p ${USER} ${USER} \
+    && echo '%wheel ALL=(ALL) NOPASSWD: ALL' > /etc/sudoers.d/wheel \
+    && if [ -n "${USER_PASSWD}" ] ; then \
+        echo "${USER}:${USER_PASSWD}" | chpasswd && echo "Password set to: ${USER_PASSWD}"; \
+    fi \
+    && usermod -a -G ${USER_GROUP} ${USER}
+
+USER ${USER}
+
+RUN git clone https://github.com/gbraad-dotfiles/upstream.git ${USERHOME}/.dotfiles --depth 2 \
+    && cd ${USERHOME}/.dotfiles \
+    && sh ./install.sh
+
+# public keys for SSH login
+RUN mkdir -p ${USERHOME}/.ssh/ \
+    && curl https://github.com/${USER}.keys | tee -a ${USERHOME}/.ssh/authorized_keys \
+    && curl https://dotfiles.gbraad.nl/public.keys | tee -a ${USERHOME}/.ssh/authorized_keys
+
+USER root
+
+RUN git clone https://github.com/gbraad-dotfiles/upstream.git ${ROOTHOME}/.dotfiles --depth 2\
+    && mkdir -p ${ROOTHOME}/.config \
+    && cd ${ROOTHOME}/.dotfiles \
+    && source ./dotfiles.sh \
+    && stow config \
+    && dotfiles restow
+
+RUN chsh -s /usr/bin/zsh ${USER} \
+    && chsh -s /usr/bin/zsh
+
+# install tailscale (or use https://github.com/spotsnel/tailscale-systemd/)
+RUN zypper --non-interactive addrepo --no-gpgcheck \
+        https://pkgs.tailscale.com/stable/opensuse/tumbleweed/tailscale.repo \
+    && zypper refresh \
+    && zypper --non-interactive install tailscale \
+    && zypper clean -a \
+    && mkdir -p /var/run/tailscale /var/cache/tailscale /var/lib/tailscale \
+    && systemctl enable tailscaled
+
+# restore cloudflared install
+RUN ARCH=$( [ "$ARCH" = "amd64" ] && echo "x86_64" || { [ "$ARCH" = "arm64" ] && echo "aarch64" || echo "$ARCH"; } ) \
+    && curl -fsSL https://github.com/cloudflare/cloudflared/releases/latest/download/cloudflared-linux-${ARCH}.rpm -o /tmp/cloudflared.rpm \
+    && zypper --no-gpg-checks --non-interactive install \
+        /tmp/cloudflared.rpm \
+    && zypper clean -a \
+    && rm -f /tmp/cloudflared.rpm
+
+# enable linger for the user (loginctl won't work without systemd running)
+RUN mkdir -p /var/lib/systemd/linger \
+    && touch /var/lib/systemd/linger/${USER}
+
+# Enable systemd
+ENTRYPOINT [ "/sbin/init" ]

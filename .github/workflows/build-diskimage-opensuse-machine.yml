@@ -1,0 +1,19 @@
+name: Build and Push OpenSUSE cloud diskimage
+
+on:
+  push:
+    branches:
+      - "main"
+  schedule:
+    - cron: "0 0 */2 * *"
+  workflow_dispatch:
+
+
+jobs:
+  build-diskimage-opensuse-machine:
+    uses: ./.github/workflows/reusable-build-diskimage-machine.yml
+    with:
+      container_name: opensuse-cloud
+      base_image: opensuse/tumbleweed
+      base_version: latest
+    secrets: inherit

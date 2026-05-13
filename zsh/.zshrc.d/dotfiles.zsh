@@ -96,6 +96,15 @@ _dotpackageinstall_dnf() {
   # allow first-time system install
 }
 
+_dotpackageinstall_zypper() {
+  echo "Installing packages..."
+  CMD_PREFIX=$(get_cmd_prefix)
+
+  "${CMD_PREFIX}" zypper install -y \
+    git zsh stow vim tmux screen fzf jq \
+    powerline
+}
+
 _dotpackageinstall() {
   if [ -f /etc/os-release ]; then
     . /etc/os-release
@@ -110,7 +119,11 @@ _dotpackageinstall() {
       _dotpackageinstall_apt
       ;;
     "fedora" | "centos" | "rhel" | "almalinux")
-      _dotpackageinstall_dnf 
+      _dotpackageinstall_dnf
+      export SYSTEM_INSTALL=1
+      ;;
+    "opensuse-tumbleweed" | "opensuse-leap" | "opensuse")
+      _dotpackageinstall_zypper
       export SYSTEM_INSTALL=1
       ;;
     *)
@@ -118,9 +131,11 @@ _dotpackageinstall() {
       if command -v apt-get > /dev/null 2>&1; then
         _dotpackageinstall_apt
       elif command -v dnf > /dev/null 2>&1; then
-        _dotpackageinstall_dnf 
+        _dotpackageinstall_dnf
+      elif command -v zypper > /dev/null 2>&1; then
+        _dotpackageinstall_zypper
       else
-        echo "Error: No supported package manager found (apt-get or dnf)."
+        echo "Error: No supported package manager found (apt-get, dnf, or zypper)."
         return 1
       fi
       ;;

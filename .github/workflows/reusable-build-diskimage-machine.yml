@@ -6,6 +6,16 @@ on:
       container_name:
         required: true
         type: string
+      base_image:
+        description: "Base image used for the machine build"
+        required: false
+        type: string
+        default: ''
+      base_version:
+        description: "Base version used for the machine build"
+        required: false
+        type: string
+        default: ''
 
 jobs:
   machine-machinefile:
@@ -48,7 +58,7 @@ jobs:
         with:
           as_user: runner
           run: |
-            machine machinebuild build ./.machine/${{ inputs.container_name }}/Machinefile from ${{ inputs.container_name }}
+            machine machinebuild build ./.machine/${{ inputs.container_name }}/Machinefile from ${{ inputs.container_name }} ${{ inputs.base_image != '' && format('--build-arg BASE_IMAGE={0}', inputs.base_image) || '' }} ${{ inputs.base_version != '' && format('--build-arg BASE_VERSION={0}', inputs.base_version) || '' }}
 
       - name: Export disk image
         uses: gbraad-actions/zsh-action@main

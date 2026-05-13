@@ -1,0 +1,19 @@
+name: Build and Push OpenSUSE container
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - "main"
+  pull_request: {}
+
+
+jobs:
+  build-and-push:
+    name: Build and push - OpenSUSE
+    uses: ./.github/workflows/reusable-build-and-push-containers.yml
+    with:
+      container_name: "opensuse"
+      base_image: "opensuse/tumbleweed"
+      base_version: "latest"
+    secrets: inherit
