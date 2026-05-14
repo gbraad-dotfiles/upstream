@@ -46,12 +46,15 @@ devenv() {
   local START_SHELL=$(dotini devenv --get devenv.shell)
   local IMAGE_USER=$(dotini devenv --get devenv.user)
 
+  local PULL_ARG="--pull=newer"
+  [[ "${RUNTIME}" == "nerdctl" ]] && PULL_ARG="--pull=always"
+
   local START_ARGS=(
     "--user=root"
     "--cap-add=NET_RAW"
     "--cap-add=NET_ADMIN"
     "--cap-add=SYS_ADMIN"
-    "--pull=newer"
+    "${PULL_ARG}"
   )
   # --userns=keep-id is podman-specific
   [[ "${RUNTIME}" == "podman" ]] && START_ARGS+=("--userns=keep-id")
@@ -83,7 +86,11 @@ devenv() {
   )
   
   local SYSTEMD_ARG=()
-  [[ "${RUNTIME}" == "podman" ]] && SYSTEMD_ARG=("--systemd=always")
+  if [[ "${RUNTIME}" == "podman" ]]; then
+    SYSTEMD_ARG=("--systemd=always")
+  elif [[ "${RUNTIME}" == "nerdctl" ]]; then
+    SYSTEMD_ARG=("--privileged" "--cgroupns=host")
+  fi
 
   case "$COMMAND" in
     "exists")
