@@ -1,0 +1,61 @@
+name: Test nerdctl with systemd
+
+on:
+  workflow_dispatch:
+    inputs:
+      image:
+        description: "Container image to test"
+        required: false
+        default: "ghcr.io/gbraad-dotfiles/fedora:latest"
+      runs-on:
+        description: "Target runner"
+        required: false
+        default: "ubuntu-latest"
+
+
+jobs:
+  test-nerdctl-systemd:
+    runs-on: ${{ inputs.runs-on }}
+
+    steps:
+      - name: Check out repository code
+        uses: actions/checkout@v4
+
+      - name: Install nerdctl
+        uses: gbraad-actions/setup-container-tools@v1
+        with:
+          runtime: nerdctl
+
+      - name: Run container with systemd
+        run: |
+          sudo nerdctl run -d \
+            --privileged \
+            --name testsys \
+            --hostname testsys \
+            ${{ inputs.image }}
+
+      - name: Wait for systemd to be ready
+        run: |
+          timeout 30 bash -c '
+            until sudo nerdctl exec testsys systemctl is-system-running 2>/dev/null | grep -qE "running|degraded"; do
+              sleep 1
+            done
+          '
+
+      - name: Show systemd status
+        run: |
+          sudo nerdctl exec testsys systemctl --no-pager status || true
+          sudo nerdctl exec testsys systemctl --no-pager list-units --state=running
+
+      - name: Check SSH service
+        run: |
+          sudo nerdctl exec testsys systemctl is-active sshd
+
+      - name: Check tailscale service
+        run: |
+          sudo nerdctl exec testsys systemctl is-active tailscaled
+
+      - name: Show container logs on failure
+        if: failure()
+        run: |
+          sudo nerdctl logs testsys

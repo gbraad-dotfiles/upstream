@@ -80,6 +80,12 @@ jobs:
           #sudo chmod go-w /home/linuxbrew/.linuxbrew/share/zsh
           #sudo chmod go-w /home/linuxbrew/.linuxbrew/share/zsh/site-functions/_brew
 
+      - name: Detect container runtime
+        id: runtime
+        run: |
+          RUNTIME=$(git config -f ~/.config/dotfiles/local/devenv.ini devenv.runtime 2>/dev/null)
+          echo "name=${RUNTIME:-podman}" >> $GITHUB_OUTPUT
+
       - name: Run devenv command - initialize system container
         id: devenv
         uses: gbraad-dotfiles/devenv-action@main
@@ -89,8 +95,7 @@ jobs:
 
       - name: Tailscale setup (devenv)
         run: |
-          sleep 1
-          until podman exec ${{ inputs.prefix_name }}sys tailscale up \
+          until ${{ steps.runtime.outputs.name }} exec ${{ inputs.prefix_name }}sys tailscale up \
             --auth-key ${TAILSCALE_AUTHKEY} \
             --hostname ${{ inputs.prefix_name }}-${{ steps.runner_id.outputs.last3 }} \
             --ssh --accept-dns=false \
@@ -107,11 +112,11 @@ jobs:
 
       - name: Hang around
         run: |
-          until podman exec ${{ inputs.prefix_name }}sys systemctl is-active --quiet tailscaled
+          until ${{ steps.runtime.outputs.name }} exec ${{ inputs.prefix_name }}sys systemctl is-active --quiet tailscaled
           do
                sleep 1
           done
-          IP=`podman exec ${{ inputs.prefix_name }}sys tailscale ip -4`
+          IP=`${{ steps.runtime.outputs.name }} exec ${{ inputs.prefix_name }}sys tailscale ip -4`
           echo "Use the following command to connect \`tailscale ssh gbraad@${IP}\` or \`rscreen gbraad@${IP}\`"
           IP=`tailscale ip -4`
           echo "Use the following command to debug from the host \`tailscale ssh runner@${IP}\` or \`rscreen runner@${IP}\`"
