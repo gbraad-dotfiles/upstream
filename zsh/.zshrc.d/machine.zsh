@@ -145,6 +145,10 @@ machine() {
     "--username=${IMAGE_USER}"
     "--ssh-identity-path=${IDENTITYPATH}"
   )
+  local FIRMWARE=$(dotini machine --get "firmware.${PREFIX}" 2>/dev/null || true)
+  if [[ -n "${FIRMWARE}" ]]; then
+    INIT_ARGS+=("--firmware=${FIRMWARE}")
+  fi
   if [[ "$(dotini machine --get machine.debug)" == "true" ]]; then
     local debug="--log-level=debug"
     START_ARGS+=($debug)
