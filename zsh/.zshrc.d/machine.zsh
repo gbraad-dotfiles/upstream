@@ -262,17 +262,30 @@ machine() {
       local SUBCOMMAND=$2
       case "$SUBCOMMAND" in
         "from")
-          machine ${PREFIX} from "$3" || { echo "Machine build failed"; return 1; }
+          machine ${PREFIX} from "$3" || true
           ;;
         "from-image")
-          machine ${PREFIX} from-image "$3" || { echo "Machine build failed"; return 1; }
+          machine ${PREFIX} from-image "$3" || true
           ;;
       esac
 
       local vmstate=$(machine ${PREFIX} status)
       if [ "${vmstate}" = "Stopped" ]; then
-        machine ${PREFIX} start
+        machine ${PREFIX} start || true
       fi
+
+      echo "Waiting for VM to be ready..."
+      local mport muser midentity
+      machine_credentials "${SYSNAME}" mport muser midentity
+      local waited=0 timeout=300
+      until ssh -i "${midentity}" -p "${mport}" -o StrictHostKeyChecking=no -o ConnectTimeout=5 -o BatchMode=yes "${muser}@localhost" true 2>/dev/null; do
+        if (( waited >= timeout )); then
+          echo "Timed out waiting for VM SSH"
+          return 1
+        fi
+        sleep 2
+        (( waited += 2 ))
+      done
 
       machine_build "${SYSNAME}" $@ || { echo "Machine build failed"; return 1; }
       echo "Machine build succeeded"
