@@ -83,7 +83,7 @@ jobs:
       - name: Detect container runtime
         id: runtime
         run: |
-          RUNTIME=$(git config -f ~/.config/dotfiles/local/devenv.ini devenv.runtime 2>/dev/null)
+          RUNTIME=$(git config -f ~/.config/dotfiles/local/devenv.ini devenv.runtime 2>/dev/null || true)
           echo "name=${RUNTIME:-podman}" >> $GITHUB_OUTPUT
 
       - name: Run devenv command - initialize system container
