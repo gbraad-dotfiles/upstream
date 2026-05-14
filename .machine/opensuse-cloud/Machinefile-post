@@ -1,0 +1,16 @@
+FROM scratch
+
+USER root
+
+RUN touch /etc/cloud/cloud-init.disabled \
+    && rm -f /etc/ssh/sshd_config.d/00-machine.conf
+
+# OpenSUSE: shorten systemd stop timeout and stop wicked to prevent
+# the VM from hanging when macadam sends the shutdown signal
+RUN mkdir -p /etc/systemd/system.conf.d \
+    && printf '[Manager]\nDefaultTimeoutStopSec=15s\n' \
+        > /etc/systemd/system.conf.d/timeout.conf \
+    && systemctl daemon-reload
+
+RUN systemctl disable wicked wickedd 2>/dev/null || true \
+    && systemctl stop wicked wickedd 2>/dev/null || true
