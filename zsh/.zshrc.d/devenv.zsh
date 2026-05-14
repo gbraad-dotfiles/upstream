@@ -156,7 +156,7 @@ devenv() {
         devenv ${PREFIX} start
         sleep 2
       fi
-      ${RUNTIME} exec -it ${SYSNAME} $@
+      ${RUNTIME} exec -it -e TERM="${TERM}" ${SYSNAME} $@
       ;;
     "root" | "su")
       devenv ${PREFIX} exec ${START_SHELL}
