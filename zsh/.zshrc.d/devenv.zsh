@@ -21,10 +21,17 @@ devenv_running_targets() {
   devenv | awk -F' - ' '$2 ~ /^Up/ {sub(/sys$/, "", $1); print $1 "\t" $2}'
 }
 
+_devenv_runtime() {
+  local rt=$(dotini devenv --get devenv.runtime 2>/dev/null)
+  echo "${rt:-podman}"
+}
+
 devenv() {
   local SUFFIX="sys"
+  local RUNTIME=$(_devenv_runtime)
+
   if [ $# -lt 2 ]; then
-    podman ps -a --filter "name=${SUFFIX}$" --format "{{.Names}} - {{.Status}}"
+    ${RUNTIME} ps -a --filter "name=${SUFFIX}$" --format "{{.Names}} - {{.Status}}"
     return 1
   fi
 
@@ -33,7 +40,7 @@ devenv() {
   local ENVNAME=${PREFIX}env
 
   local SYSNAME=${PREFIX}${SUFFIX}
-  [[ $PREFIX == "podmansh" ]] && SYSNAME="podmansh" 
+  [[ $PREFIX == "podmansh" ]] && SYSNAME="podmansh"
   shift 2
 
   local START_SHELL=$(dotini devenv --get devenv.shell)
@@ -44,9 +51,10 @@ devenv() {
     "--cap-add=NET_RAW"
     "--cap-add=NET_ADMIN"
     "--cap-add=SYS_ADMIN"
-    "--userns=keep-id"
     "--pull=newer"
   )
+  # --userns=keep-id is podman-specific
+  [[ "${RUNTIME}" == "podman" ]] && START_ARGS+=("--userns=keep-id")
   [[ -e /dev/net/tun ]] && START_ARGS+=("--device=/dev/net/tun")
   [[ -e /dev/fuse ]] && START_ARGS+=("--device=/dev/fuse")
   [[ -e /dev/dri ]] && START_ARGS+=("--device=/dev/dri")
@@ -74,15 +82,18 @@ devenv() {
     "-v" "/tmp/.X11-unix:/tmp/.X11-unix"
   )
   
+  local SYSTEMD_ARG=()
+  [[ "${RUNTIME}" == "podman" ]] && SYSTEMD_ARG=("--systemd=always")
+
   case "$COMMAND" in
     "exists")
-      return $(podman ps -a --format "{{.Names}}" | grep -q ${SYSNAME})
+      return $(${RUNTIME} ps -a --format "{{.Names}}" | grep -q ${SYSNAME})
       ;;
     "status")
       devenv_targets | awk -v prefix="$PREFIX" '$1 == prefix {print $2}'
       ;;
     "env" | "run" | "ephemeral")
-      podman run --rm -it --hostname ${HOSTNAME}-${ENVNAME} --entrypoint='' \
+      ${RUNTIME} run --rm -it --hostname ${HOSTNAME}-${ENVNAME} --entrypoint='' \
         "${START_ARGS[@]}" "${START_PATHS[@]}" \
         $(generate_devenv_name $PREFIX) ${START_SHELL} $@
       ;;
@@ -90,33 +101,29 @@ devenv() {
     #  devenv $PREFIX run -c "su - gbraad"
     #  ;;
     "create")
-      podman create --name=${SYSNAME} --hostname ${HOSTNAME}-${SYSNAME} \
-        --systemd=always "${START_ARGS[@]}" "${START_PATHS[@]}" \
+      ${RUNTIME} create --name=${SYSNAME} --hostname ${HOSTNAME}-${SYSNAME} \
+        "${SYSTEMD_ARG[@]}" "${START_ARGS[@]}" "${START_PATHS[@]}" \
         $(generate_devenv_name $PREFIX)
       ;;
     "sys" | "system")
-      #for (( i=0; i < ${#START_PATHS[@]}; i++ )); do
-      #  START_PATHS[$i]="${START_PATHS[$i]/#\~/$HOME}"
-      #done
-      podman run -d --name=${SYSNAME} --hostname ${HOSTNAME}-${SYSNAME} \
-        --systemd=always "${START_ARGS[@]}" "${START_PATHS[@]}" \
+      ${RUNTIME} run -d --name=${SYSNAME} --hostname ${HOSTNAME}-${SYSNAME} \
+        "${SYSTEMD_ARG[@]}" "${START_ARGS[@]}" "${START_PATHS[@]}" \
         $(generate_devenv_name $PREFIX)
-      # TODO: systemd only when able to check for running state
       ;;
     "noinit" | "dumb")
       # For environments that can not start systemd
-      podman run -d --name=${SYSNAME} --hostname ${HOSTNAME}-${SYSNAME} \
+      ${RUNTIME} run -d --name=${SYSNAME} --hostname ${HOSTNAME}-${SYSNAME} \
         --entrypoint "" "${START_ARGS[@]}" "${START_PATHS[@]}" \
         $(generate_devenv_name $PREFIX) $(dotini devenv --get devenv.noinit)
       ;;
     "nosys" | "init")
       # For environments that can not start systemd
-      podman run -d --name=${SYSNAME} --hostname ${HOSTNAME}-${SYSNAME} \
+      ${RUNTIME} run -d --name=${SYSNAME} --hostname ${HOSTNAME}-${SYSNAME} \
         --init --entrypoint "" "${START_ARGS[@]}" "${START_PATHS[@]}" \
         $(generate_devenv_name $PREFIX) $(dotini devenv --get devenv.noinit)
       ;;
     "start")
-      if (! podman ps -a --format "{{.Names}}" | grep -q ${SYSNAME}); then
+      if (! ${RUNTIME} ps -a --format "{{.Names}}" | grep -q ${SYSNAME}); then
         source /etc/os-release
         if [[ "$ID" == "idx" ]]; then
           devenv ${PREFIX} init
@@ -124,28 +131,25 @@ devenv() {
           devenv ${PREFIX} system
         fi
       else
-        podman start ${SYSNAME}
+        ${RUNTIME} start ${SYSNAME}
       fi
-      #systemctl --user start container-${PREFIX}sys
       ;;
     "stop")
-      #systemctl --user stop container-${PREFIX}sys
-      podman stop ${SYSNAME}
+      ${RUNTIME} stop ${SYSNAME}
       ;;
     "kill" | "rm" | "remove")
-      #systemctl --user stop container-${PREFIX}sys
-      podman rm -f ${SYSNAME}
+      ${RUNTIME} rm -f ${SYSNAME}
       ;;
     "exec" | "execute")
-      if (! podman ps -a --format "{{.Names}}" | grep -q ${SYSNAME}); then
+      if (! ${RUNTIME} ps -a --format "{{.Names}}" | grep -q ${SYSNAME}); then
         devenv ${PREFIX} sys
         sleep 1
       fi
-      if (podman ps --filter "name=${SYSNAME}" --filter "status=created" --filter "status=stopped" | grep -q ${SYSNAME}); then
+      if (${RUNTIME} ps --filter "name=${SYSNAME}" --filter "status=created" --filter "status=stopped" | grep -q ${SYSNAME}); then
         devenv ${PREFIX} start
         sleep 2
       fi
-      podman exec -it ${SYSNAME} $@
+      ${RUNTIME} exec -it ${SYSNAME} $@
       ;;
     "root" | "su")
       devenv ${PREFIX} exec ${START_SHELL}
@@ -160,11 +164,11 @@ devenv() {
       devenv ${PREFIX} exec su ${IMAGE_USER} -l -c $*
       ;;
     "systemctl" | "systemd")
-      if (podman ps --filter "name=${SYSNAME}" --filter "status=stopped" | grep -q ${SYSNAME}); then
+      if (${RUNTIME} ps --filter "name=${SYSNAME}" --filter "status=stopped" | grep -q ${SYSNAME}); then
         echo "${SYSNAME} not running"
         return
       fi
-      if (! podman ps -a --format "{{.Names}}" | grep -q ${SYSNAME}); then
+      if (! ${RUNTIME} ps -a --format "{{.Names}}" | grep -q ${SYSNAME}); then
         echo "${SYSNAME} not created"
         return
       fi
@@ -194,18 +198,18 @@ devenv() {
       devenv ${PREFIX} user dotfiles $@
       ;;
     "playbook")
-      playbook_remote podman ${SYSNAME} $@ # <filename> <...> 
+      playbook_remote ${RUNTIME} ${SYSNAME} $@ # <filename> <...>
       ;;
     "from")
       # use $1 as prefix value for the image
-      podman run -d --name=${SYSNAME} --hostname ${HOSTNAME}-${SYSNAME} --systemd=always "${START_ARGS[@]}" "${START_PATHS[@]}" $(generate_devenv_name $1)
+      ${RUNTIME} run -d --name=${SYSNAME} --hostname ${HOSTNAME}-${SYSNAME} "${SYSTEMD_ARG[@]}" "${START_ARGS[@]}" "${START_PATHS[@]}" $(generate_devenv_name $1)
       ;;
     "from-devbox")
-      podman run -d --name=${SYSNAME} --hostname ${HOSTNAME}-${SYSNAME} --systemd=always "${START_ARGS[@]}" "${START_PATHS[@]}" $(generate_devbox_name $1)
-      ;;  
+      ${RUNTIME} run -d --name=${SYSNAME} --hostname ${HOSTNAME}-${SYSNAME} "${SYSTEMD_ARG[@]}" "${START_ARGS[@]}" "${START_PATHS[@]}" $(generate_devbox_name $1)
+      ;;
     "from-image")
       # use $1 as prefix value for the image
-      podman run -d --name=${SYSNAME} --hostname ${HOSTNAME}-${SYSNAME} --systemd=always "${START_ARGS[@]}" "${START_PATHS[@]}" $1
+      ${RUNTIME} run -d --name=${SYSNAME} --hostname ${HOSTNAME}-${SYSNAME} "${SYSTEMD_ARG[@]}" "${START_ARGS[@]}" "${START_PATHS[@]}" $1
       ;;
     "tsconnect")
       local HOSTNAME=$(hostname)
