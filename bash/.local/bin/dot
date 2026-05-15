@@ -5,6 +5,7 @@ fi
 export COLORTERM=truecolor
 
 # Parse flags
+dotfiles="source ${HOME}/.dotfiles/dotfiles.sh && dotfiles source"
 zsh_flags=""
 has_c_flag=0
 
@@ -30,9 +31,9 @@ if [ "$has_c_flag" -eq 1 ] && [ "$#" -gt 0 ]; then
   # First arg is the command, rest are passed through
   user_cmd="$1"
   shift
-  exec zsh $zsh_flags -c "source ${HOME}/.dotfiles/dotfiles.sh && dotfiles source && { $user_cmd; }" "$@"
+  exec zsh $zsh_flags -c "${dotfiles} && { $user_cmd \"\$@\"; }" -- "$@"
 elif [ "$#" -eq 0 ]; then
   exec zsh --login
 else
-  exec zsh "$@"
+ exec zsh -c "${dotfiles} && { \"\$@\"; }" -- "$@"
 fi
