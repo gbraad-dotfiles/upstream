@@ -26,6 +26,11 @@ _devenv_runtime() {
   echo "${rt:-podman}"
 }
 
+_devenv_cgroupmgr() {
+  local rt=$(dotini devenv --get devenv.cgroupmgr 2>/dev/null)
+  echo "${rt:-default}"
+}
+
 devenv() {
   local SUFFIX="sys"
   local RUNTIME=$(_devenv_runtime)
@@ -47,9 +52,11 @@ devenv() {
   local IMAGE_USER=$(dotini devenv --get devenv.user)
 
   local PULL_ARG="--pull=newer"
-  [[ "${RUNTIME}" == "nerdctl" ]] && PULL_ARG="--pull=always"
+  [[ "${RUNTIME}" == "nerdctl" || "${RUNTIME}" == "containerd" ]] && PULL_ARG="--pull=always"
 
   local START_ARGS=(
+    "--tmpfs" "/run"
+    "--tmpfs" "/tmp"
     "--user=root"
     "--cap-add=NET_RAW"
     "--cap-add=NET_ADMIN"
@@ -58,6 +65,7 @@ devenv() {
   )
   # --userns=keep-id is podman-specific
   [[ "${RUNTIME}" == "podman" ]] && START_ARGS+=("--userns=keep-id")
+
   [[ -e /dev/net/tun ]] && START_ARGS+=("--device=/dev/net/tun")
   [[ -e /dev/fuse ]] && START_ARGS+=("--device=/dev/fuse")
   [[ -e /dev/dri ]] && START_ARGS+=("--device=/dev/dri")
@@ -76,6 +84,7 @@ devenv() {
   fi
 
   local START_PATHS=(
+    "-v" "/sys/fs/cgroup:/sys/fs/cgroup:rw"
     "-v" "${HOME}/Projects:/home/${IMAGE_USER}/Projects${MOUNT_OPTIONS}"
     "-v" "${HOME}/Documents:/home/${IMAGE_USER}/Documents${MOUNT_OPTIONS}"
     "-v" "${HOME}/Downloads:/home/${IMAGE_USER}/Downloads${MOUNT_OPTIONS}"
@@ -85,11 +94,24 @@ devenv() {
     "-v" "/tmp/.X11-unix:/tmp/.X11-unix"
   )
   
+  local CGROUPMGR=$(_devenv_cgroupmgr)
   local SYSTEMD_ARG=()
   if [[ "${RUNTIME}" == "podman" ]]; then
-    SYSTEMD_ARG=("--systemd=always")
-  elif [[ "${RUNTIME}" == "nerdctl" ]]; then
-    SYSTEMD_ARG=("--privileged" "--cgroupns=host")
+    # If cgroup is 'default', let Podman decide (usually systemd)
+    if [[ "$CGROUPMGR" != "default" ]]; then
+      SYSTEMD_ARG+=("--cgroup-manager=${CGROUPMGR}")
+    fi
+    SYSTEMD_ARG+=("--systemd=always")
+  elif [[ "${RUNTIME}" == "nerdctl" || "${RUNTIME}" == "containerd" ]]; then
+    # If cgroup is 'default' for nerdctl, we force 'none' to avoid the D-Bus crash
+    local mgr="${CGROUPMGR}"
+    [[ "$mgr" == "default" ]] && mgr="none"
+    
+    SYSTEMD_ARG=(
+      "--privileged" 
+      "--cgroupns=host" 
+      "--cgroup-manager=${mgr}"
+    )
   fi
 
   case "$COMMAND" in
