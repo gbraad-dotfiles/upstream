@@ -23,6 +23,12 @@ devenv_running_targets() {
 
 _devenv_runtime() {
   local rt=$(dotini devenv --get devenv.runtime 2>/dev/null)
+
+  # Force "containerd" to "nerdctl"
+  if [[ "$rt" == "containerd" ]]; then
+    echo "nerdctl"
+  fi
+
   echo "${rt:-podman}"
 }
 
@@ -52,7 +58,7 @@ devenv() {
   local IMAGE_USER=$(dotini devenv --get devenv.user)
 
   local PULL_ARG="--pull=newer"
-  [[ "${RUNTIME}" == "nerdctl" || "${RUNTIME}" == "containerd" ]] && PULL_ARG="--pull=always"
+  [[ "${RUNTIME}" == "nerdctl" ]] && PULL_ARG="--pull=always"
 
   local START_ARGS=(
     "--tmpfs" "/run"
@@ -102,7 +108,7 @@ devenv() {
       SYSTEMD_ARG+=("--cgroup-manager=${CGROUPMGR}")
     fi
     SYSTEMD_ARG+=("--systemd=always")
-  elif [[ "${RUNTIME}" == "nerdctl" || "${RUNTIME}" == "containerd" ]]; then
+  elif [[ "${RUNTIME}" == "nerdctl" ]]; then
     # If cgroup is 'default' for nerdctl, we force 'none' to avoid the D-Bus crash
     local mgr="${CGROUPMGR}"
     [[ "$mgr" == "default" ]] && mgr="none"
