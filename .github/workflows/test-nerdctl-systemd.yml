@@ -21,6 +21,13 @@ jobs:
       - name: Check out repository code
         uses: actions/checkout@v4
 
+      - name: user session needed?
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y systemd-container
+          sudo loginctl enable-linger runner
+          sudo machinectl shell runner@ /usr/bin/echo "User session created"
+
       - name: Install nerdctl
         uses: gbraad-actions/setup-container-tools@v2
         with:
