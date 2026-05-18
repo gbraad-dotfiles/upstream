@@ -9,6 +9,9 @@ playbook_remote() {
     if [[ "$1" == "macadam" ]]; then
         runner_and_target=("macadam" "ssh" "$2")
         shift 2
+    elif [[ "$1" == "limactl" ]]; then
+        runner_and_target=("limactl" "shell" "$2" "--")
+        shift 2
     elif [[ "$1" == "podman" ]]; then
         # not tested yet
         runner_and_target=("podman" "exec" "-i" "$2")

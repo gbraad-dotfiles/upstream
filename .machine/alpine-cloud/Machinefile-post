@@ -2,5 +2,6 @@ FROM scratch
 
 USER root
 
-RUN touch /etc/cloud/cloud-init.disabled \
-    && rm -f /etc/ssh/sshd_config.d/00-machine.conf
+RUN rm -f /etc/ssh/sshd_config.d/00-machine.conf
+# cloud-init is kept enabled so Lima's boot.sh can satisfy the /run/lima-boot-done requirement
+# RUN touch /etc/cloud/cloud-init.disabled
