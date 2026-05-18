@@ -355,10 +355,18 @@ machine() {
       machine ${PREFIX} dot apps $*
       ;;
     "dot")
-      mdot ${SYSNAME} "dotfiles source; export DISPLAY=:0; $*"
+      if [[ $RUNTIME == "limactl" ]]; then
+        limactl shell "${SYSNAME}" -- bash -c "dotfiles source; export DISPLAY=:0; $*"
+      else
+        mdot ${SYSNAME} "dotfiles source; export DISPLAY=:0; $*"
+      fi
       ;;
     "copyid" | "copy-id")
-      mcopyid ${SYSNAME}
+      if [[ $RUNTIME == "limactl" ]]; then
+        print -u2 "Lima: SSH key is injected during image build; copyid is not needed."
+      else
+        mcopyid ${SYSNAME}
+      fi
       ;;
     "shell")
       if [[ $RUNTIME == "limactl" ]]; then
@@ -368,8 +376,11 @@ machine() {
       fi
       ;;
     "screen")
-      #machine ${PREFIX} dot screen
-      mscreen ${SYSNAME}
+      if [[ $RUNTIME == "limactl" ]]; then
+        limactl shell "${SYSNAME}" -- screen
+      else
+        mscreen ${SYSNAME}
+      fi
       ;;
     "switch")
       local CMD="sudo bootc switch $(dotini machine --get images.$1)"
