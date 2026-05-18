@@ -199,7 +199,7 @@ ssh:
   loadDotSSHPubKeys: true
 mounts: []
 LIMAYAML
-  limactl create --name "${sysname}" "$tmpyaml"
+  limactl create --tty=false --name "${sysname}" "$tmpyaml"
   local rc=$?
   rm -f "$tmpyaml"
   return $rc
@@ -309,7 +309,7 @@ machine() {
         machine ${PREFIX} create
       fi
       if [[ $RUNTIME == "limactl" ]]; then
-        limactl start "${SYSNAME}"
+        limactl start --tty=false "${SYSNAME}"
       else
         macadam start ${START_ARGS[@]} "${SYSNAME}"
       fi
@@ -507,7 +507,7 @@ machine() {
       ;;
     "service")
       if [[ $RUNTIME == "limactl" ]]; then
-        limactl start "${SYSNAME}" 2>/dev/null || true
+        limactl start --tty=false "${SYSNAME}" 2>/dev/null || true
         while [[ "$(limactl list 2>/dev/null | awk -v n="${SYSNAME}" 'NR>1 && $1==n{print $2}')" == "Running" ]]; do
           sleep 5
         done
