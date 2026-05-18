@@ -7,7 +7,10 @@ machine_commands=(
 machine_runtime() {
   local rt
   rt=$(dotini machine --get machine.runtime 2>/dev/null)
-  echo "${rt:-macadam}"
+  rt="${rt:-macadam}"
+  # normalize: both "lima" and "limactl" mean the same runtime
+  [[ "$rt" == "lima" ]] && rt="limactl"
+  echo "$rt"
 }
 
 machine_credentials() {
@@ -190,8 +193,8 @@ machine() {
   local RUNTIME=$(machine_runtime)
 
   if [[ $RUNTIME == "limactl" ]]; then
-    if ! app limactl check; then
-      app limactl install
+    if ! app lima check; then
+      app lima install
     fi
   else
     if ! app macadam check; then
