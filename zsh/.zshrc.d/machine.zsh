@@ -4,12 +4,25 @@ machine_commands=(
   status create start stop download remove from switch apps playbook tsconnect export service-install copy-id shell
 )
 
+machine_runtime() {
+  local rt
+  rt=$(dotini machine --get machine.runtime 2>/dev/null)
+  echo "${rt:-macadam}"
+}
+
 machine_credentials() {
   if (( $# != 4 )); then
     print -u2 "Usage: machine_credentials <machine-name> <var_port> <var_user> <var_identity>"
     return 2
   fi
 
+  case "$(machine_runtime)" in
+    "limactl") _machine_credentials_lima "$@" ;;
+    *) _machine_credentials_macadam "$@" ;;
+  esac
+}
+
+_machine_credentials_macadam() {
   local sysname=$1 port_var=$2 user_var=$3 ident_var=$4
   local config_path="$HOME/.config/containers/macadam/machine/qemu/${sysname}.json"
 
@@ -33,6 +46,34 @@ machine_credentials() {
   printf -v "$port_var"  '%s' "$parts[1]"
   printf -v "$user_var"  '%s' "$parts[2]"
   printf -v "$ident_var" '%s' "$parts[3]"
+}
+
+_machine_credentials_lima() {
+  local sysname=$1 port_var=$2 user_var=$3 ident_var=$4
+
+  # SSH column from limactl list is "127.0.0.1:PORT" when running, "-" otherwise
+  local ssh_info
+  ssh_info=$(limactl list 2>/dev/null | awk -v n="$sysname" 'NR>1 && $1==n{print $3}')
+
+  if [[ -z "$ssh_info" || "$ssh_info" == "-" ]]; then
+    print -u2 "Lima: no SSH info for $sysname (is it running?)"
+    return 1
+  fi
+
+  local port="${ssh_info##*:}"
+
+  local user
+  user=$(dotini machine --get machine.user 2>/dev/null)
+  [[ -z "$user" ]] && user="$USER"
+
+  local identity
+  identity=$(dotini machine --get machine.identitypath 2>/dev/null)
+  identity="${identity/#\~/$HOME}"
+  [[ -z "$identity" ]] && identity="$HOME/.ssh/id_lima"
+
+  printf -v "$port_var"  '%s' "$port"
+  printf -v "$user_var"  '%s' "$user"
+  printf -v "$ident_var" '%s' "$identity"
 }
 
 machine_build() {
@@ -88,6 +129,13 @@ machine_running_targets() {
 }
 
 machine_status() {
+  case "$(machine_runtime)" in
+    "limactl") _machine_status_lima ;;
+    *) _machine_status_macadam ;;
+  esac
+}
+
+_machine_status_macadam() {
   macadam list | awk '
   NR==1 {
     # Find header indices
@@ -103,9 +151,52 @@ machine_status() {
   }' | column -t
 }
 
+_machine_status_lima() {
+  limactl list 2>/dev/null | awk '
+  NR==1 { next }
+  /^machine-/ {
+    name = gensub(/^machine-/, "", "g", $1);
+    status = ($2 == "Running") ? "Running" : "Stopped";
+    print name "\t" status;
+  }' | column -t
+}
+
+machine_lima_create() {
+  local sysname=$1 disk_file=$2 cpus=$3 memory=$4 user=$5 identity=$6
+
+  local tmpyaml
+  tmpyaml=$(mktemp /tmp/lima-${sysname}-XXXXXX.yaml)
+  cat > "$tmpyaml" <<LIMAYAML
+vmType: "qemu"
+cpus: ${cpus}
+memory: "${memory}MiB"
+disk: "0GiB"
+images:
+  - location: "${disk_file}"
+provision: []
+user:
+  name: ${user}
+ssh:
+  localPort: 0
+  loadDotSSHPubKeys: false
+  identityFile: "${identity}"
+mounts: []
+LIMAYAML
+  limactl create --name "${sysname}" "$tmpyaml"
+  rm -f "$tmpyaml"
+}
+
 machine() { 
-  if ! app macadam check; then
-    app macadam install
+  local RUNTIME=$(machine_runtime)
+
+  if [[ $RUNTIME == "limactl" ]]; then
+    if ! app limactl check; then
+      app limactl install
+    fi
+  else
+    if ! app macadam check; then
+      app macadam install
+    fi
   fi
 
   if [ $# -lt 2 ]; then
@@ -153,7 +244,12 @@ machine() {
 
   case "$COMMAND" in
     "exists")
-      return $(macadam list | grep -q -E "${SYSNAME} ")
+      if [[ $RUNTIME == "limactl" ]]; then
+        limactl list 2>/dev/null | awk 'NR>1{print $1}' | grep -q "^${SYSNAME}$"
+        return $?
+      else
+        return $(macadam list | grep -q -E "${SYSNAME} ")
+      fi
       ;;
     "status")
       machine_targets | awk -v prefix="$PREFIX" '$1 == prefix {print $2}'
@@ -165,7 +261,14 @@ machine() {
       if [[ ! -f "${DISKFOLDER}/${PREFIX}.qcow2" ]]; then
         machine ${PREFIX} download
       fi
-      macadam init --name "${SYSNAME}" ${INIT_ARGS[@]} "${DISKFOLDER}/${PREFIX}.qcow2"
+      if [[ $RUNTIME == "limactl" ]]; then
+        machine_lima_create "${SYSNAME}" "${DISKFOLDER}/${PREFIX}.qcow2" \
+          "$(dotini machine --get machine.vcpus)" \
+          "$(dotini machine --get machine.memory)" \
+          "${IMAGE_USER}" "${IDENTITYPATH}"
+      else
+        macadam init --name "${SYSNAME}" ${INIT_ARGS[@]} "${DISKFOLDER}/${PREFIX}.qcow2"
+      fi
       ;;
     "restart" | "reboot")
       machine ${PREFIX} stop
@@ -175,16 +278,32 @@ machine() {
       if ! machine ${PREFIX} exists; then
         machine ${PREFIX} create
       fi
-      macadam start ${START_ARGS[@]} "${SYSNAME}"
+      if [[ $RUNTIME == "limactl" ]]; then
+        limactl start "${SYSNAME}"
+      else
+        macadam start ${START_ARGS[@]} "${SYSNAME}"
+      fi
       ;;
     "stop")
-      macadam stop "${SYSNAME}"
+      if [[ $RUNTIME == "limactl" ]]; then
+        limactl stop "${SYSNAME}"
+      else
+        macadam stop "${SYSNAME}"
+      fi
       ;;
     "kill" | "rm" | "remove")
-      macadam rm -f "${SYSNAME}"
+      if [[ $RUNTIME == "limactl" ]]; then
+        limactl delete --force "${SYSNAME}"
+      else
+        macadam rm -f "${SYSNAME}"
+      fi
       ;;
     "console" | "ssh")
-      macadam ssh "${SYSNAME}"
+      if [[ $RUNTIME == "limactl" ]]; then
+        limactl shell "${SYSNAME}"
+      else
+        macadam ssh "${SYSNAME}"
+      fi
       ;;
     "root" | "su")
       machine ${PREFIX} sudo ${START_SHELL} 
@@ -193,7 +312,11 @@ machine() {
       machine ${PREFIX} exec sudo $@
       ;;
     "exec" | "user")
-      macadam ssh "${SYSNAME}" "$@"
+      if [[ $RUNTIME == "limactl" ]]; then
+        limactl shell "${SYSNAME}" -- "$@"
+      else
+        macadam ssh "${SYSNAME}" "$@"
+      fi
       ;;
     "systemctl" | "systemd")
       machine ${PREFIX} exec sudo systemctl $@
@@ -228,8 +351,12 @@ machine() {
       $(dotini machine --add disks.$1 "${IMAGE}")
       ;;
     "playbook")
-      playbook_remote macadam ${SYSNAME} $@ # <filename> <...> 
-      ;;
+      if [[ $RUNTIME == "limactl" ]]; then
+        playbook_remote limactl ${SYSNAME} $@
+      else
+        playbook_remote macadam ${SYSNAME} $@
+      fi
+      ;; # <filename> <...> 
     "from")
       if machine ${PREFIX} exists; then
         echo "Machine ${PREFIX} already exists"
@@ -240,7 +367,14 @@ machine() {
       if [[ ! -f "${DISKFOLDER}/$1.qcow2" ]]; then
         machine $1 download
       fi
-      macadam init --name "${SYSNAME}" "${INIT_ARGS[@]}" "${DISKFOLDER}/$1.qcow2"
+      if [[ $RUNTIME == "limactl" ]]; then
+        machine_lima_create "${SYSNAME}" "${DISKFOLDER}/$1.qcow2" \
+          "$(dotini machine --get machine.vcpus)" \
+          "$(dotini machine --get machine.memory)" \
+          "${IMAGE_USER}" "${IDENTITYPATH}"
+      else
+        macadam init --name "${SYSNAME}" "${INIT_ARGS[@]}" "${DISKFOLDER}/$1.qcow2"
+      fi
 
       machine ${PREFIX} start
       ;;
@@ -250,7 +384,14 @@ machine() {
         return 1
       fi
 
-      macadam init --name "${SYSNAME}" "${INIT_ARGS[@]}" "$1"
+      if [[ $RUNTIME == "limactl" ]]; then
+        machine_lima_create "${SYSNAME}" "$1" \
+          "$(dotini machine --get machine.vcpus)" \
+          "$(dotini machine --get machine.memory)" \
+          "${IMAGE_USER}" "${IDENTITYPATH}"
+      else
+        macadam init --name "${SYSNAME}" "${INIT_ARGS[@]}" "$1"
+      fi
 
       machine ${PREFIX} start
       ;;
@@ -284,9 +425,18 @@ machine() {
         machine ${PREFIX} stop
       fi
 
-      local config_path="$HOME/.config/containers/macadam/machine/qemu/${SYSNAME}.json"
-      [[ -f $config_path ]] || { print -u2 "Config file not found: $config_path"; return 1; }
-      local imagepath=$(jq -r '.ImagePath.Path' $config_path)
+      local imagepath
+      if [[ $RUNTIME == "limactl" ]]; then
+        local lima_dir
+        lima_dir=$(limactl list --json 2>/dev/null | jq -r --arg n "${SYSNAME}" '.[] | select(.name == $n) | .dir // empty')
+        [[ -z "$lima_dir" ]] && { print -u2 "Could not find lima instance dir for ${SYSNAME}"; return 1; }
+        imagepath="${lima_dir}/basedisk"
+        [[ ! -f "$imagepath" ]] && imagepath="${lima_dir}/diffdisk"
+      else
+        local config_path="$HOME/.config/containers/macadam/machine/qemu/${SYSNAME}.json"
+        [[ -f $config_path ]] || { print -u2 "Config file not found: $config_path"; return 1; }
+        imagepath=$(jq -r '.ImagePath.Path' $config_path)
+      fi
 
       if [[ "$1" = /* || "$1" = ./* || "$1" = ../* || "$1" = ~* ]]; then
         target="$1"
@@ -311,11 +461,18 @@ machine() {
       machine-service-install ${PREFIX}
       ;;
     "service")
-      macadam start ${SYSNAME} -q
-      while pgrep -f "qemu-system.*${SYSNAME}" >/dev/null; do
-        #echo "running"
-        sleep 5
-      done
+      if [[ $RUNTIME == "limactl" ]]; then
+        limactl start "${SYSNAME}" 2>/dev/null || true
+        while [[ "$(limactl list 2>/dev/null | awk -v n="${SYSNAME}" 'NR>1 && $1==n{print $2}')" == "Running" ]]; do
+          sleep 5
+        done
+      else
+        macadam start ${SYSNAME} -q
+        while pgrep -f "qemu-system.*${SYSNAME}" >/dev/null; do
+          #echo "running"
+          sleep 5
+        done
+      fi
       ;;
     *)
       echo "Unknown command: $0 $PREFIX $COMMAND"

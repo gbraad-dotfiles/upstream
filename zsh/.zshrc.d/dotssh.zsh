@@ -96,21 +96,9 @@ rscreen() {
 mdot() {
     local sysname="$1"
     shift 1
-    local config_path="$HOME/.config/containers/macadam/machine/qemu/${sysname}.json"
 
-    if [[ ! -f "$config_path" ]]; then
-        echo "Config file not found: $config_path"
-        return 1
-    fi
-
-    # Extract SSH Port and RemoteUsername from JSON
-    local port user
-    port=$(jq -r '.SSH.Port' "$config_path")
-    user=$(jq -r '.SSH.RemoteUsername' "$config_path")
-    identity=$(jq -r '.SSH.IdentityPath' "$config_path")
-
-    if [[ "$port" == "null" || "$user" == "null" ]]; then
-        echo "Could not extract SSH credentials from $config_path"
+    local port user identity
+    if ! machine_credentials "${sysname}" port user identity; then
         return 1
     fi
 
@@ -119,21 +107,9 @@ mdot() {
 
 mcopyid() {
     local sysname="$1"
-    local config_path="$HOME/.config/containers/macadam/machine/qemu/${sysname}.json"
 
-    if [[ ! -f "$config_path" ]]; then
-        echo "Config file not found: $config_path"
-        return 1
-    fi
-
-    # Extract SSH Port and RemoteUsername from JSON
-    local port user
-    port=$(jq -r '.SSH.Port' "$config_path")
-    user=$(jq -r '.SSH.RemoteUsername' "$config_path")
-    identity=$(jq -r '.SSH.IdentityPath' "$config_path")
-
-    if [[ "$port" == "null" || "$user" == "null" ]]; then
-        echo "Could not extract SSH credentials from $config_path"
+    local port user identity
+    if ! machine_credentials "${sysname}" port user identity; then
         return 1
     fi
 
