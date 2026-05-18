@@ -50,7 +50,7 @@ actions_extract_action_sections() {
         rest = substr($0, 5)
         n = split(rest, arr, /[[:space:]]+/)
         for (i=1; i<=n; i++) {
-          if (match(arr[i], /^[A-Za-z-]+$/)) {
+        if (match(arr[i], /^[A-Za-z0-9-]+$/)) {
             if (keys != "") keys = keys " "
             keys = keys arr[i]
           } else {
