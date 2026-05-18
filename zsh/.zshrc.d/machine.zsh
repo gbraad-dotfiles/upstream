@@ -165,13 +165,14 @@ _machine_status_lima() {
 }
 
 machine_lima_create() {
-  local sysname=$1 disk_file=$2 cpus=$3 memory=$4 user=$5 identity=$6
+  local sysname=$1 disk_file=$2 cpus=$3 memory=$4 disksize=$5 user=$6 identity=$7
 
   local missing=()
   [[ -z "$sysname" ]]   && missing+=("sysname")
   [[ -z "$disk_file" ]] && missing+=("disk_file")
   [[ -z "$cpus" ]]      && missing+=("cpus")
   [[ -z "$memory" ]]    && missing+=("memory")
+  [[ -z "$disksize" ]]  && missing+=("disksize")
   [[ -z "$user" ]]      && missing+=("user")
   [[ -z "$identity" ]]  && missing+=("identity")
   if (( ${#missing[@]} > 0 )); then
@@ -185,16 +186,15 @@ machine_lima_create() {
   tmpyaml=$(mktemp /tmp/lima-${sysname}-XXXXXX.yaml)
   cat > "$tmpyaml" <<LIMAYAML
 vmType: "qemu"
+plain: true
 cpus: ${cpus}
 memory: "${memory}MiB"
+disk: "${disksize}GiB"
 images:
   - location: "${disk_file}"
-provision: []
-user:
-  name: "${user}"
 ssh:
   localPort: 0
-  loadDotSSHPubKeys: false
+  loadDotSSHPubKeys: true
 mounts: []
 LIMAYAML
   limactl create --name "${sysname}" "$tmpyaml"
@@ -288,6 +288,7 @@ machine() {
         machine_lima_create "${SYSNAME}" "${DISKFOLDER}/${PREFIX}.qcow2" \
           "$(dotini machine --get machine.vcpus)" \
           "$(dotini machine --get machine.memory)" \
+          "$(dotini machine --get machine.disksize)" \
           "${IMAGE_USER}" "${IDENTITYPATH}"
       else
         macadam init --name "${SYSNAME}" ${INIT_ARGS[@]} "${DISKFOLDER}/${PREFIX}.qcow2"
@@ -394,6 +395,7 @@ machine() {
         machine_lima_create "${SYSNAME}" "${DISKFOLDER}/$1.qcow2" \
           "$(dotini machine --get machine.vcpus)" \
           "$(dotini machine --get machine.memory)" \
+          "$(dotini machine --get machine.disksize)" \
           "${IMAGE_USER}" "${IDENTITYPATH}"
       else
         macadam init --name "${SYSNAME}" "${INIT_ARGS[@]}" "${DISKFOLDER}/$1.qcow2"
@@ -411,6 +413,7 @@ machine() {
         machine_lima_create "${SYSNAME}" "$1" \
           "$(dotini machine --get machine.vcpus)" \
           "$(dotini machine --get machine.memory)" \
+          "$(dotini machine --get machine.disksize)" \
           "${IMAGE_USER}" "${IDENTITYPATH}"
       else
         macadam init --name "${SYSNAME}" "${INIT_ARGS[@]}" "$1"
