@@ -33,6 +33,8 @@ homelab services
 This forms the basis of my [development environment](https://github.com/gbraad-devenv/) images.
 For more information, please look at [dotfiles.gbraad.nl](https://dotfiles.gbraad.nl)
 
+[![Ask DeepWiki](https://deepwiki.com/badge.svg)](https://deepwiki.com/gbraad-dotfiles/wmux)
+
 
 > [!NOTE]
 > Do not use this directly, but take parts and learn from it. Treat it as, "what you see is what it is"... 
