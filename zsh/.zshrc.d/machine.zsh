@@ -167,26 +167,40 @@ _machine_status_lima() {
 machine_lima_create() {
   local sysname=$1 disk_file=$2 cpus=$3 memory=$4 user=$5 identity=$6
 
+  local missing=()
+  [[ -z "$sysname" ]]   && missing+=("sysname")
+  [[ -z "$disk_file" ]] && missing+=("disk_file")
+  [[ -z "$cpus" ]]      && missing+=("cpus")
+  [[ -z "$memory" ]]    && missing+=("memory")
+  [[ -z "$user" ]]      && missing+=("user")
+  [[ -z "$identity" ]]  && missing+=("identity")
+  if (( ${#missing[@]} > 0 )); then
+    print -u2 "machine_lima_create: missing required values: ${(j:, :)missing}"
+    return 1
+  fi
+
+  [[ -f "$disk_file" ]] || { print -u2 "Disk image not found: $disk_file"; return 1; }
+
   local tmpyaml
   tmpyaml=$(mktemp /tmp/lima-${sysname}-XXXXXX.yaml)
   cat > "$tmpyaml" <<LIMAYAML
 vmType: "qemu"
 cpus: ${cpus}
 memory: "${memory}MiB"
-disk: "0GiB"
 images:
   - location: "${disk_file}"
 provision: []
 user:
-  name: ${user}
+  name: "${user}"
 ssh:
   localPort: 0
   loadDotSSHPubKeys: false
-  identityFile: "${identity}"
 mounts: []
 LIMAYAML
   limactl create --name "${sysname}" "$tmpyaml"
+  local rc=$?
   rm -f "$tmpyaml"
+  return $rc
 }
 
 machine() { 
@@ -258,7 +272,13 @@ machine() {
       machine_targets | awk -v prefix="$PREFIX" '$1 == prefix {print $2}'
       ;;
     "download")
-      download "$(dotini machine --get disks.${PREFIX})" "${DISKFOLDER}/${PREFIX}.qcow2"
+      local disk_url
+      disk_url="$(dotini machine --get disks.${PREFIX})"
+      if [[ -z "$disk_url" ]]; then
+        print -u2 "No disk image configured for prefix '${PREFIX}' in [disks]"
+        return 1
+      fi
+      download "$disk_url" "${DISKFOLDER}/${PREFIX}.qcow2"
       ;;
     "system" | "create" | "init")
       if [[ ! -f "${DISKFOLDER}/${PREFIX}.qcow2" ]]; then
