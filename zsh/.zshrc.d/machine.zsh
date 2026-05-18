@@ -361,7 +361,11 @@ machine() {
       mcopyid ${SYSNAME}
       ;;
     "shell")
-      mshell ${SYSNAME}
+      if [[ $RUNTIME == "limactl" ]]; then
+        limactl shell "${SYSNAME}"
+      else
+        mshell ${SYSNAME}
+      fi
       ;;
     "screen")
       #machine ${PREFIX} dot screen
