@@ -70,80 +70,49 @@ TARGET_DIR=$(realpath "$TARGET_DIR")
 echo "Stow directory: $STOW_DIR"
 echo "Target directory: $TARGET_DIR"
 
-function find_path_in_target() {
-  local source_path=$1
-  local target_path=$2
-  local source_dirname=$(dirname "$source_path")
-  local target_dirname=$(dirname "$target_path")
-  local basename=$(basename "$source_path")
+function stow_dir_recursive() {
+  local src_dir=$1
+  local tgt_dir=$2
 
-  # If target parent directory doesn't exist, check if we should create a symlink to the source parent
-  if [ ! -e "$target_dirname" ]; then
-    local rel_source_dirname="${source_dirname#$STOW_DIR/*/}"
-    local parent_source_dirname="${source_dirname%/$rel_source_dirname}"
-    local parent_target_dirname="${target_dirname%/$rel_source_dirname}"
-    
-    if [ -d "$parent_source_dirname" ] && [ -d "$parent_target_dirname" ]; then
-      # We can create a symlink at a higher level
-      find_path_in_target "$parent_source_dirname" "$parent_target_dirname"
-      return
+  while IFS= read -r -d '' src_path; do
+    local basename
+    basename=$(basename "$src_path")
+    local tgt_path="$tgt_dir/$basename"
+
+    if [ -d "$src_path" ]; then
+      if [ ! -e "$tgt_path" ]; then
+        # Target doesn't exist: fold by creating a directory symlink
+        ln -sf "$src_path" "$tgt_path"
+        echo "Linked directory: $src_path -> $tgt_path"
+      elif [ -L "$tgt_path" ]; then
+        local existing_target
+        existing_target=$(readlink "$tgt_path")
+        if [ "$existing_target" != "$src_path" ]; then
+          echo "Warning: $tgt_path is a symlink to $existing_target, not $src_path. Skipping."
+        fi
+      elif [ -d "$tgt_path" ]; then
+        # Target is a real directory: recurse into it
+        stow_dir_recursive "$src_path" "$tgt_path"
+      else
+        echo "Warning: $tgt_path exists as a file, expected directory. Skipping."
+      fi
+    else
+      if [ -e "$tgt_path" ] && [ ! -L "$tgt_path" ]; then
+        echo "Warning: $tgt_path already exists and is not a symlink. Skipping."
+      else
+        ln -sf "$src_path" "$tgt_path"
+        echo "Linked: $src_path -> $tgt_path"
+      fi
     fi
-    
-    # We need to create the directory
-    mkdir -p "$target_dirname"
-    echo "Created directory: $target_dirname"
-  fi
-
-  # If target already exists and is a directory, descend into it
-  if [ -d "$target_path" ] && [ ! -L "$target_path" ]; then
-    return
-  fi
-
-  # Create the symlink
-  if [ -e "$target_path" ] && [ ! -L "$target_path" ]; then
-    echo "Warning: $target_path already exists and is not a symlink. Skipping."
-  else
-    ln -sf "$source_path" "$target_path"
-    echo "Linked: $source_path -> $target_path"
-  fi
+  done < <(find "$src_dir" -mindepth 1 -maxdepth 1 -print0)
 }
 
 function stow_package() {
   local pkg_name=$1
   local pkg_dir="$STOW_DIR/$pkg_name"
-  
+
   echo "Stowing $pkg_name from $pkg_dir to $TARGET_DIR"
-  
-  # First pass - handle files
-  find "$pkg_dir" -type f -o -type l | while read file; do
-    rel_path="${file#$pkg_dir/}"
-    target_file="$TARGET_DIR/$rel_path"
-    
-    if [ -d "$(dirname "$target_file")" ] && [ ! -L "$(dirname "$target_file")" ]; then
-      # Target directory exists, create a symlink to the file
-      if [ -e "$target_file" ] && [ ! -L "$target_file" ]; then
-        echo "Warning: $target_file already exists and is not a symlink. Skipping."
-      else
-        ln -sf "$file" "$target_file"
-        echo "Linked file: $file -> $target_file"
-      fi
-    else
-      # Check if we can create a symlink to a parent directory
-      find_path_in_target "$file" "$target_file"
-    fi
-  done
-  
-  # Second pass - handle empty directories
-  find "$pkg_dir" -type d -empty | while read dir; do
-    rel_path="${dir#$pkg_dir/}"
-    target_dir="$TARGET_DIR/$rel_path"
-    
-    # Only create empty directories if they don't exist
-    if [ ! -e "$target_dir" ]; then
-      mkdir -p "$target_dir"
-      echo "Created empty directory: $target_dir"
-    fi
-  done
+  stow_dir_recursive "$pkg_dir" "$TARGET_DIR"
 }
 
 function unstow_package() {
