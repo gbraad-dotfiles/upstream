@@ -1,0 +1,17 @@
+name: Build and Push Azure Linux container
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - "main"
+  pull_request: {}
+
+
+jobs:
+  build-and-push:
+    name: Build and push - Azure Linux
+    uses: ./.github/workflows/reusable-build-and-push-containers.yml
+    with:
+      container_name: "azurelinux"
+    secrets: inherit

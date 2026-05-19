@@ -1,0 +1,108 @@
+ARG BASE_IMAGE="mcr.microsoft.com/azurelinux/base/core"
+ARG BASE_VERSION="3.0"
+
+FROM ${BASE_IMAGE}:${BASE_VERSION}
+
+LABEL org.opencontainers.image.source = "https://github.com/gbraad-dotfiles/upstream"
+
+ARG USER="gbraad"
+ARG USER_GROUP="users"
+ARG USER_PASSWD
+ARG HOMEBASE="/home"
+ARG USERHOME="${HOMEBASE}/${USER}"
+ARG ROOTHOME="/root"
+ARG ARCH="x86_64"
+
+USER root
+
+RUN tdnf install -y \
+        systemd \
+        sudo \
+        git \
+        curl \
+        ca-certificates \
+        shadow-utils \
+        python3-pip \
+        gawk \
+        vim \
+        zsh \
+    && tdnf clean all
+
+RUN pip3 install --no-cache-dir ansible
+
+# install powerline and set up bindings
+RUN pip3 install --no-cache-dir git+https://github.com/powerline/powerline \
+    && PYSITE=$(python3 -c "import site; print(site.getsitepackages()[0])") \
+    && mkdir -p /usr/share/tmux /usr/share/powerline/zsh \
+    && ln -s ${PYSITE}/powerline/bindings/tmux/powerline.conf /usr/share/tmux/powerline.conf \
+    && ln -s ${PYSITE}/powerline/bindings/zsh/powerline.zsh /usr/share/powerline/zsh/powerline.zsh
+
+# install gstow binary from release as stow
+RUN GSTOW_ARCH=$(echo "$ARCH" | sed 's/x86_64/amd64/;s/aarch64/arm64/') \
+    && curl -fsSL https://github.com/gbraad-dotfiles/gstow/releases/download/v0.3/gstow-${GSTOW_ARCH} -o /usr/local/bin/stow \
+    && chmod +x /usr/local/bin/stow
+
+# clone root dotfiles
+RUN git clone https://github.com/gbraad-dotfiles/upstream.git ${ROOTHOME}/.dotfiles --depth 2
+
+RUN chmod 0640 /etc/shadow \
+    && mkdir -p /etc/debuginfod \
+    && echo 'setopt NULL_GLOB' >> /etc/zshenv
+
+# fix for missing users on bootc: https://github.com/gbraad-dotfiles/upstream/issues/69
+RUN grep -qF "users:x:100:" /etc/group || echo "users:x:100:" | sudo tee -a /etc/group
+
+RUN useradd -l -u 1000 -G wheel -md ${USERHOME} -s /bin/bash -p ${USER} ${USER} \
+    && sed -i.bkp -e 's/%wheel\s\+ALL=(ALL\(:ALL\)\?)\s\+ALL/%wheel ALL=NOPASSWD:ALL/g' /etc/sudoers \
+    && if [ -n "${USER_PASSWD}" ] ; then \
+        echo "${USER}:${USER_PASSWD}" | sudo chpasswd && echo "Password set to: ${USER_PASSWD}"; \
+    fi \
+    && usermod -a -G ${USER_GROUP} ${USER}
+
+USER ${USER}
+
+RUN git clone https://github.com/gbraad-dotfiles/upstream.git ${USERHOME}/.dotfiles --depth 2 \
+    && rm -f ${USERHOME}/.zshrc \
+    && cd ${USERHOME}/.dotfiles \
+    && sh ./install.sh
+
+# public keys for SSH login
+RUN mkdir -p ${USERHOME}/.ssh/ \
+    && curl https://github.com/${USER}.keys | tee -a ${USERHOME}/.ssh/authorized_keys \
+    && curl https://dotfiles.gbraad.nl/public.keys | tee -a ${USERHOME}/.ssh/authorized_keys
+
+USER root
+
+RUN mkdir -p ${ROOTHOME}/.config \
+    && cd ${ROOTHOME}/.dotfiles \
+    && source ./dotfiles.sh \
+    && stow config \
+    && dotfiles restow
+
+RUN ZSH=$(command -v zsh) \
+    && chsh -s "$ZSH" ${USER} \
+    && chsh -s "$ZSH"
+
+# install tailscale (centos/8 repo, disable repo metadata gpg check - tdnf plugin is stricter than dnf)
+RUN curl -fsSL https://pkgs.tailscale.com/stable/centos/8/tailscale.repo -o /etc/yum.repos.d/tailscale.repo \
+    && sed -i 's/repo_gpgcheck=1/repo_gpgcheck=0/' /etc/yum.repos.d/tailscale.repo \
+    && tdnf install -y \
+        tailscale \
+    && tdnf clean all \
+    && mkdir -p /var/run/tailscale /var/cache/tailscale /var/lib/tailscale \
+    && systemctl enable tailscaled
+
+# restore cloudflared install
+RUN ARCH=$( [ "$ARCH" = "amd64" ] && echo "x86_64" || { [ "$ARCH" = "arm64" ] && echo "aarch64" || echo "$ARCH"; } ) \
+    && curl -fsSL https://github.com/cloudflare/cloudflared/releases/latest/download/cloudflared-linux-${ARCH}.rpm -o /tmp/cloudflared.rpm \
+    && tdnf install -y \
+        /tmp/cloudflared.rpm \
+    && tdnf clean all \
+    && rm -f /tmp/cloudflared.rpm
+
+# enable linger for the user (loginctl won't work without systemd running)
+RUN mkdir -p /var/lib/systemd/linger \
+    && touch /var/lib/systemd/linger/${USER}
+
+# Enable systemd
+ENTRYPOINT [ "/sbin/init" ]
