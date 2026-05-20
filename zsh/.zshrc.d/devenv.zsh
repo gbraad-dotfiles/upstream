@@ -184,7 +184,8 @@ devenv() {
         devenv ${PREFIX} start
         sleep 2
       fi
-      ${RUNTIME} exec -it -e TERM="${TERM}" ${SYSNAME} $@
+      local _it_flag="-it"; [[ -t 0 ]] || _it_flag="-i"
+      ${RUNTIME} exec ${_it_flag} -e TERM="${TERM}" ${SYSNAME} $@
       ;;
     "root" | "su")
       devenv ${PREFIX} exec ${START_SHELL}
