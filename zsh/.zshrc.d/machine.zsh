@@ -343,7 +343,8 @@ machine() {
       ;;
     "exec" | "user")
       if [[ $RUNTIME == "limactl" ]]; then
-        limactl shell "${SYSNAME}" -- "$@"
+        local _lima_tty_flag=(); [[ -t 0 ]] || _lima_tty_flag=(--tty=false)
+        limactl shell "${_lima_tty_flag[@]}" "${SYSNAME}" -- "$@"
       else
         macadam ssh "${SYSNAME}" "$@"
       fi
@@ -356,7 +357,8 @@ machine() {
       ;;
     "dot")
       if [[ $RUNTIME == "limactl" ]]; then
-        limactl shell "${SYSNAME}" -- bash -c "dotfiles source; export DISPLAY=:0; $*"
+        local _lima_tty_flag=(); [[ -t 0 ]] || _lima_tty_flag=(--tty=false)
+        limactl shell "${_lima_tty_flag[@]}" "${SYSNAME}" -- bash -c "dotfiles source; export DISPLAY=:0; $*"
       else
         mdot ${SYSNAME} "dotfiles source; export DISPLAY=:0; $*"
       fi
