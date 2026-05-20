@@ -182,7 +182,8 @@ dev3s() {
 
   case "$COMMAND" in
     "deploy")
-      _dev3s_ensure_ts_secret "${KUBECTL_ARGS[@]}"
+      # Interferes with non-interactive flow
+      #_dev3s_ensure_ts_secret "${KUBECTL_ARGS[@]}"
       _dev3s_apply_pod "${SYSNAME}" "${IMAGE}" "${IMAGE_USER}" "${HOST}" "${KUBECTL_ARGS[@]}"
       ;;
 
@@ -197,7 +198,8 @@ dev3s() {
         echo "error: unknown devenv prefix '${FROM_PREFIX}'"
         return 1
       fi
-      _dev3s_ensure_ts_secret "${KUBECTL_ARGS[@]}"
+      # Interferes with non-interactive flow
+      #_dev3s_ensure_ts_secret "${KUBECTL_ARGS[@]}"
       _dev3s_apply_pod "${SYSNAME}" "${FROM_IMAGE}" "${IMAGE_USER}" "${HOST}" "${KUBECTL_ARGS[@]}"
       ;;
 
