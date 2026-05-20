@@ -1,5 +1,28 @@
 #!/bin/zsh
 
+devpods_commands=(
+  deploy from undeploy status logs shell exec screen apps dot dotfiles playbook tsconnect switch
+)
+
+devpods_prefixes() {
+  local key="images"
+  local output prefixes
+  output=($(dotini devenv --list | grep "^${key}\." || true))
+  prefixes=(${output//${key}./})
+  prefixes=(${prefixes//=*/})
+  printf "%s\n" "${prefixes[@]}"
+}
+
+devpods_targets() {
+  KUBECONFIG=${KUBECONFIG:-${HOME}/.kube/config} kubectl get pods --no-headers 2>/dev/null \
+    | awk '$1 ~ /sys$/ {sub(/sys$/, "", $1); print $1 "\t" $3 "\t" $5}'
+}
+
+devpods_running_targets() {
+  KUBECONFIG=${KUBECONFIG:-${HOME}/.kube/config} kubectl get pods --no-headers 2>/dev/null \
+    | awk '$1 ~ /sys$/ && $3 == "Running" {sub(/sys$/, "", $1); print $1 "\t" $3 "\t" $5}'
+}
+
 _dev3s_kubectl() {
   KUBECONFIG=${KUBECONFIG:-${HOME}/.kube/config} kubectl "$@"
 }
@@ -179,6 +202,46 @@ dev3s() {
       _dev3s_kubectl "${KUBECTL_ARGS[@]}" exec -it ${SYSNAME} -- \
         tailscale up --auth-key "${TS_KEY}" --hostname ${SYSNAME}-${LAST3} \
         --operator ${IMAGE_USER} --ssh
+      ;;
+
+    "screen")
+      _dev3s_kubectl "${KUBECTL_ARGS[@]}" exec -it ${SYSNAME} -- \
+        sudo -i -u ${IMAGE_USER} zsh -c "dotfiles source; screen -xR"
+      ;;
+
+    "apps")
+      _dev3s_kubectl "${KUBECTL_ARGS[@]}" exec -it ${SYSNAME} -- \
+        sudo -i -u ${IMAGE_USER} zsh -c "dotfiles source; app $*"
+      ;;
+
+    "dot")
+      _dev3s_kubectl "${KUBECTL_ARGS[@]}" exec -it ${SYSNAME} -- \
+        sudo -i -u ${IMAGE_USER} zsh -c "dotfiles source; export DISPLAY=:0; $*"
+      ;;
+
+    "dotfiles")
+      _dev3s_kubectl "${KUBECTL_ARGS[@]}" exec -it ${SYSNAME} -- \
+        sudo -i -u ${IMAGE_USER} dotfiles "$@"
+      ;;
+
+    "playbook")
+      local playbook_file=""
+      for arg in "$@"; do
+        if [[ "$arg" == *.yml || "$arg" == *.yaml ]]; then
+          playbook_file="$arg"
+        fi
+      done
+      if [[ -z "$playbook_file" || ! -f "$playbook_file" ]]; then
+        echo "error: playbook file not found in arguments"
+        return 1
+      fi
+      local remote_file="/tmp/$(basename ${playbook_file})"
+      cat "${playbook_file}" | _dev3s_kubectl "${KUBECTL_ARGS[@]}" exec -i ${SYSNAME} -- \
+        sh -c "cat > '${remote_file}'"
+      _dev3s_kubectl "${KUBECTL_ARGS[@]}" exec -it ${SYSNAME} -- \
+        ansible-playbook -i localhost, -c local "${remote_file}"
+      _dev3s_kubectl "${KUBECTL_ARGS[@]}" exec -i ${SYSNAME} -- \
+        rm -f "${remote_file}"
       ;;
 
     *)
