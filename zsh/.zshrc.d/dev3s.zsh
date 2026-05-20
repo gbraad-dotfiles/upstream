@@ -121,13 +121,30 @@ dev3s() {
     return 0
   fi
 
-  # Top-level: dev3s switch <cluster>
+  # Top-level: dev3s switch [<context>]
   if [[ $1 == "switch" ]]; then
-    export DEV3S_CONTEXT=${2:-}
-    if [[ -n "$DEV3S_CONTEXT" ]]; then
+    if [[ -n "${2:-}" ]]; then
+      export DEV3S_CONTEXT=$2
       echo "dev3s: switched to context '${DEV3S_CONTEXT}'"
     else
-      echo "dev3s: cleared context (using kubectl default)"
+      # List available contexts and pick with fzf if available
+      local contexts
+      contexts=$(kubectl config get-contexts --no-headers -o name 2>/dev/null)
+      if [[ -z "$contexts" ]]; then
+        echo "dev3s: no contexts found in kubeconfig"
+        return 1
+      fi
+      local picked
+      if command -v fzf &>/dev/null; then
+        picked=$(echo "$contexts" | fzf --prompt="context> " --height=10)
+      else
+        echo "$contexts" | nl -ba
+        printf "pick context: "
+        read -r picked
+      fi
+      [[ -z "$picked" ]] && return 0
+      export DEV3S_CONTEXT=$picked
+      echo "dev3s: switched to context '${DEV3S_CONTEXT}'"
     fi
     return 0
   fi
