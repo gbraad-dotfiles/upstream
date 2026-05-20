@@ -9,3 +9,7 @@
 # could run: `dotfiles source`
 dotfiles source
 #source ~/.dotfiles/source.sh
+
+
+# Added by Antigravity CLI installer
+export PATH="/home/gbraad/.local/bin:$PATH"

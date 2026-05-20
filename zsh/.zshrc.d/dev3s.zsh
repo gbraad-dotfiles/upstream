@@ -29,11 +29,20 @@ _dev3s_kubectl() {
 
 _dev3s_ensure_ts_secret() {
   local kubectl_args=("$@")
-  local TS_KEY=${TAILSCALE_AUTHKEY:-$(secrets get tailscale_authkey 2>/dev/null)}
+  # Skip if secret already exists
+  if _dev3s_kubectl "${kubectl_args[@]}" get secret tailscale-authkey &>/dev/null; then
+    return 0
+  fi
+  local TS_KEY=${TAILSCALE_AUTHKEY:-}
+  if [[ -z "$TS_KEY" ]]; then
+    TS_KEY=$(secrets get tailscale_authkey)
+  fi
   if [[ -n "$TS_KEY" ]]; then
-    _dev3s_kubectl "${kubectl_args[@]}" create secret generic tailscale-authkey \
+    local manifest
+    manifest=$(_dev3s_kubectl "${kubectl_args[@]}" create secret generic tailscale-authkey \
       --from-literal=TS_AUTHKEY="${TS_KEY}" \
-      --dry-run=client -o yaml | _dev3s_kubectl "${kubectl_args[@]}" apply -f -
+      --dry-run=client -o yaml)
+    echo "$manifest" | _dev3s_kubectl "${kubectl_args[@]}" apply -f -
   else
     echo "warning: tailscale_authkey not available — pod will start without Tailscale"
   fi
@@ -198,7 +207,8 @@ dev3s() {
 
     "tsconnect")
       local LAST3=${HOST: -3}
-      local TS_KEY=${TAILSCALE_AUTHKEY:-$(secrets get tailscale_authkey 2>/dev/null)}
+      local TS_KEY=${TAILSCALE_AUTHKEY:-}
+      [[ -z "$TS_KEY" ]] && TS_KEY=$(secrets get tailscale_authkey 2>/dev/null) || true
       _dev3s_kubectl "${KUBECTL_ARGS[@]}" exec -it ${SYSNAME} -- \
         tailscale up --auth-key "${TS_KEY}" --hostname ${SYSNAME}-${LAST3} \
         --operator ${IMAGE_USER} --ssh
