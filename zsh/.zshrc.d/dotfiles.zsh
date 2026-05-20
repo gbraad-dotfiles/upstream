@@ -155,6 +155,7 @@ _dotoldinstall() {
 
   mkdir -p ~/.local/bin
   mkdir -p ~/.local/lib/python2.7/site-packages/
+  mkdir -p ~/.cache/zsh
 
   _dotinstall
 
