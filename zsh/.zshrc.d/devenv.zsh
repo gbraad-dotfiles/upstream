@@ -1,7 +1,7 @@
 #!/bin/zsh
 
 devenv_commands=(
-  status create start stop remove from apps playbook tsconnect service-install shell
+  status create start stop remove from apps playbook tsconnect service-install shell deploy
 )
 
 devenv_prefixes() {
@@ -263,8 +263,88 @@ devenv() {
       devenv-service-install $PREFIX $image
       echo "Start with:\nsystemctl --user start dotfiles-devenv-${PREFIX}"
       ;;
+    "deploy")
+      local CLUSTERNAME=${1:-}
+      local KUBECTL_ARGS=()
+      [[ -n "$CLUSTERNAME" ]] && KUBECTL_ARGS+=("--context=${CLUSTERNAME}")
+
+      local IMAGE=$(generate_devenv_name $PREFIX)
+      local HOST=$(hostname)
+      local LAST3=${HOST: -3}
+
+      # Ensure tailscale-authkey secret exists in the cluster
+      local TS_KEY=${TAILSCALE_AUTHKEY:-$(secrets get tailscale_authkey 2>/dev/null)}
+      if [[ -n "$TS_KEY" ]]; then
+        KUBECONFIG=${KUBECONFIG:-${HOME}/.kube/config} kubectl "${KUBECTL_ARGS[@]}" create secret generic tailscale-authkey \
+          --from-literal=TS_AUTHKEY="${TS_KEY}" \
+          --dry-run=client -o yaml | KUBECONFIG=${KUBECONFIG:-${HOME}/.kube/config} kubectl "${KUBECTL_ARGS[@]}" apply -f -
+      else
+        echo "warning: TAILSCALE_AUTHKEY not set and 'secrets get tailscale_authkey' returned nothing — pod will start without Tailscale"
+      fi
+
+      KUBECONFIG=${KUBECONFIG:-${HOME}/.kube/config} kubectl "${KUBECTL_ARGS[@]}" apply -f - <<EOF
+apiVersion: v1
+kind: Pod
+metadata:
+  name: ${SYSNAME}
+  labels:
+    app: ${SYSNAME}
+spec:
+  hostname: ${HOST}-${SYSNAME}
+  containers:
+  - name: ${SYSNAME}
+    image: ${IMAGE}
+    imagePullPolicy: Always
+    securityContext:
+      privileged: true
+    env:
+    - name: TS_AUTHKEY
+      valueFrom:
+        secretKeyRef:
+          name: tailscale-authkey
+          key: TS_AUTHKEY
+          optional: true
+    volumeMounts:
+    - name: cgroup
+      mountPath: /sys/fs/cgroup
+    - name: projects
+      mountPath: /home/${IMAGE_USER}/Projects
+    - name: documents
+      mountPath: /home/${IMAGE_USER}/Documents
+    - name: downloads
+      mountPath: /home/${IMAGE_USER}/Downloads
+    - name: tun
+      mountPath: /dev/net/tun
+  volumes:
+  - name: cgroup
+    hostPath:
+      path: /sys/fs/cgroup
+      type: Directory
+  - name: projects
+    hostPath:
+      path: ${HOME}/Projects
+      type: DirectoryOrCreate
+  - name: documents
+    hostPath:
+      path: ${HOME}/Documents
+      type: DirectoryOrCreate
+  - name: downloads
+    hostPath:
+      path: ${HOME}/Downloads
+      type: DirectoryOrCreate
+  - name: tun
+    hostPath:
+      path: /dev/net/tun
+      type: CharDevice
+EOF
+      ;;
+    "undeploy")
+      local CLUSTERNAME=${1:-}
+      local KUBECTL_ARGS=()
+      [[ -n "$CLUSTERNAME" ]] && KUBECTL_ARGS+=("--context=${CLUSTERNAME}")
+      KUBECONFIG=${KUBECONFIG:-${HOME}/.kube/config} kubectl "${KUBECTL_ARGS[@]}" delete pod ${SYSNAME} --ignore-not-found
+      ;;
     *)
-      echo "Unknown command: $0 $PREFIX $COMMAND"
       ;;
   esac
 }
