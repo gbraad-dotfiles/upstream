@@ -233,7 +233,7 @@ dev3s() {
 
     "screen")
       _dev3s_kubectl "${KUBECTL_ARGS[@]}" exec -it ${SYSNAME} -- \
-        sudo -i -u ${IMAGE_USER} zsh -c "dotfiles source; screen -xR"
+        sudo -i -u ${IMAGE_USER} zsh -c "dotfiles source; screen"
       ;;
 
     "apps")
