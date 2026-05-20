@@ -279,3 +279,9 @@ dev3s() {
       ;;
   esac
 }
+
+if [[ $(dotini devenv --get "devenv.aliases") == true ]]; then
+  alias dp="app devpods"
+  d3s() { dev3s "$@" }
+fi
+
