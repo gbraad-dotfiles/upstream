@@ -193,7 +193,15 @@ app() {
   fi
 
   if [[ -n "${APPNAME}" ]]; then
-    local common_args=(--arg APPNAME="${APPNAME}" --arg CONFIGPATH="${APPS_CONFIG}")
+    local _raw_arch="$(uname -m)"
+    local _arch
+    case "${_raw_arch}" in
+      x86_64)           _arch="amd64" ;;
+      aarch64|arm64)    _arch="arm64" ;;
+      armv7l)           _arch="arm" ;;
+      *)                _arch="${_raw_arch}" ;;
+    esac
+    local common_args=(--arg APPNAME="${APPNAME}" --arg CONFIGPATH="${APPS_CONFIG}" --arg ARCH="${_arch}")
 
     # Check if application actually defined
     if [[ ! -f "${APPFILE}" ]]; then
