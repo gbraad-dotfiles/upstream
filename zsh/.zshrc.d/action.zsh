@@ -42,8 +42,8 @@ actions_extract_action_sections() {
         }
       }
       # Single key inside backticks
-      if (match($0, /`([^`]*)`/, m)) {
-        keys = m[1]
+      if (match($0, /`[^`]*`/)) {
+        keys = substr($0, RSTART+1, RLENGTH-2)
         from_backticks = 1
       } else {
         keys = ""
@@ -67,8 +67,9 @@ actions_extract_action_sections() {
     /^```sh/ {
       in_code=1
       mode = ""
-      if (match($0, /^```sh[[:space:]]+([a-zA-Z0-9_-]+)/, m)) {
-        mode = m[1]
+      if (match($0, /^```sh[[:space:]]+[a-zA-Z0-9_-]+/)) {
+        mode = substr($0, RSTART+3)
+        sub(/^sh[[:space:]]+/, "", mode)
       }
       next
     }
@@ -115,17 +116,23 @@ actions_parse_ini() {
   local file="$1"
   awk '
     BEGIN {section=""}
-    /^\[([A-Za-z0-9_]+)\]$/ {match($0, /^\[([A-Za-z0-9_]+)\]$/, m); section=toupper(m[1]); next}
-    /^[[:space:]]*([A-Za-z0-9_]+)[[:space:]]*=[[:space:]]*"([^"]*)"/ {
-      match($0, /^[[:space:]]*([A-Za-z0-9_]+)[[:space:]]*=[[:space:]]*"([^"]*)"/, m);
-      key=toupper(m[1]); value=m[2];
-      printf "export %s_%s=\"%s\"\n", section, key, value;
+    /^\[[A-Za-z0-9_]+\]$/ {
+      s = $0; gsub(/[\[\]]/, "", s); section=toupper(s); next
+    }
+    /^[[:space:]]*[A-Za-z0-9_]+[[:space:]]*=[[:space:]]*"[^"]*"/ {
+      s = $0
+      sub(/^[[:space:]]*/, "", s)
+      key = s; sub(/[[:space:]]*=.*$/, "", key); key = toupper(key)
+      value = s; sub(/^[^=]*=[[:space:]]*"/, "", value); sub(/".*$/, "", value)
+      printf "export %s_%s=\"%s\"\n", section, key, value
       next
     }
-    /^[[:space:]]*([A-Za-z0-9_]+)[[:space:]]*=[[:space:]]*([^"]\S*)[[:space:]]*$/ {
-      match($0, /^[[:space:]]*([A-Za-z0-9_]+)[[:space:]]*=[[:space:]]*([^"]\S*)[[:space:]]*$/, m);
-      key=toupper(m[1]); value=m[2];
-      printf "export %s_%s=\"%s\"\n", section, key, value;
+    /^[[:space:]]*[A-Za-z0-9_]+[[:space:]]*=[[:space:]]*[^"[:space:]]/ {
+      s = $0
+      sub(/^[[:space:]]*/, "", s)
+      key = s; sub(/[[:space:]]*=.*$/, "", key); key = toupper(key)
+      value = s; sub(/^[^=]*=[[:space:]]*/, "", value); sub(/[[:space:]]*$/, "", value)
+      printf "export %s_%s=\"%s\"\n", section, key, value
       next
     }
   ' "$file"
