@@ -224,8 +224,8 @@ devenv() {
     "screen")
       devenv ${PREFIX} dot screen
       ;;
-    "apps")
-      devenv ${PREFIX} dot apps $*
+    "app")
+      devenv ${PREFIX} dot app $*
       ;;
     "dot")
       devenv ${PREFIX} exec sudo -i -u ${IMAGE_USER} zsh -c "dotfiles source; export DISPLAY=:0; $*"
