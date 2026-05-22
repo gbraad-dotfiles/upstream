@@ -113,16 +113,27 @@ jobs:
             IP=`machine system exec tailscale ip -4`
             echo "ip=${IP}" >> $GITHUB_OUTPUT
 
-
       # using run otherwise issues with backticks occur
-      - name: Hang around
+      - name: Usage message on console
+        id: usage
         run: |
           # get values from results file
           IP=`grep '^ip=' ${{ steps.tailscale-machine.outputs.results }} | cut -d= -f2`
           echo "Use the following command to connect \`tailscale ssh gbraad@${IP}\` or \`rscreen gbraad@${IP}\`"
-
           IP=`tailscale ip -4`
           echo "Use the following command to debug from the host \`tailscale ssh runner@${IP}\` or \`rscreen runner@${IP}\`"
+          echo "ip=${IP}" >> $GITHUB_OUTPUT
+
+      - name: Usage message by telegram
+        uses: gbraad-dotfiles/message-action@main
+        with:
+          message: "Access: `tailscale ssh gbraad@${{ steps.usage.outputs.ip }}`"
+        env:
+          TELEGRAM_TOKEN: ${{ secrets.TELEGRAM_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+
+      - name: Hang around
+        run: |
           sleep 18000
 
       - name: Message user; 1 hour
