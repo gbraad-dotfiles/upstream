@@ -219,6 +219,8 @@ app() {
 
     local other_args=()
     local override_args=()
+    local extra_args=()
+    local past_separator=0
     # Loop through all arguments and extract --arg NAME=VALUE
     local skip_next=0 arg nextarg kv
     for ((i=1; i<=$#; i++)); do
@@ -227,6 +229,14 @@ app() {
         continue
       fi
       arg="${@[i]}"
+      if [[ "$arg" == "--" ]]; then
+        past_separator=1
+        continue
+      fi
+      if (( past_separator )); then
+        extra_args+=("$arg")
+        continue
+      fi
       if [[ "$arg" == "--arg" ]]; then
         # support both '--arg NAME=VAL' and '--arg=NAME=VAL'
         nextarg="${@[i+1]}"
@@ -249,6 +259,11 @@ app() {
         other_args+=("$arg")
       fi
     done
+
+    # Expose extra args as EXTRA_ARGS variable
+    if (( ${#extra_args[@]} > 0 )); then
+      override_args+=("--arg=EXTRA_ARGS=${extra_args[*]}")
+    fi
 
     # Parse remaining arguments as action and context
     local action=${other_args[1]}
