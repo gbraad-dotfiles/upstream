@@ -97,10 +97,23 @@ jobs:
         run: |
           echo ${{ secrets.GITHUB_TOKEN }} | gh auth login --with-token
 
+      - name: Usage message by console
+        id: usage
+        run: |
+          IPR=`tailscale ip -4`
+          echo "Use the following command to connect \`tailscale ssh runner@${IPR}\` or \`rscreen runner@${IPR}\`"
+          echo "runner_ip=${IPR}" >> $GITHUB_OUTPUT
+
+      - name: Usage message by telegram
+        uses: gbraad-dotfiles/message-action@main
+        with:
+          message: "Access: `tailscale ssh runner@${{ steps.usage.outputs.runner_ip }}`"
+        env:
+          TELEGRAM_TOKEN: ${{ secrets.TELEGRAM_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+
       - name: Hang around
         run: |
-          IP=`tailscale ip -4`
-          echo "Use the following command to connect \`tailscale ssh runner@${IP}\` or \`rscreen runner@${IP}\`"
           sleep 18000
 
       - name: Message user; 1 hour

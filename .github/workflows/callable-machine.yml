@@ -118,16 +118,17 @@ jobs:
         id: usage
         run: |
           # get values from results file
-          IP=`grep '^ip=' ${{ steps.tailscale-machine.outputs.results }} | cut -d= -f2`
-          echo "Use the following command to connect \`tailscale ssh gbraad@${IP}\` or \`rscreen gbraad@${IP}\`"
-          IP=`tailscale ip -4`
-          echo "Use the following command to debug from the host \`tailscale ssh runner@${IP}\` or \`rscreen runner@${IP}\`"
-          echo "ip=${IP}" >> $GITHUB_OUTPUT
+          IPM=`grep '^ip=' ${{ steps.tailscale-machine.outputs.results }} | cut -d= -f2`
+          echo "Use the following command to connect \`tailscale ssh gbraad@${IPM}\` or \`rscreen gbraad@${IPM}\`"
+          IPR=`tailscale ip -4`
+          echo "Use the following command to debug from the host \`tailscale ssh runner@${IPR}\` or \`rscreen runner@${IPR}\`"
+          echo "machine_ip=${IPM}" >> $GITHUB_OUTPUT
+          echo "runner_ip=${IPR}" >> $GITHUB_OUTPUT
 
       - name: Usage message by telegram
         uses: gbraad-dotfiles/message-action@main
         with:
-          message: "Access: `tailscale ssh gbraad@${{ steps.usage.outputs.ip }}`"
+          message: "Access: `tailscale ssh runner@${{ steps.usage.outputs.runner_ip }}` or `tailscale ssh gbraad@${{ steps.usage.outputs.machine_ip }}`"
         env:
           TELEGRAM_TOKEN: ${{ secrets.TELEGRAM_TOKEN }}
           TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
