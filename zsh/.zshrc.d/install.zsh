@@ -1,8 +1,8 @@
 apps_desktop_install() {
   local appname="$1"
-  local apptitle="$2"
-  if [[ -z "$appname" || -z "$apptitle" ]]; then
-    echo "Usage: apps-desktop-install <appname> <title>"
+  local apptitle="${2:-${APPTITLE:-$appname}}"
+  if [[ -z "$appname" ]]; then
+    echo "Usage: apps-desktop-install <appname> [title]"
     return 1
   fi
 
@@ -45,9 +45,10 @@ EOF
 
 apps_service_install() {
   local appname="$1"
-  local apptitle="$2"
-  if [[ -z "$appname" || -z "$apptitle" ]]; then
-    echo "Usage: apps-service-install <appname> <title>"
+  local apptitle="${2:-$(awk '/^# / {sub(/^# /,""); print; exit}' "${APPS_PATH}/${appname}.md" 2>/dev/null)}"
+  apptitle="${apptitle:-$appname}"
+  if [[ -z "$appname" ]]; then
+    echo "Usage: apps-service-install <appname> [title]"
     return 1
   fi
 

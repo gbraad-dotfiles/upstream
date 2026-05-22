@@ -201,7 +201,8 @@ app() {
       armv7l)           _arch="arm" ;;
       *)                _arch="${_raw_arch}" ;;
     esac
-    local common_args=(--arg APPNAME="${APPNAME}" --arg CONFIGPATH="${APPS_CONFIG}" --arg ARCH="${_arch}")
+    local _apptitle="$(awk '/^# / {sub(/^# /,""); print; exit}' "${APPFILE}" 2>/dev/null)"
+    local common_args=(--arg APPNAME="${APPNAME}" --arg APPTITLE="${_apptitle}" --arg CONFIGPATH="${APPS_CONFIG}" --arg ARCH="${_arch}")
 
     # Check if application actually defined
     if [[ ! -f "${APPFILE}" ]]; then
