@@ -31,7 +31,7 @@ RUN userdel -r "vscode" 2>/dev/null || true \
     && sed -i.bkp -e '/Defaults\tuse_pty/d' -e 's/%sudo\s\+ALL=(ALL\(:ALL\)\?)\s\+ALL/%sudo ALL=NOPASSWD:ALL/g' /etc/sudoers
 
 # Moved everything else to devcontainer features
-USER root
+RUN apt install -y stow
 
 # enable linger for the user (loginctl won't work without systemd running)
 RUN mkdir -p /var/lib/systemd/linger \
