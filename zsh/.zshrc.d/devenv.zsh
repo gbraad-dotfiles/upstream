@@ -40,6 +40,13 @@ _devenv_cgroupmgr() {
 devenv() {
   local SUFFIX="sys"
   local RUNTIME=$(_devenv_runtime)
+  local IS_MICROVM=0
+
+  # Intercept microvm/krun configurations to route via Podman
+  if [[ "${RUNTIME}" == "krun" || "${RUNTIME}" == "microvm" ]]; then
+    IS_MICROVM=1
+    RUNTIME="podman"
+  fi
 
   if [ $# -lt 2 ]; then
     ${RUNTIME} ps -a --filter "name=${SUFFIX}$" --format "{{.Names}} - {{.Status}}"
@@ -69,6 +76,10 @@ devenv() {
     "--cap-add=SYS_ADMIN"
     "${PULL_ARG}"
   )
+
+  # Inject the krun/microVM runtime flag if active
+  [[ $IS_MICROVM -eq 1 ]] && START_ARGS+=("--runtime=krun")
+
   # --userns=keep-id is podman-specific
   [[ "${RUNTIME}" == "podman" ]] && START_ARGS+=("--userns=keep-id")
 
