@@ -87,6 +87,10 @@ jobs:
         continue-on-error: true
         uses: gbraad-actions/setup-container-tools@v1
 
+      - uses: lima-vm/lima-actions/setup@v1
+        continue-on-error: true
+        id: lima-actions-setup
+
       - name: Codium Server
         uses: gbraad-actions/codium-server-action@v1
 
