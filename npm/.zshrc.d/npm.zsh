@@ -1,9 +1,11 @@
 #
-export NPMGLOBAL=${HOME}/.npm-global
+export NPM_CONFIG_PREFIX="${HOME}/.npm-global"
 
-if [ ! -d "${NPMGLOBAL}" ]; then
-  mkdir -p ${NPMGLOBAL}
+if [ ! -d "${NPM_CONFIG_PREFIX}" ]; then
+  mkdir -p "${NPM_CONFIG_PREFIX}"
 fi
 
-export PATH=${NPMGLOBAL}/bin:$PATH
-
+case ":${PATH}:" in
+  *":${NPM_CONFIG_PREFIX}/bin:"*) ;;
+  *) export PATH="${NPM_CONFIG_PREFIX}/bin:${PATH}" ;;
+esac
